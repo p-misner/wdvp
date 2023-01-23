@@ -10,5 +10,9 @@
     "sourceType": "module"
   },
   "plugins": ["react", "prettier"],
-  "rules": {}
+  "rules": {
+    "no-unused-vars": "warn",
+    "object-curly-newline": "off"
+    // "no-extraneous-dependencies": "warn"
+  }
 }
