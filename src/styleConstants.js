@@ -13,7 +13,7 @@ export const regFontSize = '16px';
 export const medFontSize = '20px';
 export const lrgFontSize = '24px';
 export const xlrgFontSize = '24px';
-export const heroFontSize = '24px';
+export const heroFontSize = '100px';
 
 export const lightWeight = '300';
 export const regularWeight = '400';
