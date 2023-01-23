@@ -36,12 +36,25 @@ const SectionTitle = styled.h6`
   font-size: ${medFontSize};
   font-weight: ${semiboldWeight};
   margin: ${regSpacing};
+  text-transform: capitalize;
 `;
 
 function Section({ theme, cat, onClick }) {
+  function textReturn(item) {
+    switch (item) {
+      case 'presentWorld':
+        return 'How the World is Currently Doing (2019-2021)';
+      case 'pastDecade':
+        return 'Global Trends from 20XX to 2020 (?)';
+      case 'countryCompare':
+        return 'How a Specific Country is doing in Comparison';
+      default:
+        return 'Something went wrong';
+    }
+  }
   return (
     <SectionRow onClick={() => onClick()} match={cat === theme}>
-      <SectionTitle> {cat} and</SectionTitle>
+      <SectionTitle> {textReturn(cat)} </SectionTitle>
     </SectionRow>
   );
 }
