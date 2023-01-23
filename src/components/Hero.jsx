@@ -29,7 +29,6 @@ const WGSLogoStyle = styled.img`
 `;
 const Overline = styled.p`
   text-transform: uppercase;
-  //   margin: 0px auto;
   text-align: center;
   margin-top: ${lrgSpacing};
 `;

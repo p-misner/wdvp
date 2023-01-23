@@ -12,7 +12,7 @@
   "plugins": ["react", "prettier"],
   "rules": {
     "no-unused-vars": "warn",
-    "object-curly-newline": "off"
-    // "no-extraneous-dependencies": "warn"
+    "object-curly-newline": "off",
+    "react/jsx-one-expression-per-line": "off"
   }
 }
