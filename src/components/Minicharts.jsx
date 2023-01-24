@@ -8,6 +8,8 @@ import { Group } from '@visx/group';
 import { useTooltip, useTooltipInPortal, defaultStyles } from '@visx/tooltip';
 import { WithTooltipProvidedProps } from '@visx/tooltip/lib/enhancers/withTooltip';
 import { localPoint } from '@visx/event';
+import { contourDensity } from 'd3-contour';
+import { geoPath } from 'd3-geo';
 
 const SectionWrapper = styled.div`
   width: 100%;
@@ -76,7 +78,20 @@ function ScatterplotGDP({ data }) {
     range: [yMax, 0],
     nice: true,
   });
+  // contour
+  const contour = contourDensity()
+    .x(function (d) {
+      return xScale(d[metric]);
+    })
+    .y(function (d) {
+      return yScale(d.value);
+    })
+    .size([width, height])
+    .bandwidth(5)
+    .thresholds(10)(data);
+  const pathGenerator = geoPath();
 
+  // TOOLTIP
   const {
     tooltipData,
     tooltipLeft,
@@ -136,13 +151,22 @@ function ScatterplotGDP({ data }) {
             numTicks={width > 520 ? 10 : 5}
           />
           <AxisLeft scale={yScale} hideAxisLine tickStroke="#e0e0e0" />
+          <g className="contourGroup">
+            {contour.map((x) => (
+              <path
+                key={`contour${x.value}`}
+                d={pathGenerator(x)}
+                fill="rgba(255,0,0,0.2)"
+              />
+            ))}
+          </g>
           {data.map((d) => (
             <circle
               key={d.country}
               cx={xScale(d[metric])}
               cy={yScale(d.value)}
-              r="2"
-              fill="black"
+              r="1"
+              fill="blue"
               //   onMouseMove={handleMouseMove}
               onMouseMove={() => {
                 if (tooltipTimeout) clearTimeout(tooltipTimeout);

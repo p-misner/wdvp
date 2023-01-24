@@ -16,6 +16,7 @@
     "react/jsx-one-expression-per-line": "off",
     "react/forbid-prop-types": "warn",
     "comma-dangle": "off",
-    "operator-linebreak": "off"
+    "operator-linebreak": "off",
+    "prefer-arrow-callback": "warn"
   }
 }
