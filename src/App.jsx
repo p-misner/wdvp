@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import Header from './components/Header';
@@ -15,27 +15,39 @@ const AllContent = styled.h1`
   margin: 0 auto;
   max-width: ${maxWidth};
 `;
-function sectionReturn(item) {
-  switch (item) {
-    case 'presentWorld':
-      return <PresentWorldSection />;
-    case 'pastDecade':
-      return <PastDecadeSection />;
-    case 'countryCompare':
-      return <CountryCompareSection />;
-    default:
-      return <p>Something went wrong</p>;
-  }
-}
 
 function App() {
   const [theme, setTheme] = useState('presentWorld');
+  const [isLoading, setLoading] = useState(true);
+  const [decadeData, setDecadeData] = useState();
+
+  function sectionReturn(item) {
+    switch (item) {
+      case 'presentWorld':
+        return <PresentWorldSection data={decadeData} />;
+      case 'pastDecade':
+        return <PastDecadeSection />;
+      case 'countryCompare':
+        return <CountryCompareSection />;
+      default:
+        return <p>Something went wrong</p>;
+    }
+  }
+  useEffect(() => {
+    fetch('presentFuture.json')
+      .then((response) => response.json())
+      .then((d) => {
+        setDecadeData(d);
+        setLoading(false);
+      });
+  }, []);
+
   return (
     <AllContent>
       <Header />
       <Hero />
       <ExploreSections theme={theme} setTheme={setTheme} />
-      {sectionReturn(theme)}
+      {isLoading ? <p> Loading...</p> : sectionReturn(theme)}
     </AllContent>
   );
 }
