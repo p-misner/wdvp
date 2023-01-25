@@ -10,6 +10,7 @@
     "@visx/event": "^3.0.0",
     "@visx/grid": "^3.0.0",
     "@visx/group": "^3.0.0",
+    "@visx/responsive": "^3.0.0",
     "@visx/scale": "^3.0.0",
     "@visx/tooltip": "^3.0.0",
     "d3-contour": "^4.0.2",

@@ -1,49 +1,50 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { GridRows, GridColumns } from '@visx/grid';
 import { scaleLinear } from '@visx/scale';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { Group } from '@visx/group';
-import { useTooltip, useTooltipInPortal, defaultStyles } from '@visx/tooltip';
-import { WithTooltipProvidedProps } from '@visx/tooltip/lib/enhancers/withTooltip';
-import { localPoint } from '@visx/event';
+import ParentSize from '@visx/responsive/lib/components/ParentSize';
+import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { contourDensity } from 'd3-contour';
 import { geoPath } from 'd3-geo';
 
+const gridWidth = 200;
 const SectionWrapper = styled.div`
-  width: 100%;
-  background-color: ${(props) => props.color || 'rgba(0,0,0,.1)'};
+  //   width: 100%;
+  background-color: ${(props) => props.color || 'rgba(255,0,0,.1)'};
   min-height: 600px;
-`;
-
-const TooltipWrapper = styled.div`
-  position: realtive;
-`;
-const tooltipStyles = {
-  ...defaultStyles,
-  backgroundColor: 'rgba(53,71,125,0.8)',
-  color: 'white',
-  width: 152,
-  height: 72,
-  padding: 12,
-};
-
-const GridBox = styled.div`
-  width: 316px;
-  height: 356px;
-  background-color: white;
-  border: 1px dashed gray;
 `;
 
 const GridWrapper = styled.div`
   display: grid;
   grid-gap: 16px;
-  grid-template-columns: repeat(auto-fill, 316px);
+  //   grid-template-columns: repeat(auto-fit, ${gridWidth}px);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  @media (max-width: 1000px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  @media (max-width: 700px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (max-width: 400px) {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+`;
+
+const GridBox = styled.div`
+  //   min-width: ${gridWidth}px;
+  //   height: 260px;
+  background-color: white;
+  border: 1px dashed gray;
 `;
 
 const ScatterSVG = styled.svg`
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.05);
 `;
 
 function ScatterplotGDP({ data }) {
@@ -51,11 +52,13 @@ function ScatterplotGDP({ data }) {
   const metric = 'avgGDPperCapita';
 
   // TO DO: width should be reflective of overall gridbox not static
+  // there should be a minimum (when boxes get smaller grid should wrap), but then charts can
+  // expand beyond that
   const width = 300;
-  const height = 200;
+  const height = 250;
 
   // TO DO: replace with spacing constants
-  const margin = { top: 20, right: 10, bottom: 30, left: 50 };
+  const margin = { top: 20, right: 10, bottom: 25, left: 40 };
 
   // bounds
   const xMax = width - margin.left - margin.right;
@@ -109,20 +112,6 @@ function ScatterplotGDP({ data }) {
 
   let tooltipTimeout;
   // event handlers
-  const handleMouseMove = useCallback(
-    (event) => {
-      console.log(event);
-      if (tooltipTimeout) clearTimeout(tooltipTimeout);
-      const eventSvgCoords = localPoint(event);
-      showTooltip({
-        tooltipData: 'A',
-        tooltipTop: eventSvgCoords?.y,
-        tooltipLeft: eventSvgCoords?.x,
-      });
-    },
-    [xScale, yScale, showTooltip]
-  );
-
   const handleMouseLeave = useCallback(() => {
     tooltipTimeout = window.setTimeout(() => {
       hideTooltip();
@@ -131,7 +120,13 @@ function ScatterplotGDP({ data }) {
 
   return (
     <div>
-      <ScatterSVG width={width} height={height} ref={containerRef}>
+      <ScatterSVG
+        width="100%"
+        height={height}
+        viewBox={`0 0 ${width} ${height}`}
+        ref={containerRef}
+        preserveAspectRatio="xMinYMin"
+      >
         <Group left={margin.left} top={margin.top}>
           <GridRows
             scale={yScale}
