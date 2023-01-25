@@ -19,12 +19,12 @@ const AllContent = styled.h1`
 function App() {
   const [theme, setTheme] = useState('presentWorld');
   const [isLoading, setLoading] = useState(true);
-  const [decadeData, setDecadeData] = useState();
+  const [data, setData] = useState();
 
   function sectionReturn(item) {
     switch (item) {
       case 'presentWorld':
-        return <PresentWorldSection data={decadeData} />;
+        return <PresentWorldSection data={data} />;
       case 'pastDecade':
         return <PastDecadeSection />;
       case 'countryCompare':
@@ -34,10 +34,10 @@ function App() {
     }
   }
   useEffect(() => {
-    fetch('presentFuture.json')
+    fetch('presentDayAvgLatest.json')
       .then((response) => response.json())
       .then((d) => {
-        setDecadeData(d);
+        setData(d);
         setLoading(false);
       });
   }, []);

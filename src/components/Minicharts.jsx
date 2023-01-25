@@ -41,6 +41,9 @@ const GridBox = styled.div`
   //   height: 260px;
   background-color: white;
   border: 1px dashed gray;
+  & h3 {
+    overflow-wrap: break-word;
+  }
 `;
 
 const ScatterSVG = styled.svg`
@@ -49,11 +52,8 @@ const ScatterSVG = styled.svg`
 
 function ScatterplotGDP({ data }) {
   // TO DO: switch this out with dropdowns
-  const metric = 'avgGDPperCapita';
+  const metric = 'avgGDPpercapita';
 
-  // TO DO: width should be reflective of overall gridbox not static
-  // there should be a minimum (when boxes get smaller grid should wrap), but then charts can
-  // expand beyond that
   const width = 300;
   const height = 250;
 
@@ -75,8 +75,8 @@ function ScatterplotGDP({ data }) {
   });
   const yScale = scaleLinear({
     domain: [
-      Math.min(...data.map((x) => x.value)),
-      Math.max(...data.map((x) => x.value)) * 1,
+      Math.min(...data.map((x) => x.avgVal)),
+      Math.max(...data.map((x) => x.avgVal)) * 1,
     ],
     range: [yMax, 0],
     nice: true,
@@ -87,7 +87,7 @@ function ScatterplotGDP({ data }) {
       return xScale(d[metric]);
     })
     .y(function (d) {
-      return yScale(d.value);
+      return yScale(d.avgVal);
     })
     .size([width, height])
     .bandwidth(5)
@@ -149,7 +149,7 @@ function ScatterplotGDP({ data }) {
           <g className="contourGroup">
             {contour.map((x) => (
               <path
-                key={`contour${x.value}`}
+                key={`contour${x.avgVal}`}
                 d={pathGenerator(x)}
                 fill="rgba(255,0,0,0.2)"
               />
@@ -159,13 +159,13 @@ function ScatterplotGDP({ data }) {
             <circle
               key={d.country}
               cx={xScale(d[metric])}
-              cy={yScale(d.value)}
-              r="1"
+              cy={yScale(d.avgVal)}
+              r={d.avgVal < 0.001 ? '0' : '1'}
               fill="blue"
               //   onMouseMove={handleMouseMove}
               onMouseMove={() => {
                 if (tooltipTimeout) clearTimeout(tooltipTimeout);
-                const top = yScale(d.value) + margin.top;
+                const top = yScale(d.avgVal) + margin.top;
                 const left = xScale(d[metric]) + margin.left;
                 showTooltip({
                   tooltipData: d,
@@ -186,8 +186,8 @@ function ScatterplotGDP({ data }) {
           left={tooltipLeft}
         >
           <p> {tooltipData.country}</p>
-          <p> GDP: {Math.round(tooltipData.avgGDPperCapita) / 1000}k</p>
-          <p> value: {tooltipData.value}</p>
+          <p> GDP: {Math.round(tooltipData[metric]) / 1000}k</p>
+          <p> value: {tooltipData.avgVal}</p>
         </TooltipInPortal>
       )}
     </div>
@@ -211,8 +211,6 @@ function PlotBox({ dataSeries }) {
   return (
     <GridBox>
       <h3>{dataSeries.metricTitle}</h3>
-      <p> subtitle</p>
-      <p> Trend Direction</p>
       <ScatterplotGDP data={dataSeries.data} />
     </GridBox>
   );
