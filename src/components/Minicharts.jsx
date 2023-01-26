@@ -1,14 +1,14 @@
-import React, { useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { GridRows, GridColumns } from '@visx/grid';
 import { scaleLinear } from '@visx/scale';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { Group } from '@visx/group';
-import ParentSize from '@visx/responsive/lib/components/ParentSize';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { contourDensity } from 'd3-contour';
 import { geoPath } from 'd3-geo';
+import Select from 'react-select';
 
 const gridWidth = 200;
 const SectionWrapper = styled.div`
@@ -50,9 +50,14 @@ const ScatterSVG = styled.svg`
   background-color: rgba(0, 0, 0, 0.05);
 `;
 
-function ScatterplotGDP({ data }) {
+const SelectWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin: 20px;
+`;
+
+function ScatterplotGDP({ data, xMetric }) {
   // TO DO: switch this out with dropdowns
-  const metric = 'avgGDPpercapita';
 
   const width = 300;
   const height = 250;
@@ -67,8 +72,8 @@ function ScatterplotGDP({ data }) {
   // scales
   const xScale = scaleLinear({
     domain: [
-      Math.min(...data.map((x) => x[metric])),
-      Math.max(...data.map((x) => x[metric])),
+      Math.min(...data.map((x) => x[xMetric])),
+      Math.max(...data.map((x) => x[xMetric])),
     ],
     range: [0, xMax],
     nice: true,
@@ -84,7 +89,7 @@ function ScatterplotGDP({ data }) {
   // contour
   const contour = contourDensity()
     .x(function (d) {
-      return xScale(d[metric]);
+      return xScale(d[xMetric]);
     })
     .y(function (d) {
       return yScale(d.avgVal);
@@ -158,7 +163,7 @@ function ScatterplotGDP({ data }) {
           {data.map((d) => (
             <circle
               key={d.country}
-              cx={xScale(d[metric])}
+              cx={xScale(d[xMetric])}
               cy={yScale(d.avgVal)}
               r={Math.abs(d.avgVal) < 0.001 ? '0' : '1'}
               fill="blue"
@@ -166,7 +171,7 @@ function ScatterplotGDP({ data }) {
               onMouseMove={() => {
                 if (tooltipTimeout) clearTimeout(tooltipTimeout);
                 const top = yScale(d.avgVal) + margin.top;
-                const left = xScale(d[metric]) + margin.left;
+                const left = xScale(d[xMetric]) + margin.left;
                 showTooltip({
                   tooltipData: d,
                   tooltipTop: top,
@@ -186,7 +191,7 @@ function ScatterplotGDP({ data }) {
           left={tooltipLeft}
         >
           <p> {tooltipData.country}</p>
-          <p> GDP: {Math.round(tooltipData[metric]) / 1000}k</p>
+          <p> GDP: {Math.round(tooltipData[xMetric]) / 1000}k</p>
           <p> value: {tooltipData.avgVal}</p>
         </TooltipInPortal>
       )}
@@ -196,6 +201,7 @@ function ScatterplotGDP({ data }) {
 
 ScatterplotGDP.propTypes = {
   data: PropTypes.array,
+  xMetric: PropTypes.string.isRequired,
 };
 ScatterplotGDP.defaultProps = {
   data: [
@@ -207,15 +213,16 @@ ScatterplotGDP.defaultProps = {
   ],
 };
 
-function PlotBox({ dataSeries }) {
+function PlotBox({ dataSeries, xMetric }) {
   return (
     <GridBox>
       <h3>{dataSeries.metricTitle}</h3>
-      <ScatterplotGDP data={dataSeries.data} />
+      <ScatterplotGDP data={dataSeries.data} xMetric={xMetric} />
     </GridBox>
   );
 }
 PlotBox.propTypes = {
+  xMetric: PropTypes.string.isRequired,
   dataSeries: PropTypes.shape({
     metricTitle: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
@@ -226,11 +233,52 @@ PlotBox.propTypes = {
 };
 
 export function PresentWorldSection({ data }) {
+  const [xMetric, setXMetric] = useState('avgGDPpercapita');
+  const [metricCategory, setMetricCategory] = useState('allmetrics');
+  const [colorBy, setColorBy] = useState('trend');
+
+  const xMetricOptions = [
+    { value: 'avgGDPpercapita', label: 'Average GDP Per Capita' },
+    { value: 'latestGDPpercapita', label: 'Latest GDP Per Capita' },
+    { value: 'GINI', label: 'Gini Inequality Index' },
+    { value: 'avgHappyPlanet', label: 'Average Happy Planet Index' },
+    { value: 'SEDA', label: 'Sustainable Development Index' },
+  ];
+  const metricCategoryOptions = [
+    { value: 'allmetrics', label: 'All Metrics' },
+    { value: 'economic', label: 'Economic Metrics' },
+    { value: 'health', label: 'Health Metrics' },
+    { value: 'sustainability', label: 'Sustainability Metrics' },
+  ];
+  const colorByOptions = [
+    { value: 'trend', label: 'Color by: Trend' },
+    { value: 'continent', label: 'Color by: Continent' },
+    { value: 'income', label: 'Color by: Income' },
+  ];
+
   return (
     <SectionWrapper>
+      <SelectWrapper>
+        <Select
+          defaultValue={{ value: xMetric, label: 'Average GDP Per Capita' }}
+          options={xMetricOptions}
+          onChange={(a) => setXMetric(a.value)}
+        />
+        <Select
+          defaultValue={{ value: metricCategory, label: 'All Metrics' }}
+          options={metricCategoryOptions}
+          onChange={(a) => setMetricCategory(a.value)}
+        />
+        <Select
+          defaultValue={{ value: colorBy, label: 'Color by: Trend' }}
+          options={colorByOptions}
+          onChange={(a) => setColorBy(a.value)}
+        />
+      </SelectWrapper>
+
       <GridWrapper>
         {data.map((x) => (
-          <PlotBox dataSeries={x} key={x.metricTitle} />
+          <PlotBox dataSeries={x} key={x.metricTitle} xMetric={xMetric} />
         ))}
       </GridWrapper>
     </SectionWrapper>
