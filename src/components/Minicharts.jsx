@@ -160,7 +160,7 @@ function ScatterplotGDP({ data }) {
               key={d.country}
               cx={xScale(d[metric])}
               cy={yScale(d.avgVal)}
-              r={d.avgVal < 0.001 ? '0' : '1'}
+              r={Math.abs(d.avgVal) < 0.001 ? '0' : '1'}
               fill="blue"
               //   onMouseMove={handleMouseMove}
               onMouseMove={() => {
