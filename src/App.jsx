@@ -1,28 +1,54 @@
-import React from "react";
-import logo from "./logo.svg";
-import "./App.css";
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+
+import Header from './components/Header';
+import Hero from './components/Hero';
+import ExploreSections from './components/ExploreSections';
+import {
+  CountryCompareSection,
+  PresentWorldSection,
+  PastDecadeSection,
+} from './components/Minicharts';
+import { maxWidth } from './styleConstants';
+
+const AllContent = styled.h1`
+  margin: 0 auto;
+  max-width: ${maxWidth};
+`;
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit
-          <code>src/App.js</code>
-          and save to reload.
-        </p>
+  const [theme, setTheme] = useState('presentWorld');
+  const [isLoading, setLoading] = useState(true);
+  const [data, setData] = useState();
 
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+  function sectionReturn(item) {
+    switch (item) {
+      case 'presentWorld':
+        return <PresentWorldSection data={data} />;
+      case 'pastDecade':
+        return <PastDecadeSection />;
+      case 'countryCompare':
+        return <CountryCompareSection />;
+      default:
+        return <p>Something went wrong</p>;
+    }
+  }
+  useEffect(() => {
+    fetch('presentDayAvgLatest.json')
+      .then((response) => response.json())
+      .then((d) => {
+        setData(d);
+        setLoading(false);
+      });
+  }, []);
+
+  return (
+    <AllContent>
+      <Header />
+      <Hero />
+      <ExploreSections theme={theme} setTheme={setTheme} />
+      {isLoading ? <p> Loading...</p> : sectionReturn(theme)}
+    </AllContent>
   );
 }
 
