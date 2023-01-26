@@ -35,14 +35,28 @@ const GridWrapper = styled.div`
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
 `;
+const GridWrapperHoriz = styled.div`
+  display: flex;
+  flex-direction: row;
+  overflow-x: scroll;
+  overflow-y: hidden;
+`;
 
 const GridBox = styled.div`
-  //   min-width: ${gridWidth}px;
-  //   height: 260px;
+  min-width: 100px;
+  position: relative;
   background-color: white;
   border: 1px dashed gray;
   & h3 {
     overflow-wrap: break-word;
+  }
+  .arrow {
+    visibility: hidden;
+    color: red;
+  }
+  &:hover .arrow {
+    visibility: visible;
+    color: blue;
   }
 `;
 
@@ -55,12 +69,18 @@ const SelectWrapper = styled.div`
   flex-direction: row;
   margin: 20px;
 `;
+const ExpandArrow = styled.div`
+  font-size: 48px;
+  position: absolute;
+  top: 0px;
+  right: 4px;
+`;
 
-function ScatterplotGDP({ data, xMetric }) {
+function ScatterplotGDP({ data, xMetric, size }) {
   // TO DO: switch this out with dropdowns
 
-  const width = 300;
-  const height = 250;
+  const width = size === 'large' ? 700 : 300;
+  const height = size === 'large' ? 400 : 250;
 
   // TO DO: replace with spacing constants
   const margin = { top: 20, right: 10, bottom: 25, left: 40 };
@@ -165,7 +185,9 @@ function ScatterplotGDP({ data, xMetric }) {
               key={d.country}
               cx={xScale(d[xMetric])}
               cy={yScale(d.avgVal)}
-              r={Math.abs(d.avgVal) < 0.001 ? '0' : '1'}
+              r={
+                Math.abs(d.avgVal) < 0.001 ? '0' : size === 'large' ? '3' : '1'
+              }
               fill="blue"
               //   onMouseMove={handleMouseMove}
               onMouseMove={() => {
@@ -202,6 +224,7 @@ function ScatterplotGDP({ data, xMetric }) {
 ScatterplotGDP.propTypes = {
   data: PropTypes.array,
   xMetric: PropTypes.string.isRequired,
+  size: PropTypes.string.isRequired,
 };
 ScatterplotGDP.defaultProps = {
   data: [
@@ -213,16 +236,26 @@ ScatterplotGDP.defaultProps = {
   ],
 };
 
-function PlotBox({ dataSeries, xMetric }) {
+function PlotBox({ dataSeries, xMetric, setPageLayout, size }) {
   return (
-    <GridBox>
+    <GridBox
+      onClick={() => {
+        setPageLayout({
+          layout: 'highlight',
+          selectedMetric: dataSeries,
+        });
+      }}
+    >
       <h3>{dataSeries.metricTitle}</h3>
-      <ScatterplotGDP data={dataSeries.data} xMetric={xMetric} />
+      <ScatterplotGDP data={dataSeries.data} xMetric={xMetric} size={size} />
+      <ExpandArrow className="arrow">⬈</ExpandArrow>
     </GridBox>
   );
 }
 PlotBox.propTypes = {
+  setPageLayout: PropTypes.func.isRequired,
   xMetric: PropTypes.string.isRequired,
+  size: PropTypes.string.isRequired,
   dataSeries: PropTypes.shape({
     metricTitle: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
@@ -233,6 +266,10 @@ PlotBox.propTypes = {
 };
 
 export function PresentWorldSection({ data }) {
+  const [pageLayout, setPageLayout] = useState({
+    layout: 'grid',
+    selectedMetric: {},
+  }); // grid or highlight
   const [xMetric, setXMetric] = useState('avgGDPpercapita');
   const [metricCategory, setMetricCategory] = useState('allmetrics');
   const [colorBy, setColorBy] = useState('trend');
@@ -255,7 +292,54 @@ export function PresentWorldSection({ data }) {
     { value: 'continent', label: 'Color by: Continent' },
     { value: 'income', label: 'Color by: Income' },
   ];
+  if (pageLayout.layout === 'highlight') {
+    return (
+      <SectionWrapper>
+        <button
+          onClick={() => setPageLayout({ layout: 'grid', selectedMetric: {} })}
+          type="button"
+        >
+          {' '}
+          Return to Grid{' '}
+        </button>
+        <SelectWrapper>
+          <Select
+            defaultValue={{ value: xMetric, label: 'Average GDP Per Capita' }}
+            options={xMetricOptions}
+            onChange={(a) => setXMetric(a.value)}
+          />
+          <Select
+            defaultValue={{ value: metricCategory, label: 'All Metrics' }}
+            options={metricCategoryOptions}
+            onChange={(a) => setMetricCategory(a.value)}
+          />
+          <Select
+            defaultValue={{ value: colorBy, label: 'Color by: Trend' }}
+            options={colorByOptions}
+            onChange={(a) => setColorBy(a.value)}
+          />
+        </SelectWrapper>
+        <PlotBox
+          size="large"
+          dataSeries={pageLayout.selectedMetric}
+          key={pageLayout.selectedMetric.metricTitle}
+          xMetric={xMetric}
+          setPageLayout={setPageLayout}
+        />
 
+        <GridWrapperHoriz>
+          {data.map((x) => (
+            <PlotBox
+              dataSeries={x}
+              key={x.metricTitle}
+              xMetric={xMetric}
+              setPageLayout={setPageLayout}
+            />
+          ))}
+        </GridWrapperHoriz>
+      </SectionWrapper>
+    );
+  }
   return (
     <SectionWrapper>
       <SelectWrapper>
@@ -278,7 +362,12 @@ export function PresentWorldSection({ data }) {
 
       <GridWrapper>
         {data.map((x) => (
-          <PlotBox dataSeries={x} key={x.metricTitle} xMetric={xMetric} />
+          <PlotBox
+            dataSeries={x}
+            key={x.metricTitle}
+            xMetric={xMetric}
+            setPageLayout={setPageLayout}
+          />
         ))}
       </GridWrapper>
     </SectionWrapper>
