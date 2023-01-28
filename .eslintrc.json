@@ -21,6 +21,7 @@
     "prefer-arrow-callback": "warn",
     "no-confusing-arrow": "off",
     "implicit-arrow-linebreak": "off",
-    "no-nested-ternary": "warn"
+    "no-nested-ternary": "warn",
+    "indent": "off"
   }
 }

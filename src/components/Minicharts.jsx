@@ -186,7 +186,11 @@ function ScatterplotGDP({ data, xMetric, size }) {
               cx={xScale(d[xMetric])}
               cy={yScale(d.avgVal)}
               r={
-                Math.abs(d.avgVal) < 0.001 ? '0' : size === 'large' ? '3' : '1'
+                Math.abs(d.avgVal) < 0.001 || Math.abs(d[xMetric]) < 0.001
+                  ? '0'
+                  : size === 'large'
+                  ? '3'
+                  : '1'
               }
               fill="blue"
               //   onMouseMove={handleMouseMove}
@@ -304,7 +308,7 @@ export function PresentWorldSection({ data }) {
         </button>
         <SelectWrapper>
           <Select
-            defaultValue={{ value: xMetric, label: 'Average GDP Per Capita' }}
+            defaultValue={{ value: xMetric, label: xMetric }}
             options={xMetricOptions}
             onChange={(a) => setXMetric(a.value)}
           />
@@ -314,7 +318,7 @@ export function PresentWorldSection({ data }) {
             onChange={(a) => setMetricCategory(a.value)}
           />
           <Select
-            defaultValue={{ value: colorBy, label: 'Color by: Trend' }}
+            // defaultValue={{ value: colorBy, label: 'Color by: Trend' }}
             options={colorByOptions}
             onChange={(a) => setColorBy(a.value)}
           />
@@ -344,7 +348,7 @@ export function PresentWorldSection({ data }) {
     <SectionWrapper>
       <SelectWrapper>
         <Select
-          defaultValue={{ value: xMetric, label: 'Average GDP Per Capita' }}
+          defaultValue={{ value: xMetric, label: xMetric }}
           options={xMetricOptions}
           onChange={(a) => setXMetric(a.value)}
         />
