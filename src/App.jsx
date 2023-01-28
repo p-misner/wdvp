@@ -4,11 +4,7 @@ import styled from 'styled-components';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import ExploreSections from './components/ExploreSections';
-import {
-  CountryCompareSection,
-  PresentWorldSection,
-  PastDecadeSection,
-} from './components/Minicharts';
+import { PastDecadeSection, MultiCharts } from './components/Minicharts';
 import { maxWidth } from './styleConstants';
 
 const AllContent = styled.h1`
@@ -24,11 +20,11 @@ function App() {
   function sectionReturn(item) {
     switch (item) {
       case 'presentWorld':
-        return <PresentWorldSection data={data} />;
+        return <MultiCharts data={data} theme={item} />;
       case 'pastDecade':
         return <PastDecadeSection />;
       case 'countryCompare':
-        return <CountryCompareSection />;
+        return <MultiCharts data={data} theme={item} />;
       default:
         return <p>Something went wrong</p>;
     }

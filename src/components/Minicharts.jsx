@@ -8,6 +8,7 @@ import { Group } from '@visx/group';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { contourDensity } from 'd3-contour';
 import { geoPath } from 'd3-geo';
+
 import Select from 'react-select';
 
 const gridWidth = 200;
@@ -75,6 +76,34 @@ const ExpandArrow = styled.div`
   top: 0px;
   right: 4px;
 `;
+
+// Dropdown Options
+const xMetricOptions = [
+  { value: 'avgGDPpercapita', label: 'Average GDP Per Capita' },
+  { value: 'latestGDPpercapita', label: 'Latest GDP Per Capita' },
+  { value: 'GINI', label: 'Gini Inequality Index' },
+  { value: 'avgHappyPlanet', label: 'Average Happy Planet Index' },
+  { value: 'SEDA', label: 'Sustainable Development Index' },
+];
+const countries = [
+  { value: 'Australia', label: 'Australia' },
+  { value: 'Afghanistan', label: 'Afghanistan' },
+  { value: 'Albania', label: 'Albania' },
+  { value: 'Algeria', label: 'Algeria' },
+  { value: 'Angola', label: 'Angola' },
+  { value: 'China', label: 'China' },
+];
+const metricCategoryOptions = [
+  { value: 'allmetrics', label: 'All Metrics' },
+  { value: 'economic', label: 'Economic Metrics' },
+  { value: 'health', label: 'Health Metrics' },
+  { value: 'sustainability', label: 'Sustainability Metrics' },
+];
+const colorByOptions = [
+  { value: 'trend', label: 'Color by: Trend' },
+  { value: 'continent', label: 'Color by: Continent' },
+  { value: 'income', label: 'Color by: Income' },
+];
 
 function ScatterplotGDP({ data, xMetric, size }) {
   // TO DO: switch this out with dropdowns
@@ -172,9 +201,10 @@ function ScatterplotGDP({ data, xMetric, size }) {
           />
           <AxisLeft scale={yScale} hideAxisLine tickStroke="#e0e0e0" />
           <g className="contourGroup">
-            {contour.map((x) => (
+            {contour.map((x, i) => (
               <path
-                key={`contour${x.avgVal}`}
+                // eslint-disable-next-line react/no-array-index-key
+                key={`contour${i}}`}
                 d={pathGenerator(x)}
                 fill="rgba(255,0,0,0.2)"
               />
@@ -224,7 +254,6 @@ function ScatterplotGDP({ data, xMetric, size }) {
     </div>
   );
 }
-
 ScatterplotGDP.propTypes = {
   data: PropTypes.array,
   xMetric: PropTypes.string.isRequired,
@@ -240,7 +269,146 @@ ScatterplotGDP.defaultProps = {
   ],
 };
 
-function PlotBox({ dataSeries, xMetric, setPageLayout, size }) {
+function CountryBubble({ data, xMetric, size }) {
+  const width = size === 'large' ? 700 : 300;
+  const height = size === 'large' ? 400 : 250;
+
+  // TO DO: replace with spacing constants
+  const margin = { top: 20, right: 10, bottom: 25, left: 40 };
+  const radius = 3;
+  const bubblePadding = 2;
+
+  //   .force('x', forceX())
+  //   .force('y', forceY());
+
+  // bounds
+  const xMax = width - margin.left - margin.right;
+  const yMax = height - margin.top - margin.bottom;
+
+  // scales
+  const xScale = scaleLinear({
+    domain: [0, 1],
+    range: [0, xMax],
+    nice: true,
+  });
+  const yScale = scaleLinear({
+    domain: [
+      Math.min(...data.map((x) => x.avgVal)),
+      Math.max(...data.map((x) => x.avgVal)) * 1,
+    ],
+    range: [yMax, 0],
+    nice: true,
+  });
+
+  // console.log(simulation.nodes(data).nodes());
+
+  // TOOLTIP
+  const {
+    tooltipData,
+    tooltipLeft,
+    tooltipTop,
+    tooltipOpen,
+    showTooltip, // on hover we will call this function to show tooltip
+    hideTooltip, // and this one to hide it
+  } = useTooltip();
+
+  const { countryRef, TooltipInPortal } = useTooltipInPortal({
+    detectBounds: true,
+    // when tooltip containers are scrolled, this will correctly update the Tooltip position
+    scroll: true,
+  });
+
+  let tooltipTimeout;
+  // event handlers
+  const handleMouseLeave = useCallback(() => {
+    tooltipTimeout = window.setTimeout(() => {
+      hideTooltip();
+    }, 300);
+  }, [hideTooltip]);
+  return (
+    <div>
+      {xMetric}
+      <ScatterSVG
+        width="100%"
+        height={height}
+        viewBox={`0 0 ${width} ${height}`}
+        ref={countryRef}
+        preserveAspectRatio="xMinYMin"
+      >
+        <Group left={margin.left} top={margin.top}>
+          <GridRows
+            scale={yScale}
+            width={xMax}
+            height={yMax}
+            stroke="#e0e0e0"
+          />
+          <GridColumns
+            scale={xScale}
+            width={xMax}
+            height={yMax}
+            stroke="#e0e0e0"
+          />
+          <AxisBottom
+            top={yMax}
+            scale={xScale}
+            numTicks={width > 520 ? 10 : 5}
+          />
+          <AxisLeft scale={yScale} hideAxisLine tickStroke="#e0e0e0" />{' '}
+        </Group>
+        <g>
+          {data.map((d) => (
+            <circle
+              key={d.country}
+              cx={xScale(0.5) + margin.left}
+              cy={yScale(d.avgVal) + margin.top}
+              r={
+                Math.abs(d.avgVal) < 0.001 || Math.abs(d[xMetric]) < 0.001
+                  ? '0'
+                  : d.country === xMetric
+                  ? '10'
+                  : size === 'large'
+                  ? '3'
+                  : '1'
+              }
+              fill="blue"
+              //   onMouseMove={handleMouseMove}
+              onMouseMove={() => {
+                if (tooltipTimeout) clearTimeout(tooltipTimeout);
+                const top = yScale(d.avgVal) + margin.top;
+                const left = xScale(0.5) + margin.left;
+                showTooltip({
+                  tooltipData: d,
+                  tooltipTop: top + 600,
+                  tooltipLeft: left,
+                });
+              }}
+              onMouseLeave={handleMouseLeave}
+            />
+          ))}
+        </g>
+      </ScatterSVG>
+      {tooltipOpen && (
+        <TooltipInPortal
+          // set this to random so it correctly updates with parent bounds
+          key={Math.random()}
+          top={tooltipTop}
+          left={tooltipLeft}
+        >
+          <p> {tooltipData.country}</p>
+          <p> GDP: {Math.round(tooltipData[xMetric]) / 1000}k</p>
+          <p> value: {tooltipData.avgVal}</p>
+        </TooltipInPortal>
+      )}
+    </div>
+  );
+}
+CountryBubble.propTypes = {
+  data: PropTypes.array.isRequired,
+  xMetric: PropTypes.string.isRequired,
+  size: PropTypes.string.isRequired,
+};
+
+function PlotBox({ dataSeries, xMetric, setPageLayout, size, chartType }) {
   return (
     <GridBox
       onClick={() => {
@@ -251,7 +419,11 @@ function PlotBox({ dataSeries, xMetric, setPageLayout, size }) {
       }}
     >
       <h3>{dataSeries.metricTitle}</h3>
-      <ScatterplotGDP data={dataSeries.data} xMetric={xMetric} size={size} />
+      {chartType === 'bubble' ? (
+        <CountryBubble data={dataSeries.data} xMetric={xMetric} size={size} />
+      ) : (
+        <ScatterplotGDP data={dataSeries.data} xMetric={xMetric} size={size} />
+      )}
       <ExpandArrow className="arrow">⬈</ExpandArrow>
     </GridBox>
   );
@@ -259,43 +431,75 @@ function PlotBox({ dataSeries, xMetric, setPageLayout, size }) {
 PlotBox.propTypes = {
   setPageLayout: PropTypes.func.isRequired,
   xMetric: PropTypes.string.isRequired,
-  size: PropTypes.string.isRequired,
+  chartType: PropTypes.string.isRequired,
+  size: PropTypes.string,
   dataSeries: PropTypes.shape({
     metricTitle: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
     notes: PropTypes.string.isRequired,
-    dataYear: PropTypes.string.isRequired,
+    // dataYear: PropTypes.string.isRequired,
     data: PropTypes.array.isRequired,
   }).isRequired,
 };
+PlotBox.defaultProps = {
+  size: 'small',
+};
 
-export function PresentWorldSection({ data }) {
+function ControlPanel({ controllersObj }) {
+  return (
+    <SelectWrapper>
+      {controllersObj.map((x) => (
+        <Select
+          key={x.defaultState}
+          defaultValue={{ value: x.defaultState, label: x.defaultState }}
+          options={x.options}
+          onChange={(a) => x.changeState(a.value)}
+        />
+      ))}
+    </SelectWrapper>
+  );
+}
+
+ControlPanel.propTypes = {
+  controllersObj: PropTypes.array.isRequired,
+};
+
+export function MultiCharts({ data, theme }) {
   const [pageLayout, setPageLayout] = useState({
     layout: 'grid',
     selectedMetric: {},
   }); // grid or highlight
+
   const [xMetric, setXMetric] = useState('avgGDPpercapita');
   const [metricCategory, setMetricCategory] = useState('allmetrics');
   const [colorBy, setColorBy] = useState('trend');
+  const [country, setCountry] = useState('Australia');
 
-  const xMetricOptions = [
-    { value: 'avgGDPpercapita', label: 'Average GDP Per Capita' },
-    { value: 'latestGDPpercapita', label: 'Latest GDP Per Capita' },
-    { value: 'GINI', label: 'Gini Inequality Index' },
-    { value: 'avgHappyPlanet', label: 'Average Happy Planet Index' },
-    { value: 'SEDA', label: 'Sustainable Development Index' },
+  const presentWorldControllers = [
+    {
+      defaultState: xMetric,
+      options: xMetricOptions,
+      changeState: setXMetric,
+    },
+    {
+      defaultState: metricCategory,
+      options: metricCategoryOptions,
+      changeState: setMetricCategory,
+    },
+    {
+      defaultState: colorBy,
+      options: colorByOptions,
+      changeState: setColorBy,
+    },
   ];
-  const metricCategoryOptions = [
-    { value: 'allmetrics', label: 'All Metrics' },
-    { value: 'economic', label: 'Economic Metrics' },
-    { value: 'health', label: 'Health Metrics' },
-    { value: 'sustainability', label: 'Sustainability Metrics' },
+  const countryCompareControllers = [
+    {
+      defaultState: 'Australia',
+      options: countries,
+      changeState: setCountry,
+    },
   ];
-  const colorByOptions = [
-    { value: 'trend', label: 'Color by: Trend' },
-    { value: 'continent', label: 'Color by: Continent' },
-    { value: 'income', label: 'Color by: Income' },
-  ];
+
   if (pageLayout.layout === 'highlight') {
     return (
       <SectionWrapper>
@@ -303,41 +507,31 @@ export function PresentWorldSection({ data }) {
           onClick={() => setPageLayout({ layout: 'grid', selectedMetric: {} })}
           type="button"
         >
-          {' '}
-          Return to Grid{' '}
+          Return to Grid
         </button>
-        <SelectWrapper>
-          <Select
-            defaultValue={{ value: xMetric, label: xMetric }}
-            options={xMetricOptions}
-            onChange={(a) => setXMetric(a.value)}
-          />
-          <Select
-            defaultValue={{ value: metricCategory, label: 'All Metrics' }}
-            options={metricCategoryOptions}
-            onChange={(a) => setMetricCategory(a.value)}
-          />
-          <Select
-            // defaultValue={{ value: colorBy, label: 'Color by: Trend' }}
-            options={colorByOptions}
-            onChange={(a) => setColorBy(a.value)}
-          />
-        </SelectWrapper>
+
+        {theme === 'presentWorld' ? (
+          <ControlPanel controllersObj={presentWorldControllers} />
+        ) : (
+          <ControlPanel controllersObj={countryCompareControllers} />
+        )}
+
         <PlotBox
           size="large"
           dataSeries={pageLayout.selectedMetric}
           key={pageLayout.selectedMetric.metricTitle}
-          xMetric={xMetric}
+          xMetric={theme === 'presentWorld' ? xMetric : country}
           setPageLayout={setPageLayout}
+          chartType={theme === 'presentWorld' ? 'scattercontour' : 'bubble'}
         />
-
         <GridWrapperHoriz>
           {data.map((x) => (
             <PlotBox
               dataSeries={x}
               key={x.metricTitle}
-              xMetric={xMetric}
+              xMetric={theme === 'presentWorld' ? xMetric : country}
               setPageLayout={setPageLayout}
+              chartType={theme === 'presentWorld' ? 'scattercontour' : 'bubble'}
             />
           ))}
         </GridWrapperHoriz>
@@ -346,31 +540,20 @@ export function PresentWorldSection({ data }) {
   }
   return (
     <SectionWrapper>
-      <SelectWrapper>
-        <Select
-          defaultValue={{ value: xMetric, label: xMetric }}
-          options={xMetricOptions}
-          onChange={(a) => setXMetric(a.value)}
-        />
-        <Select
-          defaultValue={{ value: metricCategory, label: 'All Metrics' }}
-          options={metricCategoryOptions}
-          onChange={(a) => setMetricCategory(a.value)}
-        />
-        <Select
-          defaultValue={{ value: colorBy, label: 'Color by: Trend' }}
-          options={colorByOptions}
-          onChange={(a) => setColorBy(a.value)}
-        />
-      </SelectWrapper>
+      {theme === 'presentWorld' ? (
+        <ControlPanel controllersObj={presentWorldControllers} />
+      ) : (
+        <ControlPanel controllersObj={countryCompareControllers} />
+      )}
 
       <GridWrapper>
         {data.map((x) => (
           <PlotBox
             dataSeries={x}
             key={x.metricTitle}
-            xMetric={xMetric}
+            xMetric={theme === 'presentWorld' ? xMetric : country}
             setPageLayout={setPageLayout}
+            chartType={theme === 'presentWorld' ? 'scattercontour' : 'bubble'}
           />
         ))}
       </GridWrapper>
@@ -378,13 +561,11 @@ export function PresentWorldSection({ data }) {
   );
 }
 
-PresentWorldSection.propTypes = {
+MultiCharts.propTypes = {
   data: PropTypes.array.isRequired,
+  theme: PropTypes.string.isRequired,
 };
 
 export function PastDecadeSection() {
   return <SectionWrapper color="blue">Present World</SectionWrapper>;
-}
-export function CountryCompareSection() {
-  return <SectionWrapper color="orange">Country Compare</SectionWrapper>;
 }

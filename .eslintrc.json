@@ -22,6 +22,8 @@
     "no-confusing-arrow": "off",
     "implicit-arrow-linebreak": "off",
     "no-nested-ternary": "warn",
-    "indent": "off"
+    "indent": "off",
+    "function-paren-newline": "off",
+    "nonblock-statement-body-position": "off"
   }
 }
