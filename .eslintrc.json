@@ -13,12 +13,15 @@
   "rules": {
     "no-unused-vars": "warn",
     "object-curly-newline": "off",
+    "react/jsx-curly-newline": "off",
     "react/jsx-one-expression-per-line": "off",
     "react/forbid-prop-types": "warn",
     "comma-dangle": "off",
     "operator-linebreak": "off",
     "prefer-arrow-callback": "warn",
     "no-confusing-arrow": "off",
-    "implicit-arrow-linebreak": "off"
+    "implicit-arrow-linebreak": "off",
+    "no-nested-ternary": "warn",
+    "indent": "off"
   }
 }
