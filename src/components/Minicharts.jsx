@@ -19,6 +19,12 @@ import {
   Melon,
   PaleBlue,
 } from '../styleConstants';
+import {
+  countries,
+  metricCategoryOptions,
+  colorByOptions,
+  xMetricOptions,
+} from './dataConstants';
 
 import { GINI } from './BespokeLargeCharts';
 
@@ -140,36 +146,6 @@ const ExpandArrow = styled.div`
   top: 0px;
   right: 4px;
 `;
-
-// Dropdown Options
-const xMetricOptions = [
-  { value: 'avgGDPpercapita', label: 'Average GDP Per Capita' },
-  { value: 'latestGDPpercapita', label: 'Latest GDP Per Capita' },
-  { value: 'GINI', label: 'Gini Inequality Index' },
-  { value: 'avgHappyPlanet', label: 'Average Happy Planet Index' },
-  { value: 'SEDA', label: 'Sustainable Development Index' },
-];
-
-// country names, populations, continent, trend w/ metrics, income level, general income??
-const countries = [
-  { value: 'Australia', label: 'Australia' },
-  { value: 'Afghanistan', label: 'Afghanistan' },
-  { value: 'Albania', label: 'Albania' },
-  { value: 'Algeria', label: 'Algeria' },
-  { value: 'Angola', label: 'Angola' },
-  { value: 'China', label: 'China' },
-];
-const metricCategoryOptions = [
-  { value: 'allmetrics', label: 'All Metrics' },
-  { value: 'economic', label: 'Economic Metrics' },
-  { value: 'health', label: 'Health Metrics' },
-  { value: 'sustainability', label: 'Sustainability Metrics' },
-];
-const colorByOptions = [
-  { value: 'trend', label: 'Color by: Trend' },
-  { value: 'continent', label: 'Color by: Continent' },
-  { value: 'income', label: 'Color by: Income' },
-];
 
 function ScatterplotGDP({ data, xMetric, size }) {
   // TO DO: switch this out with dropdowns
@@ -542,26 +518,28 @@ const HeroChart = styled.div`
     font-weight: ${mediumWeight};
   }
 `;
-function LargeChart({ dataSeries, xMetric, setPageLayout, size, chartType }) {
+function LargeChart({ dataSeries, xMetric, colorBy, size }) {
   // first do fully for GINI
   return (
     <HeroChart>
-      <h3>Gini Index</h3>
-
-      <GINI data={dataSeries.data} xMetric={xMetric} size={size} />
+      <h3>{dataSeries.metricTitle}</h3>
+      <GINI
+        data={dataSeries.data}
+        chartTitle={dataSeries.metricTitle}
+        xMetric={xMetric}
+        colorBy={colorBy}
+      />
     </HeroChart>
   );
 }
 LargeChart.propTypes = {
-  setPageLayout: PropTypes.func.isRequired,
   xMetric: PropTypes.string.isRequired,
-  chartType: PropTypes.string.isRequired,
+  colorBy: PropTypes.string.isRequired,
   size: PropTypes.string,
   dataSeries: PropTypes.shape({
     metricTitle: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
     notes: PropTypes.string.isRequired,
-    // dataYear: PropTypes.string.isRequired,
     data: PropTypes.array.isRequired,
   }).isRequired,
 };
@@ -604,7 +582,7 @@ export function MultiCharts({ data, theme }) {
 
   const [xMetric, setXMetric] = useState('avgGDPpercapita');
   const [metricCategory, setMetricCategory] = useState('allmetrics');
-  const [colorBy, setColorBy] = useState('trend');
+  const [colorBy, setColorBy] = useState('correlation');
   const [country, setCountry] = useState('Australia');
 
   const presentWorldControllers = [
@@ -653,6 +631,7 @@ export function MultiCharts({ data, theme }) {
           dataSeries={pageLayout.selectedMetric}
           key={pageLayout.selectedMetric.metricTitle}
           xMetric={theme === 'presentWorld' ? xMetric : country}
+          colorBy={colorBy}
           setPageLayout={setPageLayout}
           chartType={theme === 'presentWorld' ? 'scattercontour' : 'bubble'}
         />

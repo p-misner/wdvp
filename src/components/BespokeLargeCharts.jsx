@@ -2,7 +2,12 @@ import React, { useState, useCallback } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { GridRows, GridColumns } from '@visx/grid';
-import { scaleLinear, scaleLog, scaleSymlog } from '@visx/scale';
+import {
+  scaleLinear,
+  scaleLog,
+  scaleOrdinal,
+  scaleQuantile,
+} from '@visx/scale';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { Group } from '@visx/group';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
@@ -11,14 +16,13 @@ import { geoPath } from 'd3-geo';
 import {
   Aqua,
   Carrot,
-  lrgFontSize,
   Marigold,
   Squash,
-  mediumWeight,
-  Melon,
-  PaleBlue,
   regFontSize,
+  DarkestBlue,
+  DarkTeal,
 } from '../styleConstants';
+import { customMetrics } from './dataConstants';
 
 const ScatterSVG = styled.svg``;
 const InChartButtonWrapper = styled.div`
@@ -43,19 +47,31 @@ const InChartButton = styled.button`
     background: ${(props) => (props.active ? 'black' : 'lightgray')};
   }
 `;
+
+function tickFormatter(value) {
+  if (value > 1000) {
+    return `${value / 1000}k`;
+  }
+  return value;
+}
 // eslint-disable-next-line import/prefer-default-export
-export function GINI({ data, xMetric, size }) {
+export function GINI({ data, xMetric, colorBy, chartTitle }) {
   const [scaleByPop, setScaleByPop] = useState(false);
 
-  const width = size === 'large' ? 700 : 370;
-  const height = size === 'large' ? 500 : 220;
+  const width = 700;
+  const height = 500;
 
   // TO DO: replace with spacing constants
-  const margin = { top: 20, right: 10, bottom: 60, left: 44 };
+  const margin = { top: 20, right: 10, bottom: 60, left: 52 };
 
   // bounds
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom;
+
+  // domain changes depending on metric (not based on min max)
+  const metricDomain = customMetrics.find(
+    (item) => item.metricTitle === chartTitle
+  )?.domain;
 
   // scales
   const xScale = scaleLinear({
@@ -67,22 +83,49 @@ export function GINI({ data, xMetric, size }) {
     nice: true,
   });
   const yScale = scaleLinear({
-    domain: [0, 100],
+    domain: metricDomain,
     range: [yMax, 0],
     nice: true,
   });
   const popScale = scaleLinear({
     domain: [20, 1386000000],
-    range: [2, 40],
+    range: [2, 60],
     nice: true,
   });
+  const rankingScale = scaleQuantile()
+    .domain([
+      Math.min(...data.map((x) => x.avgVal)),
+      Math.max(...data.map((x) => x.avgVal)),
+    ])
+    .range([DarkTeal, Aqua, Marigold, Squash]);
+
+  const continentScale = scaleOrdinal()
+    .domain([
+      'North America',
+      'South America',
+      'Europe',
+      'Asia',
+      'Africa',
+      'Australia',
+    ])
+    .range(['red', 'orange', 'yellow', 'green', 'blue', 'purple']);
+  const incomeScale = scaleOrdinal()
+    .domain([
+      'Low Income',
+      'Lower Middle Income',
+      'Upper Middle Income',
+      'High Income',
+    ])
+    .range([DarkestBlue, Aqua, Marigold, Squash])
+    .unknown('black');
+
   // contour
   const contour = contourDensity()
     .x((d) => xScale(d[xMetric]))
     .y((d) => yScale(d.avgVal))
     .size([width, height])
-    .bandwidth(8)
-    .thresholds(8)(data);
+    .bandwidth(12)
+    .thresholds(10)(data);
   const pathGenerator = geoPath();
 
   // TOOLTIP
@@ -103,20 +146,16 @@ export function GINI({ data, xMetric, size }) {
 
   let tooltipTimeout;
   // event handlers
-  const handleMouseLeave = useCallback(
-    (e) => {
-      e.target.style.strokeWidth = '1';
-      e.target.style.stroke = 'black';
-      e.target.style.fill = 'black';
-      e.target.style.fillOpacity = '0.4';
-
-      //   e.target.style.r = '3';
-      tooltipTimeout = window.setTimeout(() => {
-        hideTooltip();
-      }, 300);
-    },
-    [hideTooltip]
-  );
+  function HoverStyleReset(e) {
+    e.target.style.strokeWidth = '1';
+    // e.target.style.stroke = 'black';
+    // e.target.style.fill = 'black';
+  }
+  const TooltipTimer = useCallback(() => {
+    tooltipTimeout = window.setTimeout(() => {
+      hideTooltip();
+    }, 300);
+  }, [hideTooltip]);
 
   return (
     <div style={{ marginBottom: 64, position: 'relative', maxWidth: '700px' }}>
@@ -171,7 +210,7 @@ export function GINI({ data, xMetric, size }) {
               fontSize: 16,
               textAnchor: 'middle',
             })}
-            tickFormat={(value) => `${value / 1000}k`}
+            tickFormat={(value) => tickFormatter(value)}
           />
           <g transform="translate(0,0)">
             <AxisLeft
@@ -185,20 +224,23 @@ export function GINI({ data, xMetric, size }) {
                 textAnchor: 'end',
               })}
               numTicks={5}
+              tickFormat={(value) => tickFormatter(value)}
             />
           </g>
           <g className="contourGroup">
-            {contour.map((x, i) => (
-              <path
-                // eslint-disable-next-line react/no-array-index-key
-                key={`contour${i}}`}
-                d={pathGenerator(x)}
-                fill={Carrot}
-                stroke={Carrot}
-                fillOpacity={0.4}
-                strokeWidth={0.5}
-              />
-            ))}
+            {colorBy === 'correlation'
+              ? contour.map((x, i) => (
+                  <path
+                    // eslint-disable-next-line react/no-array-index-key
+                    key={`contour${i}}`}
+                    d={pathGenerator(x)}
+                    fill={Carrot}
+                    stroke={Carrot}
+                    fillOpacity={i > 3 ? 0.3 : 0.2}
+                    strokeWidth={0.5}
+                  />
+                ))
+              : null}
           </g>
           <g className="points">
             {data.map((d) => (
@@ -209,17 +251,28 @@ export function GINI({ data, xMetric, size }) {
                 r={
                   Math.abs(d.avgVal) < 0.001 || Math.abs(d[xMetric]) < 0.001
                     ? '0'
-                    : popScale(d.population)
+                    : scaleByPop
+                    ? popScale(d.population)
+                    : colorBy === 'correlation'
+                    ? '3'
+                    : '5'
                 }
-                fill="black"
-                fillOpacity="0.2"
+                fill={
+                  colorBy === 'ranking'
+                    ? rankingScale(d.avgVal)
+                    : colorBy === 'continent'
+                    ? continentScale(d.continent)
+                    : colorBy === 'income'
+                    ? incomeScale(d.incomeLevel)
+                    : 'black'
+                }
+                fillOpacity="0.8"
                 stroke="black"
                 onMouseEnter={function (e) {
-                  e.target.style.stroke = Squash;
-                  e.target.style.fill = Marigold;
-                  e.target.style.fillOpacity = '1';
-                  e.target.style.strokeWidth = '1';
-                  //   e.target.style.r = '6';
+                  //   e.target.style.stroke = Squash;
+                  //   e.target.style.fill = Marigold;
+                  //   e.target.style.fillOpacity = '1';
+                  e.target.style.strokeWidth = '3';
                 }}
                 //   onMouseMove={handleMouseMove}
                 onMouseMove={() => {
@@ -232,7 +285,10 @@ export function GINI({ data, xMetric, size }) {
                     tooltipLeft: left,
                   });
                 }}
-                onMouseLeave={handleMouseLeave}
+                onMouseLeave={(e) => {
+                  TooltipTimer();
+                  HoverStyleReset(e);
+                }}
               />
             ))}
           </g>
@@ -301,5 +357,6 @@ export function GINI({ data, xMetric, size }) {
 GINI.propTypes = {
   data: PropTypes.array.isRequired,
   xMetric: PropTypes.string.isRequired,
-  size: PropTypes.string.isRequired,
+  chartTitle: PropTypes.string.isRequired,
+  colorBy: PropTypes.string.isRequired,
 };
