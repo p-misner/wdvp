@@ -10,12 +10,21 @@ import { contourDensity } from 'd3-contour';
 import { geoPath } from 'd3-geo';
 
 import Select from 'react-select';
+import {
+  Aqua,
+  Carrot,
+  lrgFontSize,
+  Marigold,
+  mediumWeight,
+  Melon,
+  PaleBlue,
+} from '../styleConstants';
+
+import { GINI } from './BespokeLargeCharts';
 
 const gridWidth = 200;
 const SectionWrapper = styled.div`
-  //   width: 100%;
-  background-color: ${(props) => props.color || 'rgba(255,0,0,.1)'};
-  min-height: 600px;
+  // min-height: 600px;
 `;
 
 const GridWrapper = styled.div`
@@ -45,30 +54,85 @@ const GridWrapperHoriz = styled.div`
 
 const GridBox = styled.div`
   min-width: 100px;
+  height: 220px;
   position: relative;
   background-color: white;
-  border: 1px dashed gray;
+  border: 1px solid black;
+  border-radius: 8px 8px 0px 0px;
+  padding: 16px;
   & h3 {
     overflow-wrap: break-word;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 19px;
+    letter-spacing: 0em;
+    text-align: left;
+    text-transform: capitalize;
   }
+  & h4 {
+    overflow-wrap: break-word;
+    font-size: 16px;
+    line-height: 19px;
+    letter-spacing: 0em;
+    opacity: 0.8;
+    text-transform: capitalize;
+  }
+`;
+const GraphContents = styled.div`
+  position: relative;
   .arrow {
     visibility: hidden;
     color: red;
+    top: -16px;
+    right: 2px;
   }
   &:hover .arrow {
+    cursor: pointer;
     visibility: visible;
     color: blue;
+    top: -16px;
+    right: 2px;
+  }
+`;
+const BottomInfoWrapper = styled.div`
+  cursor: ${(props) => (props.open ? 'default' : 'n-resize')};
+  border: 1px solid black;
+  height: ${(props) => (props.open ? '220px' : '40px')};
+  width: 100%;
+  position: absolute;
+  background: ${PaleBlue};
+  left: 0px;
+  bottom: 0px;
+  border-radius: 8px 8px 0px 0px;
+  button {
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 16px;
+    visibility: ${(props) => (props.open ? 'visibile' : 'hidden')};
+    position: absolute;
+    right: 8px;
+    top: 12px;
   }
 `;
 
+const BottomInfoContents = styled.div`
+  width: 100%;
+  h3 {
+    margin: 12px auto;
+    text-align: center;
+    font-weight: 500;
+  }
+`;
 const ScatterSVG = styled.svg`
-  background-color: rgba(0, 0, 0, 0.05);
+  // background-color: rgba(0, 0, 0, 0.05);
 `;
 
 const SelectWrapper = styled.div`
   display: flex;
   flex-direction: row;
-  margin: 20px;
+  margin-bottom: 24px;
+  justify-content: center;
 `;
 const ExpandArrow = styled.div`
   font-size: 48px;
@@ -85,6 +149,8 @@ const xMetricOptions = [
   { value: 'avgHappyPlanet', label: 'Average Happy Planet Index' },
   { value: 'SEDA', label: 'Sustainable Development Index' },
 ];
+
+// country names, populations, continent, trend w/ metrics, income level, general income??
 const countries = [
   { value: 'Australia', label: 'Australia' },
   { value: 'Afghanistan', label: 'Afghanistan' },
@@ -108,8 +174,8 @@ const colorByOptions = [
 function ScatterplotGDP({ data, xMetric, size }) {
   // TO DO: switch this out with dropdowns
 
-  const width = size === 'large' ? 700 : 300;
-  const height = size === 'large' ? 400 : 250;
+  const width = size === 'large' ? 700 : 370;
+  const height = size === 'large' ? 400 : 220;
 
   // TO DO: replace with spacing constants
   const margin = { top: 20, right: 10, bottom: 25, left: 40 };
@@ -144,8 +210,8 @@ function ScatterplotGDP({ data, xMetric, size }) {
       return yScale(d.avgVal);
     })
     .size([width, height])
-    .bandwidth(5)
-    .thresholds(10)(data);
+    .bandwidth(8)
+    .thresholds(8)(data);
   const pathGenerator = geoPath();
 
   // TOOLTIP
@@ -194,19 +260,28 @@ function ScatterplotGDP({ data, xMetric, size }) {
             height={yMax}
             stroke="#e0e0e0"
           />
-          <AxisBottom
-            top={yMax}
-            scale={xScale}
-            numTicks={width > 520 ? 10 : 5}
+          <AxisBottom top={yMax} scale={xScale} numTicks={1} />
+          <AxisLeft
+            scale={yScale}
+            hideAxisLine
+            tickStroke="#e0e0e0"
+            tickLabelProps={() => ({
+              opacity: 0.6,
+              fontSize: 16,
+              textAnchor: 'end',
+            })}
+            numTicks={1}
           />
-          <AxisLeft scale={yScale} hideAxisLine tickStroke="#e0e0e0" />
           <g className="contourGroup">
             {contour.map((x, i) => (
               <path
                 // eslint-disable-next-line react/no-array-index-key
                 key={`contour${i}}`}
                 d={pathGenerator(x)}
-                fill="rgba(255,0,0,0.2)"
+                fill={PaleBlue}
+                stroke={PaleBlue}
+                fillOpacity={0.4}
+                strokeWidth={0.5}
               />
             ))}
           </g>
@@ -222,7 +297,7 @@ function ScatterplotGDP({ data, xMetric, size }) {
                   ? '3'
                   : '1'
               }
-              fill="blue"
+              fill="black"
               //   onMouseMove={handleMouseMove}
               onMouseMove={() => {
                 if (tooltipTimeout) clearTimeout(tooltipTimeout);
@@ -255,18 +330,9 @@ function ScatterplotGDP({ data, xMetric, size }) {
   );
 }
 ScatterplotGDP.propTypes = {
-  data: PropTypes.array,
+  data: PropTypes.array.isRequired,
   xMetric: PropTypes.string.isRequired,
   size: PropTypes.string.isRequired,
-};
-ScatterplotGDP.defaultProps = {
-  data: [
-    { x: 10, y: 10 },
-    { x: 20, y: 20 },
-    { x: 30, y: 30 },
-    { x: 40, y: 40 },
-    { x: 50, y: 50 },
-  ],
 };
 
 function CountryBubble({ data, xMetric, size }) {
@@ -409,22 +475,47 @@ CountryBubble.propTypes = {
 };
 
 function PlotBox({ dataSeries, xMetric, setPageLayout, size, chartType }) {
+  const [open, setOpen] = useState(false);
   return (
-    <GridBox
-      onClick={() => {
-        setPageLayout({
-          layout: 'highlight',
-          selectedMetric: dataSeries,
-        });
-      }}
-    >
-      <h3>{dataSeries.metricTitle}</h3>
-      {chartType === 'bubble' ? (
-        <CountryBubble data={dataSeries.data} xMetric={xMetric} size={size} />
-      ) : (
-        <ScatterplotGDP data={dataSeries.data} xMetric={xMetric} size={size} />
-      )}
-      <ExpandArrow className="arrow">⬈</ExpandArrow>
+    <GridBox>
+      <GraphContents
+        onClick={() => {
+          setPageLayout({
+            layout: 'highlight',
+            selectedMetric: dataSeries,
+          });
+        }}
+      >
+        <h3>{dataSeries.metricTitle}</h3>
+        {/* <h4>metric unit</h4> */}
+        {chartType === 'bubble' ? (
+          <CountryBubble data={dataSeries.data} xMetric={xMetric} size={size} />
+        ) : (
+          <ScatterplotGDP
+            data={dataSeries.data}
+            xMetric={xMetric}
+            size={size}
+          />
+        )}
+        <ExpandArrow className="arrow">⬈</ExpandArrow>
+      </GraphContents>
+      <BottomInfoWrapper
+        onClick={() => (open ? null : setOpen(true))}
+        open={open}
+      >
+        <BottomInfoContents>
+          <h3> No Strong Correlation </h3>
+          <button
+            type="button"
+            onClick={() => {
+              console.log('clicked');
+              setOpen(false);
+            }}
+          >
+            ⓧ
+          </button>
+        </BottomInfoContents>
+      </BottomInfoWrapper>
     </GridBox>
   );
 }
@@ -445,11 +536,52 @@ PlotBox.defaultProps = {
   size: 'small',
 };
 
+const HeroChart = styled.div`
+  h3 {
+    font-size: ${lrgFontSize};
+    font-weight: ${mediumWeight};
+  }
+`;
+function LargeChart({ dataSeries, xMetric, setPageLayout, size, chartType }) {
+  // first do fully for GINI
+  return (
+    <HeroChart>
+      <h3>Gini Index</h3>
+
+      <GINI data={dataSeries.data} xMetric={xMetric} size={size} />
+    </HeroChart>
+  );
+}
+LargeChart.propTypes = {
+  setPageLayout: PropTypes.func.isRequired,
+  xMetric: PropTypes.string.isRequired,
+  chartType: PropTypes.string.isRequired,
+  size: PropTypes.string,
+  dataSeries: PropTypes.shape({
+    metricTitle: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired,
+    notes: PropTypes.string.isRequired,
+    // dataYear: PropTypes.string.isRequired,
+    data: PropTypes.array.isRequired,
+  }).isRequired,
+};
+LargeChart.defaultProps = {
+  size: 'small',
+};
+
 function ControlPanel({ controllersObj }) {
   return (
     <SelectWrapper>
       {controllersObj.map((x) => (
         <Select
+          styles={{
+            container: (baseStyles) => ({
+              ...baseStyles,
+              paddingRight: '16px',
+              fontSize: '20px',
+              minWidth: '250px',
+            }),
+          }}
           key={x.defaultState}
           defaultValue={{ value: x.defaultState, label: x.defaultState }}
           options={x.options}
@@ -516,7 +648,7 @@ export function MultiCharts({ data, theme }) {
           <ControlPanel controllersObj={countryCompareControllers} />
         )}
 
-        <PlotBox
+        <LargeChart
           size="large"
           dataSeries={pageLayout.selectedMetric}
           key={pageLayout.selectedMetric.metricTitle}

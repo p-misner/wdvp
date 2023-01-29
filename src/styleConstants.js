@@ -1,4 +1,4 @@
-export const maxWidth = '1320px';
+export const maxWidth = '1620px';
 export const fontColor = '#000';
 
 export const xsSpacing = '4px';
@@ -21,3 +21,15 @@ export const mediumWeight = '500';
 export const semiboldWeight = '600';
 export const boldWeight = '700';
 export const blackWeight = '800';
+
+export const DarkestBlue = '#223274';
+export const DarkTeal = '#386371';
+export const Aqua = '#3CA288';
+export const SeafoamGreen = '#96D7AE';
+export const PaleGreen = '#BFE6CF';
+export const PaleBlue = '#DBEFF0';
+export const Sand = ' #E5E2C7';
+export const Melon = '#E6D096';
+export const Marigold = '#EBAD5C';
+export const Carrot = '#D77631';
+export const Squash = '#C35B21';

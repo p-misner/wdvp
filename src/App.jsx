@@ -9,6 +9,7 @@ import { maxWidth } from './styleConstants';
 
 const AllContent = styled.h1`
   margin: 0 auto;
+  width: 95vw;
   max-width: ${maxWidth};
 `;
 
@@ -42,7 +43,7 @@ function App() {
     <AllContent>
       <Header />
       <Hero />
-      <ExploreSections theme={theme} setTheme={setTheme} />
+      {/* <ExploreSections theme={theme} setTheme={setTheme} /> */}
       {isLoading ? <p> Loading...</p> : sectionReturn(theme)}
     </AllContent>
   );
