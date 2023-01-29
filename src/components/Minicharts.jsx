@@ -27,7 +27,7 @@ import {
   customMetricOptions,
 } from './dataConstants';
 
-import { GINI } from './BespokeLargeCharts';
+import { GINI, Legend } from './BespokeLargeCharts';
 
 const gridWidth = 200;
 const SectionWrapper = styled.div`
@@ -512,6 +512,10 @@ PlotBox.propTypes = {
 PlotBox.defaultProps = {
   size: 'small',
 };
+const SideSideWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
 
 const HeroChart = styled.div`
   h3 {
@@ -531,12 +535,19 @@ function LargeChart({ dataSeries, xMetric, colorBy, size }) {
           ? customMetric.seriesName
           : dataSeries.metricTitle}
       </h3>
-      <GINI
-        customMetric={customMetric}
-        data={dataSeries.data}
-        xMetric={xMetric}
-        colorBy={colorBy}
-      />
+      <SideSideWrapper>
+        <GINI
+          customMetric={customMetric}
+          data={dataSeries.data}
+          xMetric={xMetric}
+          colorBy={colorBy}
+        />
+        <Legend
+          customMetric={customMetric}
+          xMetric={xMetric}
+          colorBy={colorBy}
+        />
+      </SideSideWrapper>
     </HeroChart>
   );
 }

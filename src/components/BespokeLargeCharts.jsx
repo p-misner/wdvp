@@ -66,12 +66,11 @@ function tickFormatter(value) {
   }
   return value;
 }
-// eslint-disable-next-line import/prefer-default-export
 export function GINI({ data, xMetric, colorBy, customMetric }) {
   const [scaleByPop, setScaleByPop] = useState(false);
 
-  const width = 700;
-  const height = 500;
+  const width = 800;
+  const height = 600;
 
   // TO DO: replace with spacing constants
   const margin = { top: 20, right: 10, bottom: 60, left: 52 };
@@ -105,10 +104,15 @@ export function GINI({ data, xMetric, colorBy, customMetric }) {
     range: [2, 60],
     nice: true,
   });
-  const rankingScale = scaleQuantile()
+
+  const BottomDomain = Math.min(...data.map((x) => x.avgVal));
+  const TopDomain = Math.max(...data.map((x) => x.avgVal));
+  const rankingScale = scaleLinear()
     .domain([
-      Math.min(...data.map((x) => x.avgVal)),
-      Math.max(...data.map((x) => x.avgVal)),
+      BottomDomain,
+      BottomDomain + (TopDomain - BottomDomain) / 3,
+      BottomDomain + (2 * (TopDomain - BottomDomain)) / 3,
+      TopDomain,
     ])
     .range([DarkTeal, Aqua, Marigold, Squash]);
 
@@ -169,7 +173,7 @@ export function GINI({ data, xMetric, colorBy, customMetric }) {
   }, [hideTooltip]);
 
   return (
-    <div style={{ marginBottom: 64, position: 'relative', maxWidth: '700px' }}>
+    <div style={{ marginBottom: 64, position: 'relative', maxWidth: '800px' }}>
       <InChartButtonWrapper position={controlPosition}>
         <p> Scale by:</p>
         <InChartButton
@@ -431,6 +435,166 @@ export function GINI({ data, xMetric, colorBy, customMetric }) {
 }
 GINI.propTypes = {
   data: PropTypes.array.isRequired,
+  xMetric: PropTypes.string.isRequired,
+  customMetric: PropTypes.object.isRequired,
+  colorBy: PropTypes.string.isRequired,
+};
+
+const StripLegendWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  //   min-width: 00px;
+  & :first-child div {
+    border-radius: 8px 0px 0px 8px;
+  }
+  & :last-child div {
+    border-radius: 0px 8px 8px 0px;
+  }
+`;
+const StripLegendItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0px;
+  p {
+    padding-left: 4px;
+    padding-top: 4px;
+    opacity: 0.6;
+  }
+`;
+const ColorRect = styled.div`
+  width: 100%;
+  height: 24px;
+  background: ${(props) => props.color || 'gray'};
+  opacity: 0.9;
+  border: 2px solid black;
+`;
+const SmallColorRect = styled.div`
+  width: 20px;
+  height: 20px;
+  background: ${(props) => props.color || 'gray'};
+  opacity: 0.9;
+  border: 2px solid black;
+  border-radius: 8px;
+`;
+const PillsLegendWrapper = styled.div`
+  justify-content: center;
+  display: flex;
+  flex-flow: row wrap;
+`;
+const PillsLegendItem = styled.div`
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  margin-bottom: 8px;
+  margin-right: 8px;
+  p {
+    padding-left: 4px;
+    padding-top: 4px;
+    opacity: 0.7;
+  }
+`;
+const RankingWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+`;
+
+const GradientRect = styled.div`
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    ${DarkTeal},
+    ${Aqua},
+    ${Marigold},
+    ${Squash}
+  );
+  border: 2px solid black;
+  border-radius: 8px;
+  height: 24px;
+`;
+const LabelWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  opacity: 0.7;
+  margin-top: 4px;
+`;
+
+function IncomeLegend() {
+  return (
+    <StripLegendWrapper>
+      <StripLegendItem>
+        <ColorRect color={DarkestBlue} />
+        <p>Low </p>
+      </StripLegendItem>
+      <StripLegendItem>
+        <ColorRect color={Aqua} />
+        <p>Lower Middle</p>
+      </StripLegendItem>
+      <StripLegendItem>
+        <ColorRect color={Marigold} />
+        <p>Upper Middle</p>
+      </StripLegendItem>
+      <StripLegendItem>
+        <ColorRect color={Squash} />
+        <p>High</p>
+      </StripLegendItem>
+    </StripLegendWrapper>
+  );
+}
+function RankingLegend() {
+  return (
+    <RankingWrapper>
+      <GradientRect />
+      <LabelWrapper>
+        <p> Lower</p>
+        <p> Higher</p>
+      </LabelWrapper>
+    </RankingWrapper>
+  );
+}
+
+function ContinentLegend() {
+  // wouldn't it be fun if the symbols weren't rectangles but the continent shape instead??
+  return (
+    <PillsLegendWrapper>
+      <PillsLegendItem>
+        <SmallColorRect color="red" /> <p>North America</p>
+      </PillsLegendItem>
+      <PillsLegendItem>
+        <SmallColorRect color="orange" /> <p>South America</p>
+      </PillsLegendItem>
+      <PillsLegendItem>
+        <SmallColorRect color="yellow" /> <p>Europe</p>
+      </PillsLegendItem>
+      <PillsLegendItem>
+        <SmallColorRect color="green" /> <p>Asia</p>
+      </PillsLegendItem>
+      <PillsLegendItem>
+        <SmallColorRect color="blue" /> <p>Africa</p>
+      </PillsLegendItem>
+      <PillsLegendItem>
+        <SmallColorRect color="purple" /> <p>Oceania</p>
+      </PillsLegendItem>
+    </PillsLegendWrapper>
+  );
+}
+export function Legend({ xMetric, colorBy, customMetric }) {
+  return (
+    <div>
+      <h2>Legend {colorBy}</h2>
+      {colorBy === 'income' ? (
+        <IncomeLegend />
+      ) : colorBy === 'ranking' ? (
+        <RankingLegend />
+      ) : (
+        <ContinentLegend />
+      )}
+    </div>
+  );
+}
+Legend.propTypes = {
   xMetric: PropTypes.string.isRequired,
   customMetric: PropTypes.object.isRequired,
   colorBy: PropTypes.string.isRequired,
