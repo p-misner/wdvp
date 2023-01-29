@@ -29,53 +29,80 @@ export const colorByOptions = [
 ];
 
 // Custom Metrics
-export const customMetrics = [
+export const customMetricOptions = [
   {
     metricTitle: 'GINIindex',
+    seriesName: 'GINI Index',
     domain: [0, 100],
+    lowerText: 'LESS EQUAL',
+    upperText: 'MORE EQUAL',
   },
   {
     metricTitle: 'happyplanetindex',
+    seriesName: 'Happy Planet Index',
     domain: [0, 100],
+    upperText: 'HAPPIER',
   },
   {
     metricTitle: 'humandevelopmentindex',
+    seriesName: 'Human Development Index',
     domain: [0, 1],
+    controlPosition: 'bottom',
+    lowerText: 'LESS DEVELOPED',
+    upperText: 'MORE DEVELOPED',
   },
   {
     metricTitle: 'sustainableeconomicdevelopmentassessmentSEDA',
+    seriesName: 'Sustainable Economic Development Assessment',
     domain: [0, 100],
+    controlPosition: 'bottom',
+    upperText: 'MORE SUSTAINABLE',
+    lowerText: 'LESS SUSTAINABLE',
   },
   {
     metricTitle: 'GDPgrowthpercent',
+    seriesName: 'Percent GDP Growth',
     domain: [-15, 20],
+    upperText: 'ECONOMY GROWING',
+    lowerText: 'ECONOMY SHRINKING',
   },
   {
     metricTitle: 'GDP',
+    seriesName: 'Gross Domestic Product (GDP)',
     domain: [0, 23000],
+    upperText: 'WEALTHIER',
   },
   {
     metricTitle: 'GDPpercapita',
+    seriesName: 'GDP Per Capita',
     domain: [0, 125000],
+    upperText: 'WEALTHIER',
   },
   {
     metricTitle: 'healthexpenditure',
+    seriesName: 'Health Expenditure',
     domain: [0, 15],
   },
   {
     metricTitle: 'healthexpenditureperperson',
+    seriesName: 'Health Expenditure Per Capita',
     domain: [0, 12000],
   },
   {
     metricTitle: 'infantmortality',
+    seriesName: 'Infant Mortality',
     domain: [0, 100],
+    upperText: 'HIGHER MORTALITY',
   },
   {
     metricTitle: 'maternalmortalityper100000livebirths',
+    seriesName: 'Maternal Mortality',
     domain: [0, 1200],
+    upperText: 'HIGHER MORTALITY',
   },
   {
     metricTitle: 'educationexpenditure',
+    seriesName: 'Percent of GDP Spent on Education',
     domain: [0, 20],
   },
   {
@@ -84,78 +111,116 @@ export const customMetrics = [
   },
   {
     metricTitle: 'kidsoutofprimary',
+    seriesName: 'Percent of Eligible Kids not in Primary School',
     domain: [0, 100],
+    upperText: 'MORE KIDS OUT OF SCHOOL',
   },
   {
     metricTitle: 'unemployment',
+    seriesName: 'Percent Unemployment',
     domain: [0, 30],
   },
   {
     metricTitle: 'ofpopulationinextremepoverty',
+    seriesName: 'Percent of Population in Extreme Poverity',
     domain: [0, 30],
+    upperText: 'MORE IN EXTREME POVERTY ',
+  },
+  {
+    metricTitle: 'ofpopulationwithaccesstoelectricity',
+    seriesName: 'Percent of Population with Access to Electricity',
+    domain: [0, 100],
+    controlPosition: 'bottom',
+    lowerText: 'LESS ACCESS ',
   },
   {
     metricTitle: 'politicalrightsscore',
+    seriesName: 'Political Rights Score',
     domain: [0, 50],
   },
   {
     metricTitle: 'civillibertiesscore',
+    seriesName: 'Civil Liberties Score',
     domain: [0, 100],
   },
   {
     metricTitle: 'politcalstability',
-    domain: [-3, 3],
+    seriesName: 'Political Stability and Absence of Violence',
+    domain: [-3, 2],
+    controlPosition: 'bottom',
   },
   {
     metricTitle: 'goveffectiveness',
+    seriesName: 'Government Effectiveness',
+
     domain: [-3, 3],
+    controlPosition: 'bottom',
   },
   {
     metricTitle: 'regulatoryquality',
-    domain: [-3, 3],
+    seriesName: 'Regulatory Quality',
+    domain: [-3, 2.5],
+    controlPosition: 'bottom',
   },
   {
     metricTitle: 'ruleoflaw',
-    domain: [-3, 3],
+    seriesName: 'Rule of Law',
+    domain: [-3, 2.5],
+    controlPosition: 'bottom',
   },
   {
     metricTitle: 'controlcorruption',
-    domain: [-3, 3],
+    seriesName: 'Control of Corruption',
+    domain: [-3, 2.5],
+    controlPosition: 'bottom',
   },
   {
     metricTitle: 'judicialeffectiveness',
+    seriesName: 'Judicial Effectiveness',
     domain: [0, 100],
+    controlPosition: 'bottom',
   },
   {
     metricTitle: 'govintegrity',
+    seriesName: 'Goernment Integrity',
     domain: [0, 100],
+    controlPosition: 'bottom',
   },
   {
     metricTitle: 'economicfreedom',
+    seriesName: 'Economic Freedom',
     domain: [0, 100],
+    controlPosition: 'bottom',
   },
   {
     metricTitle: 'finncialfreedom',
+    seriesName: 'Financial Freedom',
     domain: [0, 100],
+    controlPosition: 'bottom',
   },
   {
     metricTitle: 'governmentexpenditure',
+    seriesName: 'Government Expenditure',
     domain: [0, 100],
   },
   {
     metricTitle: 'CO2eemissionspercapita',
+    seriesName: 'CO2 Emissions per Capita',
     domain: [0, 40],
   },
   {
     metricTitle: 'renewableshare',
+    seriesName: 'Share of Electricity from Renewables Generation',
     domain: [0, 100],
   },
   {
     metricTitle: 'womenparliment',
+    seriesName: 'Percent of Seats Held by Women in National Parliaments',
     domain: [0, 70],
   },
   {
     metricTitle: 'militaryspending',
+    seriesName: 'Military Spending as Percent of GDP',
     domain: [0, 20],
   },
 ];

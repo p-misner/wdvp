@@ -22,12 +22,11 @@ import {
   DarkestBlue,
   DarkTeal,
 } from '../styleConstants';
-import { customMetrics } from './dataConstants';
 
 const ScatterSVG = styled.svg``;
 const InChartButtonWrapper = styled.div`
   position: absolute;
-  top: 10px;
+  top: ${(props) => (props.position === 'bottom' ? '350px' : '10px')};
   right: 20px;
   background: white;
   padding: 2px;
@@ -47,6 +46,19 @@ const InChartButton = styled.button`
     background: ${(props) => (props.active ? 'black' : 'lightgray')};
   }
 `;
+const SVGOverline = styled.text`
+  font-size: 14px;
+  font-weight: 600;
+  fill: #6e6d6d;
+  pointer-events: none;
+`;
+const SVGOverlineHeavy = styled.text`
+  font-size: 14px;
+  font-weight: 600;
+  stroke-width: 2px;
+  stroke: white;
+  pointer-events: none;
+`;
 
 function tickFormatter(value) {
   if (value > 1000) {
@@ -55,7 +67,7 @@ function tickFormatter(value) {
   return value;
 }
 // eslint-disable-next-line import/prefer-default-export
-export function GINI({ data, xMetric, colorBy, chartTitle }) {
+export function GINI({ data, xMetric, colorBy, customMetric }) {
   const [scaleByPop, setScaleByPop] = useState(false);
 
   const width = 700;
@@ -69,9 +81,10 @@ export function GINI({ data, xMetric, colorBy, chartTitle }) {
   const yMax = height - margin.top - margin.bottom;
 
   // domain changes depending on metric (not based on min max)
-  const metricDomain = customMetrics.find(
-    (item) => item.metricTitle === chartTitle
-  )?.domain;
+
+  const controlPosition = customMetric?.controlPosition
+    ? customMetric.controlPosition
+    : 'top';
 
   // scales
   const xScale = scaleLinear({
@@ -83,7 +96,7 @@ export function GINI({ data, xMetric, colorBy, chartTitle }) {
     nice: true,
   });
   const yScale = scaleLinear({
-    domain: metricDomain,
+    domain: customMetric?.domain,
     range: [yMax, 0],
     nice: true,
   });
@@ -144,13 +157,11 @@ export function GINI({ data, xMetric, colorBy, chartTitle }) {
     scroll: true,
   });
 
-  let tooltipTimeout;
-  // event handlers
   function HoverStyleReset(e) {
     e.target.style.strokeWidth = '1';
-    // e.target.style.stroke = 'black';
-    // e.target.style.fill = 'black';
   }
+
+  let tooltipTimeout;
   const TooltipTimer = useCallback(() => {
     tooltipTimeout = window.setTimeout(() => {
       hideTooltip();
@@ -159,7 +170,7 @@ export function GINI({ data, xMetric, colorBy, chartTitle }) {
 
   return (
     <div style={{ marginBottom: 64, position: 'relative', maxWidth: '700px' }}>
-      <InChartButtonWrapper>
+      <InChartButtonWrapper position={controlPosition}>
         <p> Scale by:</p>
         <InChartButton
           active={!scaleByPop}
@@ -184,6 +195,18 @@ export function GINI({ data, xMetric, colorBy, chartTitle }) {
         ref={containerRef}
         preserveAspectRatio="xMinYMin"
       >
+        <defs>
+          <marker
+            id="arrowhead"
+            markerWidth="10"
+            markerHeight="7"
+            refX="0"
+            refY="3.5"
+            orient="auto"
+          >
+            <polygon fill="gray" points="0 0, 10 3.5, 0 7" />
+          </marker>
+        </defs>
         <Group left={margin.left} top={margin.top}>
           <GridRows
             scale={yScale}
@@ -205,6 +228,12 @@ export function GINI({ data, xMetric, colorBy, chartTitle }) {
             strokeWidth="2px"
             tickStroke="#e0e0e0"
             label={xMetric}
+            labelOffset={20}
+            labelProps={() => ({
+              textAnchor: 'start',
+              opacity: 0.6,
+              fontSize: 16,
+            })}
             tickLabelProps={() => ({
               opacity: 0.6,
               fontSize: 16,
@@ -292,7 +321,53 @@ export function GINI({ data, xMetric, colorBy, chartTitle }) {
               />
             ))}
           </g>
-          <g className="labels">a</g>
+          <g className="labels">
+            {customMetric?.upperText ? (
+              <g className="upperText">
+                <SVGOverlineHeavy x={20} y={40}>
+                  {customMetric.upperText}
+                </SVGOverlineHeavy>
+                <SVGOverline x={20} y={40}>
+                  {customMetric.upperText}
+                </SVGOverline>
+                <line
+                  x1="10"
+                  y1="60"
+                  x2="10"
+                  y2="20"
+                  stroke="gray"
+                  strokeWidth="1"
+                  markerEnd="url(#arrowhead)"
+                />
+              </g>
+            ) : null}
+            {customMetric?.lowerText ? (
+              <g className="lowerText">
+                <SVGOverlineHeavy
+                  x={20}
+                  y={height - margin.top - margin.bottom - 30}
+                >
+                  {customMetric.lowerText}
+                </SVGOverlineHeavy>
+
+                <SVGOverline
+                  x={20}
+                  y={height - margin.top - margin.bottom - 30}
+                >
+                  {customMetric.lowerText}
+                </SVGOverline>
+                <line
+                  x1="10"
+                  y1={height - margin.top - margin.bottom - 60}
+                  x2="10"
+                  y2={height - margin.top - margin.bottom - 20}
+                  stroke="gray"
+                  strokeWidth="1"
+                  markerEnd="url(#arrowhead)"
+                />
+              </g>
+            ) : null}
+          </g>
           {/* {data.map((d) => (
             <g style={{ pointerEvents: 'none' }}>
               <text
@@ -357,6 +432,6 @@ export function GINI({ data, xMetric, colorBy, chartTitle }) {
 GINI.propTypes = {
   data: PropTypes.array.isRequired,
   xMetric: PropTypes.string.isRequired,
-  chartTitle: PropTypes.string.isRequired,
+  customMetric: PropTypes.object.isRequired,
   colorBy: PropTypes.string.isRequired,
 };

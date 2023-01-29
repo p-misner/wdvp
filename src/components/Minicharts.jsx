@@ -24,6 +24,7 @@ import {
   metricCategoryOptions,
   colorByOptions,
   xMetricOptions,
+  customMetricOptions,
 } from './dataConstants';
 
 import { GINI } from './BespokeLargeCharts';
@@ -520,12 +521,19 @@ const HeroChart = styled.div`
 `;
 function LargeChart({ dataSeries, xMetric, colorBy, size }) {
   // first do fully for GINI
+  const customMetric = customMetricOptions.find(
+    (item) => item.metricTitle === dataSeries.metricTitle
+  );
   return (
     <HeroChart>
-      <h3>{dataSeries.metricTitle}</h3>
+      <h3>
+        {customMetric?.seriesName
+          ? customMetric.seriesName
+          : dataSeries.metricTitle}
+      </h3>
       <GINI
+        customMetric={customMetric}
         data={dataSeries.data}
-        chartTitle={dataSeries.metricTitle}
         xMetric={xMetric}
         colorBy={colorBy}
       />
@@ -591,11 +599,11 @@ export function MultiCharts({ data, theme }) {
       options: xMetricOptions,
       changeState: setXMetric,
     },
-    {
-      defaultState: metricCategory,
-      options: metricCategoryOptions,
-      changeState: setMetricCategory,
-    },
+    // {
+    //   defaultState: metricCategory,
+    //   options: metricCategoryOptions,
+    //   changeState: setMetricCategory,
+    // },
     {
       defaultState: colorBy,
       options: colorByOptions,
