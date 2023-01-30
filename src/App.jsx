@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import Header from './components/Header';
 import Hero from './components/Hero';
-import { MultiCharts } from './components/Minicharts';
+import { PresentFutureDashboard } from './components/Minicharts';
 import { maxWidth } from './styleConstants';
 
 const AllContent = styled.h1`
@@ -27,12 +27,12 @@ function App() {
 
   return (
     <AllContent>
-      <Header />
-      <Hero />
+      {/* <Header />
+      <Hero /> */}
       {isLoading ? (
         <p> Loading...</p>
       ) : (
-        <MultiCharts data={data} theme="presentWorld" />
+        <PresentFutureDashboard data={data} theme="presentWorld" />
       )}
     </AllContent>
   );

@@ -2,7 +2,12 @@ import React, { useState, useCallback } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { GridRows, GridColumns } from '@visx/grid';
-import { scaleLinear } from '@visx/scale';
+import {
+  scaleLinear,
+  scaleLog,
+  scaleOrdinal,
+  scaleQuantile,
+} from '@visx/scale';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { Group } from '@visx/group';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
@@ -19,6 +24,9 @@ import {
   mediumWeight,
   Melon,
   PaleBlue,
+  DarkTeal,
+  DarkestBlue,
+  Squash,
 } from '../styleConstants';
 import {
   countries,
@@ -31,26 +39,25 @@ import {
 
 import { BackgroundInfo, GINI, Legend } from './BespokeLargeCharts';
 
-const gridWidth = 200;
-const SectionWrapper = styled.div`
-  // min-height: 600px;
-`;
+const SectionWrapper = styled.div``;
 
 const GridWrapper = styled.div`
   display: grid;
   grid-gap: 16px;
-  //   grid-template-columns: repeat(auto-fit, ${gridWidth}px);
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  @media (max-width: 1200px) {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  @media (max-width: 1420px) {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  @media (max-width: 1150px) {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-  @media (max-width: 1000px) {
+  @media (max-width: 850px) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-  @media (max-width: 700px) {
+  @media (max-width: 600px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  @media (max-width: 400px) {
+  @media (max-width: 300px) {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
 `;
@@ -63,13 +70,15 @@ const GridWrapperHoriz = styled.div`
 `;
 
 const GridBox = styled.div`
-  min-width: 100px;
-  height: 220px;
+  min-width: ${(props) =>
+    props.pageLayout.layout === 'highlight' ? '200px' : '100px'};
+  margin-right: ${(props) =>
+    props.pageLayout.layout === 'highlight' ? '16px' : '0px'};
+  height: 200px;
   position: relative;
-  background-color: white;
   border: 1px solid black;
   border-radius: 8px 8px 0px 0px;
-  padding: 16px;
+  padding: 0px 16px 16px 16px;
   & h3 {
     overflow-wrap: break-word;
     font-size: 16px;
@@ -89,28 +98,40 @@ const GridBox = styled.div`
   }
 `;
 const GraphContents = styled.div`
+  max-height: 174px;
   position: relative;
+  margin-left: -8px;
+
+  &:hover {
+    cursor: pointer;
+  }
+
   .arrow {
     visibility: hidden;
     color: red;
-    top: -16px;
-    right: 2px;
+    top: -8px;
+    right: 0px;
   }
+
   &:hover .arrow {
-    cursor: pointer;
     visibility: visible;
-    color: blue;
-    top: -16px;
-    right: 2px;
+    font-size: 16px;
+    font-weight: 600;
+    width: 150px;
+    color: rgba(0, 0, 0, 0.4);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
   }
 `;
 const BottomInfoWrapper = styled.div`
   cursor: ${(props) => (props.open ? 'default' : 'n-resize')};
   border: 1px solid black;
-  height: ${(props) => (props.open ? '220px' : '40px')};
+  height: ${(props) => (props.open ? '180px' : '40px')};
   width: 100%;
   position: absolute;
-  background: ${PaleBlue};
+  background: #ffd;
   left: 0px;
   bottom: 0px;
   border-radius: 8px 8px 0px 0px;
@@ -125,18 +146,18 @@ const BottomInfoWrapper = styled.div`
     top: 12px;
   }
 `;
-
 const BottomInfoContents = styled.div`
   width: 100%;
   h3 {
-    margin: 12px auto;
+    margin: 12px;
     text-align: center;
     font-weight: 500;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
 `;
-const ScatterSVG = styled.svg`
-  // background-color: rgba(0, 0, 0, 0.05);
-`;
+const ScatterSVG = styled.svg``;
 
 const SelectWrapper = styled.div`
   display: flex;
@@ -151,19 +172,21 @@ const ExpandArrow = styled.div`
   right: 4px;
 `;
 
-function ScatterplotGDP({ data, xMetric, size }) {
+function ScatterplotGDP({ data, xMetric, colorBy, metricTitle }) {
   // TO DO: switch this out with dropdowns
-
-  const width = size === 'large' ? 700 : 370;
-  const height = size === 'large' ? 400 : 220;
+  const width = 340;
+  const height = 240;
 
   // TO DO: replace with spacing constants
-  const margin = { top: 20, right: 10, bottom: 25, left: 40 };
+  const margin = { top: 16, right: 10, bottom: 10, left: 40 };
 
   // bounds
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom;
 
+  const customMetric = customMetricOptions.find(
+    (item) => item.metricTitle === metricTitle
+  );
   // scales
   const xScale = scaleLinear({
     domain: [
@@ -174,13 +197,47 @@ function ScatterplotGDP({ data, xMetric, size }) {
     nice: true,
   });
   const yScale = scaleLinear({
-    domain: [
-      Math.min(...data.map((x) => x.avgVal)),
-      Math.max(...data.map((x) => x.avgVal)) * 1,
-    ],
+    domain: customMetric?.domain,
     range: [yMax, 0],
     nice: true,
   });
+  const popScale = scaleLinear({
+    domain: [20, 1386000000],
+    range: [2, 60],
+    nice: true,
+  });
+
+  const BottomDomain = Math.min(...data.map((x) => x.avgVal));
+  const TopDomain = Math.max(...data.map((x) => x.avgVal));
+  const rankingScale = scaleLinear()
+    .domain([
+      BottomDomain,
+      BottomDomain + (TopDomain - BottomDomain) / 3,
+      BottomDomain + (2 * (TopDomain - BottomDomain)) / 3,
+      TopDomain,
+    ])
+    .range([DarkTeal, Aqua, Marigold, Squash]);
+
+  const continentScale = scaleOrdinal()
+    .domain([
+      'North America',
+      'South America',
+      'Europe',
+      'Asia',
+      'Africa',
+      'Australia',
+    ])
+    .range(['red', 'orange', 'yellow', 'green', 'blue', 'purple']);
+  const incomeScale = scaleOrdinal()
+    .domain([
+      'Low Income',
+      'Lower Middle Income',
+      'Upper Middle Income',
+      'High Income',
+    ])
+    .range([DarkestBlue, Aqua, Marigold, Squash])
+    .unknown('black');
+
   // contour
   const contour = contourDensity()
     .x(function (d) {
@@ -194,37 +251,12 @@ function ScatterplotGDP({ data, xMetric, size }) {
     .thresholds(8)(data);
   const pathGenerator = geoPath();
 
-  // TOOLTIP
-  const {
-    tooltipData,
-    tooltipLeft,
-    tooltipTop,
-    tooltipOpen,
-    showTooltip, // on hover we will call this function to show tooltip
-    hideTooltip, // and this one to hide it
-  } = useTooltip();
-
-  const { containerRef, TooltipInPortal } = useTooltipInPortal({
-    detectBounds: true,
-    // when tooltip containers are scrolled, this will correctly update the Tooltip position
-    scroll: true,
-  });
-
-  let tooltipTimeout;
-  // event handlers
-  const handleMouseLeave = useCallback(() => {
-    tooltipTimeout = window.setTimeout(() => {
-      hideTooltip();
-    }, 300);
-  }, [hideTooltip]);
-
   return (
     <div>
       <ScatterSVG
         width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
-        ref={containerRef}
         preserveAspectRatio="xMinYMin"
       >
         <Group left={margin.left} top={margin.top}>
@@ -253,243 +285,90 @@ function ScatterplotGDP({ data, xMetric, size }) {
             numTicks={1}
           />
           <g className="contourGroup">
-            {contour.map((x, i) => (
-              <path
-                // eslint-disable-next-line react/no-array-index-key
-                key={`contour${i}}`}
-                d={pathGenerator(x)}
-                fill={PaleBlue}
-                stroke={PaleBlue}
-                fillOpacity={0.4}
-                strokeWidth={0.5}
+            {colorBy === 'correlation'
+              ? contour.map((x, i) => (
+                  <path
+                    // eslint-disable-next-line react/no-array-index-key
+                    key={`contour${i}}`}
+                    d={pathGenerator(x)}
+                    fill={Carrot}
+                    stroke={Carrot}
+                    fillOpacity={i > 3 ? 0.3 : 0.2}
+                    strokeWidth={0.5}
+                  />
+                ))
+              : null}
+          </g>
+          <g className="points">
+            {data.map((d) => (
+              <circle
+                key={d.country}
+                cx={xScale(d[xMetric])}
+                cy={yScale(d.avgVal)}
+                r={
+                  Math.abs(d.avgVal) < 0.001 || Math.abs(d[xMetric]) < 0.001
+                    ? '0'
+                    : colorBy === 'correlation'
+                    ? '1'
+                    : '3'
+                }
+                fill={
+                  colorBy === 'ranking'
+                    ? rankingScale(d.avgVal)
+                    : colorBy === 'continent'
+                    ? continentScale(d.continent)
+                    : colorBy === 'income'
+                    ? incomeScale(d.incomeLevel)
+                    : 'black'
+                }
+                fillOpacity="0.8"
+                stroke="black"
+                strokeWidth="0.25"
               />
             ))}
           </g>
-          {data.map((d) => (
-            <circle
-              key={d.country}
-              cx={xScale(d[xMetric])}
-              cy={yScale(d.avgVal)}
-              r={
-                Math.abs(d.avgVal) < 0.001 || Math.abs(d[xMetric]) < 0.001
-                  ? '0'
-                  : size === 'large'
-                  ? '3'
-                  : '1'
-              }
-              fill="black"
-              //   onMouseMove={handleMouseMove}
-              onMouseMove={() => {
-                if (tooltipTimeout) clearTimeout(tooltipTimeout);
-                const top = yScale(d.avgVal) + margin.top;
-                const left = xScale(d[xMetric]) + margin.left;
-                showTooltip({
-                  tooltipData: d,
-                  tooltipTop: top,
-                  tooltipLeft: left,
-                });
-              }}
-              onMouseLeave={handleMouseLeave}
-            />
-          ))}
         </Group>
       </ScatterSVG>
-      {tooltipOpen && (
-        <TooltipInPortal
-          // set this to random so it correctly updates with parent bounds
-          key={Math.random()}
-          top={tooltipTop}
-          left={tooltipLeft}
-        >
-          <p> {tooltipData.country}</p>
-          <p> GDP: {Math.round(tooltipData[xMetric]) / 1000}k</p>
-          <p> value: {tooltipData.avgVal}</p>
-        </TooltipInPortal>
-      )}
     </div>
   );
 }
 ScatterplotGDP.propTypes = {
   data: PropTypes.array.isRequired,
   xMetric: PropTypes.string.isRequired,
-  size: PropTypes.string.isRequired,
+  metricTitle: PropTypes.string.isRequired,
+  colorBy: PropTypes.string.isRequired,
 };
 
-function CountryBubble({ data, xMetric, size }) {
-  const width = size === 'large' ? 700 : 300;
-  const height = size === 'large' ? 400 : 250;
-
-  // TO DO: replace with spacing constants
-  const margin = { top: 20, right: 10, bottom: 25, left: 40 };
-  const radius = 3;
-  const bubblePadding = 2;
-
-  //   .force('x', forceX())
-  //   .force('y', forceY());
-
-  // bounds
-  const xMax = width - margin.left - margin.right;
-  const yMax = height - margin.top - margin.bottom;
-
-  // scales
-  const xScale = scaleLinear({
-    domain: [0, 1],
-    range: [0, xMax],
-    nice: true,
-  });
-  const yScale = scaleLinear({
-    domain: [
-      Math.min(...data.map((x) => x.avgVal)),
-      Math.max(...data.map((x) => x.avgVal)) * 1,
-    ],
-    range: [yMax, 0],
-    nice: true,
-  });
-
-  // console.log(simulation.nodes(data).nodes());
-
-  // TOOLTIP
-  const {
-    tooltipData,
-    tooltipLeft,
-    tooltipTop,
-    tooltipOpen,
-    showTooltip, // on hover we will call this function to show tooltip
-    hideTooltip, // and this one to hide it
-  } = useTooltip();
-
-  const { countryRef, TooltipInPortal } = useTooltipInPortal({
-    detectBounds: true,
-    // when tooltip containers are scrolled, this will correctly update the Tooltip position
-    scroll: true,
-  });
-
-  let tooltipTimeout;
-  // event handlers
-  const handleMouseLeave = useCallback(() => {
-    tooltipTimeout = window.setTimeout(() => {
-      hideTooltip();
-    }, 300);
-  }, [hideTooltip]);
-  return (
-    <div>
-      {xMetric}
-      <ScatterSVG
-        width="100%"
-        height={height}
-        viewBox={`0 0 ${width} ${height}`}
-        ref={countryRef}
-        preserveAspectRatio="xMinYMin"
-      >
-        <Group left={margin.left} top={margin.top}>
-          <GridRows
-            scale={yScale}
-            width={xMax}
-            height={yMax}
-            stroke="#e0e0e0"
-          />
-          <GridColumns
-            scale={xScale}
-            width={xMax}
-            height={yMax}
-            stroke="#e0e0e0"
-          />
-          <AxisBottom
-            top={yMax}
-            scale={xScale}
-            numTicks={width > 520 ? 10 : 5}
-          />
-          <AxisLeft scale={yScale} hideAxisLine tickStroke="#e0e0e0" />{' '}
-        </Group>
-        <g>
-          {data.map((d) => (
-            <circle
-              key={d.country}
-              cx={xScale(0.5) + margin.left}
-              cy={yScale(d.avgVal) + margin.top}
-              r={
-                Math.abs(d.avgVal) < 0.001 || Math.abs(d[xMetric]) < 0.001
-                  ? '0'
-                  : d.country === xMetric
-                  ? '10'
-                  : size === 'large'
-                  ? '3'
-                  : '1'
-              }
-              fill="blue"
-              //   onMouseMove={handleMouseMove}
-              onMouseMove={() => {
-                if (tooltipTimeout) clearTimeout(tooltipTimeout);
-                const top = yScale(d.avgVal) + margin.top;
-                const left = xScale(0.5) + margin.left;
-                showTooltip({
-                  tooltipData: d,
-                  tooltipTop: top + 600,
-                  tooltipLeft: left,
-                });
-              }}
-              onMouseLeave={handleMouseLeave}
-            />
-          ))}
-        </g>
-      </ScatterSVG>
-      {tooltipOpen && (
-        <TooltipInPortal
-          // set this to random so it correctly updates with parent bounds
-          key={Math.random()}
-          top={tooltipTop}
-          left={tooltipLeft}
-        >
-          <p> {tooltipData.country}</p>
-          <p> GDP: {Math.round(tooltipData[xMetric]) / 1000}k</p>
-          <p> value: {tooltipData.avgVal}</p>
-        </TooltipInPortal>
-      )}
-    </div>
-  );
-}
-CountryBubble.propTypes = {
-  data: PropTypes.array.isRequired,
-  xMetric: PropTypes.string.isRequired,
-  size: PropTypes.string.isRequired,
-};
-
-function PlotBox({ dataSeries, xMetric, setPageLayout, size, chartType }) {
+function PlotBox({ dataSeries, xMetric, setPageLayout, pageLayout, colorBy }) {
   const [open, setOpen] = useState(false);
   return (
-    <GridBox>
+    <GridBox pageLayout={pageLayout}>
       <GraphContents
         onClick={() => {
-          console.log(dataSeries);
           setPageLayout({
             layout: 'highlight',
             selectedMetric: dataSeries,
           });
         }}
       >
-        <h3>{dataSeries.metricTitle}</h3>
-        {/* <h4>metric unit</h4> */}
-        {chartType === 'bubble' ? (
-          <CountryBubble data={dataSeries.data} xMetric={xMetric} size={size} />
-        ) : (
-          <ScatterplotGDP
-            data={dataSeries.data}
-            xMetric={xMetric}
-            size={size}
-          />
-        )}
-        <ExpandArrow className="arrow">⬈</ExpandArrow>
+        <ScatterplotGDP
+          data={dataSeries.data}
+          xMetric={xMetric}
+          colorBy={colorBy}
+          metricTitle={dataSeries.metricTitle}
+        />
+
+        <ExpandArrow className="arrow">Click to Expand</ExpandArrow>
       </GraphContents>
       <BottomInfoWrapper
         onClick={() => (open ? null : setOpen(true))}
         open={open}
       >
         <BottomInfoContents>
-          <h3> No Strong Correlation </h3>
+          <h3> {dataSeries.metricTitle} </h3>
           <button
             type="button"
             onClick={() => {
-              console.log('clicked');
               setOpen(false);
             }}
           >
@@ -502,31 +381,27 @@ function PlotBox({ dataSeries, xMetric, setPageLayout, size, chartType }) {
 }
 PlotBox.propTypes = {
   setPageLayout: PropTypes.func.isRequired,
+  pageLayout: PropTypes.string.isRequired,
   xMetric: PropTypes.string.isRequired,
-  chartType: PropTypes.string.isRequired,
-  size: PropTypes.string,
+  colorBy: PropTypes.string.isRequired,
   dataSeries: PropTypes.shape({
     metricTitle: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
     notes: PropTypes.string.isRequired,
-    // dataYear: PropTypes.string.isRequired,
+    pageLayout: PropTypes.string.isRequired,
     data: PropTypes.array.isRequired,
   }).isRequired,
 };
-PlotBox.defaultProps = {
-  size: 'small',
-};
+
 const SideSideWrapper = styled.div`
   display: flex;
   flex-direction: row;
 `;
-
 const Left = styled.div`
   display: flex;
   flex-direction: column;
   margin-left: 24px;
 `;
-
 const HeroChart = styled.div`
   h3 {
     font-size: ${lrgFontSize};
@@ -611,12 +486,117 @@ function ControlPanel({ controllersObj }) {
     </SelectWrapper>
   );
 }
-
 ControlPanel.propTypes = {
   controllersObj: PropTypes.array.isRequired,
 };
 
-export function MultiCharts({ data, theme }) {
+function HighlightSection({
+  setPageLayout,
+  pageLayout,
+  xMetric,
+  theme,
+  colorBy,
+  data,
+  presentWorldControllers,
+}) {
+  return (
+    <SectionWrapper>
+      <ControlPanel controllersObj={presentWorldControllers} />
+      <LargeChart
+        size="large"
+        dataSeries={pageLayout.selectedMetric}
+        key={pageLayout.selectedMetric.metricTitle}
+        xMetric={xMetric}
+        colorBy={colorBy}
+        setPageLayout={setPageLayout}
+        chartType={theme === 'presentWorld' ? 'scattercontour' : 'bubble'}
+      />
+      <button
+        onClick={() => setPageLayout({ layout: 'grid', selectedMetric: {} })}
+        type="button"
+      >
+        Return to Grid
+      </button>
+      <GridWrapperHoriz>
+        {data.map((x) => (
+          <PlotBox
+            dataSeries={x}
+            key={x.metricTitle}
+            xMetric={xMetric}
+            colorBy={colorBy}
+            setPageLayout={setPageLayout}
+            pageLayout={pageLayout}
+          />
+        ))}
+      </GridWrapperHoriz>
+    </SectionWrapper>
+  );
+}
+HighlightSection.propTypes = {
+  data: PropTypes.array.isRequired,
+  theme: PropTypes.string.isRequired,
+  setPageLayout: PropTypes.func.isRequired,
+  colorBy: PropTypes.string.isRequired,
+  xMetric: PropTypes.string.isRequired,
+  presentWorldControllers: PropTypes.array.isRequired,
+  pageLayout: PropTypes.shape({
+    layout: PropTypes.oneOf(['highlight', 'grid']),
+    selectedMetric: PropTypes.shape({
+      metricTitle: PropTypes.string.isRequired,
+      url: PropTypes.string.isRequired,
+      notes: PropTypes.string.isRequired,
+      data: PropTypes.array.isRequired,
+    }).isRequired,
+  }).isRequired,
+};
+
+function GridSection({
+  setPageLayout,
+  pageLayout,
+  xMetric,
+  theme,
+  colorBy,
+  data,
+  presentWorldControllers,
+}) {
+  return (
+    <SectionWrapper>
+      <ControlPanel controllersObj={presentWorldControllers} />
+      <GridWrapper>
+        {data.map((x) => (
+          <PlotBox
+            dataSeries={x}
+            key={x.metricTitle}
+            xMetric={xMetric}
+            colorBy={colorBy}
+            setPageLayout={setPageLayout}
+            pageLayout={pageLayout}
+          />
+        ))}
+      </GridWrapper>
+    </SectionWrapper>
+  );
+}
+GridSection.propTypes = {
+  data: PropTypes.array.isRequired,
+  theme: PropTypes.string.isRequired,
+  setPageLayout: PropTypes.func.isRequired,
+  colorBy: PropTypes.string.isRequired,
+  xMetric: PropTypes.string.isRequired,
+  presentWorldControllers: PropTypes.array.isRequired,
+  pageLayout: PropTypes.shape({
+    layout: PropTypes.oneOf(['highlight', 'grid']),
+    selectedMetric: PropTypes.shape({
+      metricTitle: PropTypes.string.isRequired,
+      url: PropTypes.string.isRequired,
+      notes: PropTypes.string.isRequired,
+      data: PropTypes.array.isRequired,
+    }).isRequired,
+  }).isRequired,
+};
+
+// eslint-disable-next-line import/prefer-default-export
+export function PresentFutureDashboard({ data, theme }) {
   const [pageLayout, setPageLayout] = useState({
     layout: 'highlight',
     selectedMetric: defaultSelectedMetric,
@@ -624,7 +604,6 @@ export function MultiCharts({ data, theme }) {
 
   const [xMetric, setXMetric] = useState('avgGDPpercapita');
   const [colorBy, setColorBy] = useState('ranking');
-  const [country, setCountry] = useState('Australia');
 
   const presentWorldControllers = [
     {
@@ -643,81 +622,33 @@ export function MultiCharts({ data, theme }) {
       changeState: setColorBy,
     },
   ];
-  const countryCompareControllers = [
-    {
-      defaultState: 'Australia',
-      options: countries,
-      changeState: setCountry,
-    },
-  ];
 
   if (pageLayout.layout === 'highlight') {
     return (
-      <SectionWrapper>
-        <button
-          onClick={() => setPageLayout({ layout: 'grid', selectedMetric: {} })}
-          type="button"
-        >
-          Return to Grid
-        </button>
-
-        {theme === 'presentWorld' ? (
-          <ControlPanel controllersObj={presentWorldControllers} />
-        ) : (
-          <ControlPanel controllersObj={countryCompareControllers} />
-        )}
-
-        <LargeChart
-          size="large"
-          dataSeries={pageLayout.selectedMetric}
-          key={pageLayout.selectedMetric.metricTitle}
-          xMetric={theme === 'presentWorld' ? xMetric : country}
-          colorBy={colorBy}
-          setPageLayout={setPageLayout}
-          chartType={theme === 'presentWorld' ? 'scattercontour' : 'bubble'}
-        />
-        <GridWrapperHoriz>
-          {data.map((x) => (
-            <PlotBox
-              dataSeries={x}
-              key={x.metricTitle}
-              xMetric={theme === 'presentWorld' ? xMetric : country}
-              setPageLayout={setPageLayout}
-              chartType={theme === 'presentWorld' ? 'scattercontour' : 'bubble'}
-            />
-          ))}
-        </GridWrapperHoriz>
-      </SectionWrapper>
+      <HighlightSection
+        pageLayout={pageLayout}
+        theme={theme}
+        setPageLayout={setPageLayout}
+        data={data}
+        colorBy={colorBy}
+        xMetric={xMetric}
+        presentWorldControllers={presentWorldControllers}
+      />
     );
   }
   return (
-    <SectionWrapper>
-      {theme === 'presentWorld' ? (
-        <ControlPanel controllersObj={presentWorldControllers} />
-      ) : (
-        <ControlPanel controllersObj={countryCompareControllers} />
-      )}
-
-      <GridWrapper>
-        {data.map((x) => (
-          <PlotBox
-            dataSeries={x}
-            key={x.metricTitle}
-            xMetric={theme === 'presentWorld' ? xMetric : country}
-            setPageLayout={setPageLayout}
-            chartType={theme === 'presentWorld' ? 'scattercontour' : 'bubble'}
-          />
-        ))}
-      </GridWrapper>
-    </SectionWrapper>
+    <GridSection
+      pageLayout={pageLayout}
+      theme={theme}
+      setPageLayout={setPageLayout}
+      data={data}
+      colorBy={colorBy}
+      xMetric={xMetric}
+      presentWorldControllers={presentWorldControllers}
+    />
   );
 }
-
-MultiCharts.propTypes = {
+PresentFutureDashboard.propTypes = {
   data: PropTypes.array.isRequired,
   theme: PropTypes.string.isRequired,
 };
-
-export function PastDecadeSection() {
-  return <SectionWrapper color="blue">Present World</SectionWrapper>;
-}
