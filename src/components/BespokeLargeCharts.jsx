@@ -26,7 +26,7 @@ import {
 const ScatterSVG = styled.svg``;
 const InChartButtonWrapper = styled.div`
   position: absolute;
-  top: ${(props) => (props.position === 'bottom' ? '350px' : '10px')};
+  top: ${(props) => (props.position === 'bottom' ? '460px' : '10px')};
   right: 20px;
   background: white;
   padding: 2px;
@@ -496,7 +496,7 @@ const PillsLegendItem = styled.div`
 const RankingWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  width: 300px;
+  width: 100%;
 `;
 
 const GradientRect = styled.div`
@@ -554,7 +554,6 @@ function RankingLegend() {
     </RankingWrapper>
   );
 }
-
 function ContinentLegend() {
   // wouldn't it be fun if the symbols weren't rectangles but the continent shape instead??
   return (
@@ -580,10 +579,16 @@ function ContinentLegend() {
     </PillsLegendWrapper>
   );
 }
+const LegendTitle = styled.h1`
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-transform: capitalize;
+`;
 export function Legend({ xMetric, colorBy, customMetric }) {
   return (
     <div>
-      <h2>Legend {colorBy}</h2>
+      <LegendTitle>Legend {colorBy}</LegendTitle>
       {colorBy === 'income' ? (
         <IncomeLegend />
       ) : colorBy === 'ranking' ? (
@@ -599,3 +604,57 @@ Legend.propTypes = {
   customMetric: PropTypes.object.isRequired,
   colorBy: PropTypes.string.isRequired,
 };
+
+const BackgroundInfoWrapper = styled.div`
+  margin-top: 24px;
+  width: 100%;
+  border: 2px solid black;
+  border-radius: 8px;
+`;
+const TwoColumnInfo = styled.div`
+  display: flex;
+  flex-direction: row;
+  max-width: 600px;
+  p {
+    font-size: 18px;
+    margin: 16px 16px;
+  }
+`;
+const TitleColumn = styled.p`
+  width: 100%;
+  max-width: 80px;
+`;
+const TitleBlock = styled.div`
+  padding: 12px 16px;
+  border-bottom: 2px solid black;
+  background: #e2e2e2;
+  border-radius: 8px 8px 0px 0px;
+  h1 {
+    font-size: 20px;
+    font-weight: 600;
+  }
+`;
+export function BackgroundInfo() {
+  return (
+    <BackgroundInfoWrapper>
+      <TitleBlock>
+        <h1>No Strong Correlation with GDP Growth</h1>
+      </TitleBlock>
+      <TwoColumnInfo>
+        <TitleColumn>Definition: </TitleColumn>
+        <p>GDP Growth means how quickly an economy is growing. </p>
+      </TwoColumnInfo>
+      <TwoColumnInfo>
+        <TitleColumn>Notes: </TitleColumn>
+        <p>
+          The higher a country’s GDP is does not have a strong negative or
+          positive correlation with that country’s GDP Growth.{' '}
+        </p>
+      </TwoColumnInfo>
+      <TwoColumnInfo>
+        <TitleColumn>Source: </TitleColumn>
+        <p>World Bank. Where available, values from 2019-2020 averaged.</p>
+      </TwoColumnInfo>
+    </BackgroundInfoWrapper>
+  );
+}

@@ -15,6 +15,7 @@ import {
   Carrot,
   lrgFontSize,
   Marigold,
+  maxWidth,
   mediumWeight,
   Melon,
   PaleBlue,
@@ -25,9 +26,10 @@ import {
   colorByOptions,
   xMetricOptions,
   customMetricOptions,
+  defaultSelectedMetric,
 } from './dataConstants';
 
-import { GINI, Legend } from './BespokeLargeCharts';
+import { BackgroundInfo, GINI, Legend } from './BespokeLargeCharts';
 
 const gridWidth = 200;
 const SectionWrapper = styled.div`
@@ -57,6 +59,7 @@ const GridWrapperHoriz = styled.div`
   flex-direction: row;
   overflow-x: scroll;
   overflow-y: hidden;
+  max-width: 1420px;
 `;
 
 const GridBox = styled.div`
@@ -457,6 +460,7 @@ function PlotBox({ dataSeries, xMetric, setPageLayout, size, chartType }) {
     <GridBox>
       <GraphContents
         onClick={() => {
+          console.log(dataSeries);
           setPageLayout({
             layout: 'highlight',
             selectedMetric: dataSeries,
@@ -517,11 +521,23 @@ const SideSideWrapper = styled.div`
   flex-direction: row;
 `;
 
+const Left = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-left: 24px;
+`;
+
 const HeroChart = styled.div`
   h3 {
     font-size: ${lrgFontSize};
     font-weight: ${mediumWeight};
   }
+`;
+const LegendTitle = styled.h1`
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  text-transform: capitalize;
 `;
 function LargeChart({ dataSeries, xMetric, colorBy, size }) {
   // first do fully for GINI
@@ -542,11 +558,18 @@ function LargeChart({ dataSeries, xMetric, colorBy, size }) {
           xMetric={xMetric}
           colorBy={colorBy}
         />
-        <Legend
-          customMetric={customMetric}
-          xMetric={xMetric}
-          colorBy={colorBy}
-        />
+        <Left>
+          <Legend
+            customMetric={customMetric}
+            xMetric={xMetric}
+            colorBy={colorBy}
+          />
+          <BackgroundInfo />
+          <LegendTitle style={{ marginTop: '24px' }}>
+            {' '}
+            Top Ranked Countries
+          </LegendTitle>
+        </Left>
       </SideSideWrapper>
     </HeroChart>
   );
@@ -595,13 +618,12 @@ ControlPanel.propTypes = {
 
 export function MultiCharts({ data, theme }) {
   const [pageLayout, setPageLayout] = useState({
-    layout: 'grid',
-    selectedMetric: {},
+    layout: 'highlight',
+    selectedMetric: defaultSelectedMetric,
   }); // grid or highlight
 
   const [xMetric, setXMetric] = useState('avgGDPpercapita');
-  const [metricCategory, setMetricCategory] = useState('allmetrics');
-  const [colorBy, setColorBy] = useState('correlation');
+  const [colorBy, setColorBy] = useState('ranking');
   const [country, setCountry] = useState('Australia');
 
   const presentWorldControllers = [
