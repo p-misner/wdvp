@@ -13,7 +13,6 @@ import { Group } from '@visx/group';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { contourDensity } from 'd3-contour';
 import { geoPath } from 'd3-geo';
-
 import Select from 'react-select';
 import {
   Aqua,
@@ -36,6 +35,7 @@ import {
   customMetricOptions,
   defaultSelectedMetric,
 } from './dataConstants';
+import { tickFormatter } from './utils';
 
 import { BackgroundInfo, GINI, Legend } from './BespokeLargeCharts';
 
@@ -159,12 +159,6 @@ const BottomInfoContents = styled.div`
 `;
 const ScatterSVG = styled.svg``;
 
-const SelectWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  margin-bottom: 24px;
-  justify-content: center;
-`;
 const ExpandArrow = styled.div`
   font-size: 48px;
   position: absolute;
@@ -172,7 +166,7 @@ const ExpandArrow = styled.div`
   right: 4px;
 `;
 
-function ScatterplotGDP({ data, xMetric, colorBy, metricTitle }) {
+function ScatterplotGDP({ data, xMetric, colorBy, metricTitle, customMetric }) {
   // TO DO: switch this out with dropdowns
   const width = 340;
   const height = 240;
@@ -184,9 +178,6 @@ function ScatterplotGDP({ data, xMetric, colorBy, metricTitle }) {
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom;
 
-  const customMetric = customMetricOptions.find(
-    (item) => item.metricTitle === metricTitle
-  );
   // scales
   const xScale = scaleLinear({
     domain: [
@@ -272,20 +263,35 @@ function ScatterplotGDP({ data, xMetric, colorBy, metricTitle }) {
             height={yMax}
             stroke="#e0e0e0"
           />
-          <AxisBottom top={yMax} scale={xScale} numTicks={1} />
+          <AxisBottom
+            top={yMax}
+            scale={xScale}
+            numTicks={2}
+            stroke="gray"
+            strokeWidth="2px"
+            tickStroke="#e0e0e0"
+            tickLabelProps={() => ({
+              opacity: 0.6,
+              fontSize: 16,
+              textAnchor: 'middle',
+            })}
+            tickFormat={(value) => tickFormatter(value)}
+          />
           <AxisLeft
             scale={yScale}
             hideAxisLine
             tickStroke="#e0e0e0"
+            tickLength={16}
             tickLabelProps={() => ({
               opacity: 0.6,
               fontSize: 16,
               textAnchor: 'end',
             })}
-            numTicks={1}
+            numTicks={2}
+            tickFormat={(value) => tickFormatter(value)}
           />
           <g className="contourGroup">
-            {colorBy === 'correlation'
+            {colorBy === 'Correlation'
               ? contour.map((x, i) => (
                   <path
                     // eslint-disable-next-line react/no-array-index-key
@@ -308,16 +314,16 @@ function ScatterplotGDP({ data, xMetric, colorBy, metricTitle }) {
                 r={
                   Math.abs(d.avgVal) < 0.001 || Math.abs(d[xMetric]) < 0.001
                     ? '0'
-                    : colorBy === 'correlation'
+                    : colorBy === 'Correlation'
                     ? '1'
                     : '3'
                 }
                 fill={
-                  colorBy === 'ranking'
+                  colorBy === 'Ranking'
                     ? rankingScale(d.avgVal)
-                    : colorBy === 'continent'
+                    : colorBy === 'Continent'
                     ? continentScale(d.continent)
-                    : colorBy === 'income'
+                    : colorBy === 'Income'
                     ? incomeScale(d.incomeLevel)
                     : 'black'
                 }
@@ -337,10 +343,16 @@ ScatterplotGDP.propTypes = {
   xMetric: PropTypes.string.isRequired,
   metricTitle: PropTypes.string.isRequired,
   colorBy: PropTypes.string.isRequired,
+  customMetric: PropTypes.object.isRequired,
 };
 
 function PlotBox({ dataSeries, xMetric, setPageLayout, pageLayout, colorBy }) {
   const [open, setOpen] = useState(false);
+
+  const customMetric = customMetricOptions.find(
+    (item) => item.metricTitle === dataSeries.metricTitle
+  );
+
   return (
     <GridBox pageLayout={pageLayout}>
       <GraphContents
@@ -356,6 +368,7 @@ function PlotBox({ dataSeries, xMetric, setPageLayout, pageLayout, colorBy }) {
           xMetric={xMetric}
           colorBy={colorBy}
           metricTitle={dataSeries.metricTitle}
+          customMetric={customMetric}
         />
 
         <ExpandArrow className="arrow">Click to Expand</ExpandArrow>
@@ -365,7 +378,12 @@ function PlotBox({ dataSeries, xMetric, setPageLayout, pageLayout, colorBy }) {
         open={open}
       >
         <BottomInfoContents>
-          <h3> {dataSeries.metricTitle} </h3>
+          <h3>
+            {' '}
+            {customMetric?.seriesName
+              ? customMetric.seriesName
+              : dataSeries.metricTitle}{' '}
+          </h3>
           <button
             type="button"
             onClick={() => {
@@ -464,24 +482,46 @@ LargeChart.defaultProps = {
   size: 'small',
 };
 
+const SelectWrapper = styled.div`
+  display: flex;
+  flex-flow: row nowrap;
+  margin-bottom: 24px;
+  justify-content: center;
+  @media (max-width: 900px) {
+    flex-flow: row wrap;
+  }
+`;
+const LabelDropdownWrapper = styled.div`
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  margin-right: 16px;
+  p {
+    margin-right: 4px;
+    opacity: 0.7;
+    font-weight: 500;
+  }
+`;
 function ControlPanel({ controllersObj }) {
   return (
     <SelectWrapper>
       {controllersObj.map((x) => (
-        <Select
-          styles={{
-            container: (baseStyles) => ({
-              ...baseStyles,
-              paddingRight: '16px',
-              fontSize: '20px',
-              minWidth: '250px',
-            }),
-          }}
-          key={x.defaultState}
-          defaultValue={{ value: x.defaultState, label: x.defaultState }}
-          options={x.options}
-          onChange={(a) => x.changeState(a.value)}
-        />
+        <LabelDropdownWrapper key={x.defaultState}>
+          <p> {x.dropdownLabel.toUpperCase()}:</p>
+          <Select
+            styles={{
+              container: (baseStyles) => ({
+                ...baseStyles,
+                paddingRight: '16px',
+                fontSize: '18px',
+                minWidth: '250px',
+              }),
+            }}
+            defaultValue={{ value: x.defaultState, label: x.defaultState }}
+            options={x.options}
+            onChange={(a) => x.changeState(a.value)}
+          />
+        </LabelDropdownWrapper>
       ))}
     </SelectWrapper>
   );
@@ -595,6 +635,35 @@ GridSection.propTypes = {
   }).isRequired,
 };
 
+const DashboardWrapper = styled.div`
+  padding: 32px;
+  border: 2px solid black;
+  border-radius: 8px;
+  @media (max-width: 600px) {
+    padding: 16px;
+  }
+  margin: 0px;
+`;
+
+const DashboardTitleWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px dashed black;
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+  h2 {
+    font-size: 32px;
+    font-weight: 600;
+    margin-right: 24px;
+    white-space: nowrap;
+  }
+  p {
+    font-size: 18px;
+    line-height: 22px;
+    max-width: 800px;
+  }
+`;
+
 // eslint-disable-next-line import/prefer-default-export
 export function PresentFutureDashboard({ data, theme }) {
   const [pageLayout, setPageLayout] = useState({
@@ -603,49 +672,59 @@ export function PresentFutureDashboard({ data, theme }) {
   }); // grid or highlight
 
   const [xMetric, setXMetric] = useState('avgGDPpercapita');
-  const [colorBy, setColorBy] = useState('ranking');
+  const [colorBy, setColorBy] = useState('Ranking');
 
   const presentWorldControllers = [
     {
       defaultState: xMetric,
       options: xMetricOptions,
       changeState: setXMetric,
+      dropdownLabel: 'Compare Metric To',
     },
-    // {
-    //   defaultState: metricCategory,
-    //   options: metricCategoryOptions,
-    //   changeState: setMetricCategory,
-    // },
     {
       defaultState: colorBy,
       options: colorByOptions,
       changeState: setColorBy,
+      dropdownLabel: 'Color Chart By',
+    },
+    {
+      defaultState: 'None',
+      dropdownLabel: 'Highlight a Country',
     },
   ];
 
-  if (pageLayout.layout === 'highlight') {
-    return (
-      <HighlightSection
-        pageLayout={pageLayout}
-        theme={theme}
-        setPageLayout={setPageLayout}
-        data={data}
-        colorBy={colorBy}
-        xMetric={xMetric}
-        presentWorldControllers={presentWorldControllers}
-      />
-    );
-  }
   return (
-    <GridSection
-      pageLayout={pageLayout}
-      theme={theme}
-      setPageLayout={setPageLayout}
-      data={data}
-      colorBy={colorBy}
-      xMetric={xMetric}
-      presentWorldControllers={presentWorldControllers}
-    />
+    <DashboardWrapper>
+      <DashboardTitleWrapper>
+        <h2>Dashboard of the Present Future</h2>
+        <p>
+          Understand and explore how 174 listed countries are doing on 37
+          different metrics and how specific countries compare to the globe and
+          similar countries.
+        </p>
+      </DashboardTitleWrapper>
+      {pageLayout.layout === 'highlight' ? (
+        <HighlightSection
+          pageLayout={pageLayout}
+          theme={theme}
+          setPageLayout={setPageLayout}
+          data={data}
+          colorBy={colorBy}
+          xMetric={xMetric}
+          presentWorldControllers={presentWorldControllers}
+        />
+      ) : (
+        <GridSection
+          pageLayout={pageLayout}
+          theme={theme}
+          setPageLayout={setPageLayout}
+          data={data}
+          colorBy={colorBy}
+          xMetric={xMetric}
+          presentWorldControllers={presentWorldControllers}
+        />
+      )}
+    </DashboardWrapper>
   );
 }
 PresentFutureDashboard.propTypes = {

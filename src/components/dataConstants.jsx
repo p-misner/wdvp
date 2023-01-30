@@ -22,10 +22,10 @@ export const metricCategoryOptions = [
   { value: 'sustainability', label: 'Sustainability Metrics' },
 ];
 export const colorByOptions = [
-  { value: 'correlation', label: 'Color by: Correlation' },
-  { value: 'ranking', label: 'Color by: Ranking' },
-  { value: 'continent', label: 'Color by: Continent' },
-  { value: 'income', label: 'Color by: Income' },
+  { value: 'Correlation', label: 'Color by: Correlation' },
+  { value: 'Ranking', label: 'Color by: Ranking' },
+  { value: 'Continent', label: 'Color by: Continent' },
+  { value: 'Income', label: 'Color by: Income' },
 ];
 
 // Custom Metrics

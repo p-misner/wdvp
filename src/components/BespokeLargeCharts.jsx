@@ -22,6 +22,7 @@ import {
   DarkestBlue,
   DarkTeal,
 } from '../styleConstants';
+import { tickFormatter } from './utils';
 
 const ScatterSVG = styled.svg``;
 const InChartButtonWrapper = styled.div`
@@ -60,12 +61,6 @@ const SVGOverlineHeavy = styled.text`
   pointer-events: none;
 `;
 
-function tickFormatter(value) {
-  if (value > 1000) {
-    return `${value / 1000}k`;
-  }
-  return value;
-}
 export function GINI({ data, xMetric, colorBy, customMetric }) {
   const [scaleByPop, setScaleByPop] = useState(false);
 
@@ -261,7 +256,7 @@ export function GINI({ data, xMetric, colorBy, customMetric }) {
             />
           </g>
           <g className="contourGroup">
-            {colorBy === 'correlation'
+            {colorBy === 'Correlation'
               ? contour.map((x, i) => (
                   <path
                     // eslint-disable-next-line react/no-array-index-key
@@ -286,16 +281,16 @@ export function GINI({ data, xMetric, colorBy, customMetric }) {
                     ? '0'
                     : scaleByPop
                     ? popScale(d.population)
-                    : colorBy === 'correlation'
+                    : colorBy === 'Correlation'
                     ? '3'
                     : '5'
                 }
                 fill={
-                  colorBy === 'ranking'
+                  colorBy === 'Ranking'
                     ? rankingScale(d.avgVal)
-                    : colorBy === 'continent'
+                    : colorBy === 'Continent'
                     ? continentScale(d.continent)
-                    : colorBy === 'income'
+                    : colorBy === 'Income'
                     ? incomeScale(d.incomeLevel)
                     : 'black'
                 }
@@ -589,9 +584,9 @@ export function Legend({ xMetric, colorBy, customMetric }) {
   return (
     <div>
       <LegendTitle>Legend {colorBy}</LegendTitle>
-      {colorBy === 'income' ? (
+      {colorBy === 'Income' ? (
         <IncomeLegend />
-      ) : colorBy === 'ranking' ? (
+      ) : colorBy === 'Ranking' ? (
         <RankingLegend />
       ) : (
         <ContinentLegend />
