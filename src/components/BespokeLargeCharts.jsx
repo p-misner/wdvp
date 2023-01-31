@@ -21,7 +21,12 @@ import {
   PaleBlue,
   PaleGreen,
 } from '../styleConstants';
-import { tickFormatter, contourColor } from './utils';
+import {
+  tickFormatter,
+  contourColor,
+  correctVar,
+  correctMetric,
+} from './utils';
 
 const ScatterSVG = styled.svg``;
 const InChartButtonWrapper = styled.div`
@@ -231,6 +236,7 @@ export function GINI({ data, xMetric, colorBy, customMetric }) {
               opacity: 0.6,
               fontSize: 16,
             })}
+            hideAxisLine
             tickLabelProps={() => ({
               opacity: 0.6,
               fontSize: 16,
@@ -253,6 +259,14 @@ export function GINI({ data, xMetric, colorBy, customMetric }) {
               tickFormat={(value) => tickFormatter(value)}
             />
           </g>
+          <line
+            x1={-16}
+            x2={width - margin.right - margin.left}
+            y1={yScale(0) - 1.5}
+            y2={yScale(0) - 1.5}
+            stroke="gray"
+            strokeWidth="3"
+          />
           <g className="contourGroup">
             {colorBy === 'Correlation'
               ? contour.map((x, i) => (
@@ -278,7 +292,7 @@ export function GINI({ data, xMetric, colorBy, customMetric }) {
                 cx={xScale(d[xMetric])}
                 cy={yScale(d.avgVal)}
                 r={
-                  Math.abs(d.avgVal) < 0.001 || Math.abs(d[xMetric]) < 0.001
+                  Math.abs(d.avgVal) < 0.0001 || Math.abs(d[xMetric]) < 0.0001
                     ? '0'
                     : scaleByPop
                     ? popScale(d.population)
@@ -657,38 +671,6 @@ const TitleBlock = styled.div`
   }
 `;
 export function BackgroundInfo({ xMetric, customMetric }) {
-  function correctMetric(item) {
-    switch (item) {
-      case 'avgGDPpercapita':
-        return 'Average GDP per Capita';
-      case 'latestGDPpercapita':
-        return 'Latest GDP per Capita';
-      case 'GINI':
-        return 'GINI Index';
-      case 'SEDA':
-        return 'SEDA';
-      case 'avgHappyPlanet':
-        return 'Happy Planet Index';
-      default:
-        return item;
-    }
-  }
-  function correctVar(item) {
-    switch (item) {
-      case 'avgGDPpercapita':
-        return 'GDPcorrelation';
-      case 'latestGDPpercapita':
-        return 'GDPcorrelation';
-      case 'GINI':
-        return 'GINIcorrelation';
-      case 'SEDA':
-        return 'SEDAcorrelation';
-      case 'avgHappyPlanet':
-        return 'Happycorrelation';
-      default:
-        return item;
-    }
-  }
   return (
     <BackgroundInfoWrapper>
       <TitleBlock color={contourColor({ xMetric, customMetric })}>
@@ -763,7 +745,7 @@ const RankSVG = styled.svg`
   height: 38px;
   width: 100%;
 `;
-export function RankingInfo({ rankingData, customMetric }) {
+export function RankingInfo({ rankingData, customMetric, xMetric }) {
   const margin = { left: 10, right: 25 };
   const xScale = scaleLinear({
     domain: customMetric?.domain,
@@ -785,7 +767,7 @@ export function RankingInfo({ rankingData, customMetric }) {
     <div>
       <RankingWrapper>
         <TitleBlock color="#fff">
-          <h1>[Metric] Ranking</h1>
+          <h1>Ranking By {correctMetric(xMetric)}</h1>
         </TitleBlock>
         <RankingList className="fadeout">
           {rankingData.map((x) => (
@@ -859,6 +841,7 @@ export function RankingInfo({ rankingData, customMetric }) {
 }
 
 RankingInfo.propTypes = {
+  xMetric: PropTypes.string.isRequired,
   rankingData: PropTypes.array.isRequired,
   customMetric: PropTypes.object.isRequired,
 };

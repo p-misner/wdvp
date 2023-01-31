@@ -469,7 +469,11 @@ function LargeChart({ dataSeries, xMetric, colorBy, size }) {
               xMetric={xMetric}
               customMetric={customMetric}
               rankingData={dataSeries.data
-                .filter((x) => x.avgVal !== null)
+                .filter(
+                  (x) =>
+                    x.avgVal !== null &&
+                    (Math.abs(x.avgVal) > 0.001 || Math.abs(x[xMetric]) > 0.001)
+                )
                 .sort((a, b) => b.avgVal - a.avgVal)
                 .map((x, i) => ({
                   country: x.country,

@@ -60,3 +60,35 @@ export function contourColor({ xMetric, customMetric }) {
   }
   return color;
 }
+export function correctMetric(item) {
+  switch (item) {
+    case 'avgGDPpercapita':
+      return 'Average GDP per Capita';
+    case 'latestGDPpercapita':
+      return 'Latest GDP per Capita';
+    case 'GINI':
+      return 'GINI Index';
+    case 'SEDA':
+      return 'SEDA';
+    case 'avgHappyPlanet':
+      return 'Happy Planet Index';
+    default:
+      return item;
+  }
+}
+export function correctVar(item) {
+  switch (item) {
+    case 'avgGDPpercapita':
+      return 'GDPcorrelation';
+    case 'latestGDPpercapita':
+      return 'GDPcorrelation';
+    case 'GINI':
+      return 'GINIcorrelation';
+    case 'SEDA':
+      return 'SEDAcorrelation';
+    case 'avgHappyPlanet':
+      return 'Happycorrelation';
+    default:
+      return item;
+  }
+}

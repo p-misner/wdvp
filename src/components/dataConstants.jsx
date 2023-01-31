@@ -185,7 +185,7 @@ export const customMetricOptions = [
   {
     metricTitle: 'politicalrightsscore',
     seriesName: 'Political Rights Score',
-    domain: [0, 50],
+    domain: [-10, 50],
   },
   {
     metricTitle: 'civillibertiesscore',
