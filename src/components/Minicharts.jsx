@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { GridRows, GridColumns } from '@visx/grid';
@@ -21,8 +21,6 @@ import {
   Marigold,
   maxWidth,
   mediumWeight,
-  Melon,
-  PaleBlue,
   DarkTeal,
   DarkestBlue,
   Squash,
@@ -32,6 +30,7 @@ import {
   xMetricOptions,
   customMetricOptions,
   defaultSelectedMetric,
+  countries,
 } from './dataConstants';
 import { tickFormatter, contourColor } from './utils';
 
@@ -43,7 +42,6 @@ import {
 } from './BespokeLargeCharts';
 
 const SectionWrapper = styled.div``;
-
 const GridWrapper = styled.div`
   display: grid;
   grid-gap: 16px;
@@ -71,7 +69,6 @@ const GridWrapperHoriz = styled.div`
   overflow-y: hidden;
   max-width: 1420px;
 `;
-
 const GridBox = styled.div`
   min-width: ${(props) =>
     props.pageLayout.layout === 'highlight' ? '200px' : '100px'};
@@ -169,7 +166,22 @@ const ExpandArrow = styled.div`
   right: 4px;
 `;
 
-function ScatterplotGDP({ data, xMetric, colorBy, metricTitle, customMetric }) {
+function ScatterplotGDP({
+  data,
+  xMetric,
+  colorBy,
+  selectedCountry,
+  metricTitle,
+  customMetric,
+}) {
+  const similarCountries = ['China', 'United States', 'India', 'Argentina'];
+  const allLabeledCountries = [
+    'China',
+    'United States',
+    'India',
+    'Argentina',
+  ].concat([selectedCountry.value]);
+
   // TO DO: switch this out with dropdowns
   const width = 340;
   const height = 240;
@@ -321,8 +333,10 @@ function ScatterplotGDP({ data, xMetric, colorBy, metricTitle, customMetric }) {
                 cx={xScale(d[xMetric])}
                 cy={yScale(d.avgVal)}
                 r={
-                  Math.abs(d.avgVal) < 0.001 || Math.abs(d[xMetric]) < 0.001
+                  Math.abs(d.avgVal) < 0.0001 || Math.abs(d[xMetric]) < 0.0001
                     ? '0'
+                    : d.country === selectedCountry
+                    ? '20'
                     : colorBy === 'Correlation'
                     ? '1'
                     : '3'
@@ -336,9 +350,9 @@ function ScatterplotGDP({ data, xMetric, colorBy, metricTitle, customMetric }) {
                     ? incomeScale(d.incomeLevel)
                     : 'black'
                 }
-                fillOpacity="0.8"
+                fillOpacity="1"
                 stroke="black"
-                strokeWidth="0.25"
+                strokeWidth={d.country === selectedCountry ? '2' : '0.25'}
               />
             ))}
           </g>
@@ -352,10 +366,18 @@ ScatterplotGDP.propTypes = {
   xMetric: PropTypes.string.isRequired,
   metricTitle: PropTypes.string.isRequired,
   colorBy: PropTypes.string.isRequired,
+  selectedCountry: PropTypes.string.isRequired,
   customMetric: PropTypes.object.isRequired,
 };
 
-function PlotBox({ dataSeries, xMetric, setPageLayout, pageLayout, colorBy }) {
+function PlotBox({
+  dataSeries,
+  xMetric,
+  selectedCountry,
+  setPageLayout,
+  pageLayout,
+  colorBy,
+}) {
   const [open, setOpen] = useState(false);
 
   const customMetric = customMetricOptions.find(
@@ -376,6 +398,7 @@ function PlotBox({ dataSeries, xMetric, setPageLayout, pageLayout, colorBy }) {
           data={dataSeries.data}
           xMetric={xMetric}
           colorBy={colorBy}
+          selectedCountry={selectedCountry}
           metricTitle={dataSeries.metricTitle}
           customMetric={customMetric}
         />
@@ -410,6 +433,7 @@ PlotBox.propTypes = {
   setPageLayout: PropTypes.func.isRequired,
   pageLayout: PropTypes.string.isRequired,
   xMetric: PropTypes.string.isRequired,
+  selectedCountry: PropTypes.string.isRequired,
   colorBy: PropTypes.string.isRequired,
   dataSeries: PropTypes.shape({
     metricTitle: PropTypes.string.isRequired,
@@ -436,7 +460,7 @@ const HeroChart = styled.div`
   }
 `;
 
-function LargeChart({ dataSeries, xMetric, colorBy, size }) {
+function LargeChart({ dataSeries, xMetric, colorBy, selectedCountry, size }) {
   // first do fully for GINI
   const customMetric = customMetricOptions.find(
     (item) => item.metricTitle === dataSeries.metricTitle
@@ -454,6 +478,7 @@ function LargeChart({ dataSeries, xMetric, colorBy, size }) {
           data={dataSeries.data}
           xMetric={xMetric}
           colorBy={colorBy}
+          selectedCountry={selectedCountry}
         />
         <Left>
           <Legend
@@ -466,7 +491,7 @@ function LargeChart({ dataSeries, xMetric, colorBy, size }) {
           )}
           {colorBy === 'Ranking' && (
             <RankingInfo
-              xMetric={xMetric}
+              selectedCountry={selectedCountry}
               customMetric={customMetric}
               rankingData={dataSeries.data
                 .filter(
@@ -490,6 +515,7 @@ function LargeChart({ dataSeries, xMetric, colorBy, size }) {
 LargeChart.propTypes = {
   xMetric: PropTypes.string.isRequired,
   colorBy: PropTypes.string.isRequired,
+  selectedCountry: PropTypes.string.isRequired,
   size: PropTypes.string,
   dataSeries: PropTypes.shape({
     metricTitle: PropTypes.string.isRequired,
@@ -554,6 +580,7 @@ function HighlightSection({
   setPageLayout,
   pageLayout,
   xMetric,
+  selectedCountry,
   theme,
   colorBy,
   data,
@@ -568,6 +595,7 @@ function HighlightSection({
         key={pageLayout.selectedMetric.metricTitle}
         xMetric={xMetric}
         colorBy={colorBy}
+        selectedCountry={selectedCountry}
         setPageLayout={setPageLayout}
         chartType={theme === 'presentWorld' ? 'scattercontour' : 'bubble'}
       />
@@ -586,6 +614,7 @@ function HighlightSection({
             colorBy={colorBy}
             setPageLayout={setPageLayout}
             pageLayout={pageLayout}
+            selectedCountry={selectedCountry}
           />
         ))}
       </GridWrapperHoriz>
@@ -598,6 +627,7 @@ HighlightSection.propTypes = {
   setPageLayout: PropTypes.func.isRequired,
   colorBy: PropTypes.string.isRequired,
   xMetric: PropTypes.string.isRequired,
+  selectedCountry: PropTypes.string.isRequired,
   presentWorldControllers: PropTypes.array.isRequired,
   pageLayout: PropTypes.shape({
     layout: PropTypes.oneOf(['highlight', 'grid']),
@@ -614,6 +644,7 @@ function GridSection({
   setPageLayout,
   pageLayout,
   xMetric,
+  selectedCountry,
   theme,
   colorBy,
   data,
@@ -629,6 +660,7 @@ function GridSection({
             key={x.metricTitle}
             xMetric={xMetric}
             colorBy={colorBy}
+            selectedCountry={selectedCountry}
             setPageLayout={setPageLayout}
             pageLayout={pageLayout}
           />
@@ -643,6 +675,7 @@ GridSection.propTypes = {
   setPageLayout: PropTypes.func.isRequired,
   colorBy: PropTypes.string.isRequired,
   xMetric: PropTypes.string.isRequired,
+  selectedCountry: PropTypes.string.isRequired,
   presentWorldControllers: PropTypes.array.isRequired,
   pageLayout: PropTypes.shape({
     layout: PropTypes.oneOf(['highlight', 'grid']),
@@ -664,7 +697,6 @@ const DashboardWrapper = styled.div`
   }
   margin: 0px;
 `;
-
 const DashboardTitleWrapper = styled.div`
   display: flex;
   flex-direction: row;
@@ -683,7 +715,6 @@ const DashboardTitleWrapper = styled.div`
     max-width: 800px;
   }
 `;
-
 // eslint-disable-next-line import/prefer-default-export
 export function PresentFutureDashboard({ data, theme }) {
   const [pageLayout, setPageLayout] = useState({
@@ -693,6 +724,7 @@ export function PresentFutureDashboard({ data, theme }) {
 
   const [xMetric, setXMetric] = useState('avgGDPpercapita');
   const [colorBy, setColorBy] = useState('Ranking');
+  const [selectedCountry, setSelectedCountry] = useState('None');
 
   const presentWorldControllers = [
     {
@@ -708,8 +740,10 @@ export function PresentFutureDashboard({ data, theme }) {
       dropdownLabel: 'Color Chart By',
     },
     {
-      defaultState: 'None',
+      defaultState: selectedCountry,
       dropdownLabel: 'Highlight a Country',
+      options: countries.map((x) => ({ value: x, label: x })),
+      changeState: setSelectedCountry,
     },
   ];
 
@@ -731,6 +765,7 @@ export function PresentFutureDashboard({ data, theme }) {
           data={data}
           colorBy={colorBy}
           xMetric={xMetric}
+          selectedCountry={selectedCountry}
           presentWorldControllers={presentWorldControllers}
         />
       ) : (
@@ -741,6 +776,7 @@ export function PresentFutureDashboard({ data, theme }) {
           data={data}
           colorBy={colorBy}
           xMetric={xMetric}
+          selectedCountry={selectedCountry}
           presentWorldControllers={presentWorldControllers}
         />
       )}

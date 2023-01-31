@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from 'react';
+/* eslint-disable no-nested-ternary */
+import React, { useState, useCallback, useEffect } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { GridRows, GridColumns } from '@visx/grid';
@@ -65,7 +66,13 @@ const SVGOverlineHeavy = styled.text`
   pointer-events: none;
 `;
 
-export function GINI({ data, xMetric, colorBy, customMetric }) {
+export function GINI({
+  data,
+  xMetric,
+  colorBy,
+  selectedCountry,
+  customMetric,
+}) {
   const [scaleByPop, setScaleByPop] = useState(false);
 
   const width = 800;
@@ -160,7 +167,8 @@ export function GINI({ data, xMetric, colorBy, customMetric }) {
   });
 
   function HoverStyleReset(e) {
-    e.target.style.strokeWidth = '1';
+    e.target.style['-webkit-filter'] = 'drop-shadow(0px 0px 0px #fff)';
+    e.target.style.filter = 'drop-shadow(0px 0px 0px #fff)';
   }
 
   let tooltipTimeout;
@@ -169,6 +177,14 @@ export function GINI({ data, xMetric, colorBy, customMetric }) {
       hideTooltip();
     }, 300);
   }, [hideTooltip]);
+
+  const similarCountries = ['China', 'United States', 'India', 'Argentina'];
+  const allLabeledCountries = [
+    'China',
+    'United States',
+    'India',
+    'Argentina',
+  ].concat([selectedCountry]);
 
   return (
     <div style={{ marginBottom: 64, position: 'relative', maxWidth: '800px' }}>
@@ -280,7 +296,7 @@ export function GINI({ data, xMetric, colorBy, customMetric }) {
                     })}
                     stroke={contourColor({ customMetric, xMetric })}
                     fillOpacity={i > 3 ? 0.3 : 0.2}
-                    strokeWidth={0.5}
+                    strokeWidth="0.5"
                   />
                 ))
               : null}
@@ -294,6 +310,8 @@ export function GINI({ data, xMetric, colorBy, customMetric }) {
                 r={
                   Math.abs(d.avgVal) < 0.0001 || Math.abs(d[xMetric]) < 0.0001
                     ? '0'
+                    : d.country === selectedCountry
+                    ? '30'
                     : scaleByPop
                     ? popScale(d.population)
                     : colorBy === 'Correlation'
@@ -309,15 +327,20 @@ export function GINI({ data, xMetric, colorBy, customMetric }) {
                     ? incomeScale(d.incomeLevel)
                     : 'black'
                 }
-                fillOpacity="0.8"
+                fillOpacity="1"
+                strokeWidth={
+                  d.country === selectedCountry
+                    ? '3'
+                    : similarCountries.indexOf(d.country) > -1
+                    ? '2'
+                    : '1'
+                }
                 stroke="black"
                 onMouseEnter={function (e) {
-                  //   e.target.style.stroke = Squash;
-                  //   e.target.style.fill = Marigold;
-                  //   e.target.style.fillOpacity = '1';
-                  e.target.style.strokeWidth = '3';
+                  e.target.style['-webkit-filter'] =
+                    'drop-shadow(-2px -2px 0px black)';
+                  e.target.style.filter = 'drop-shadow(-2px -2px 0px black)';
                 }}
-                //   onMouseMove={handleMouseMove}
                 onMouseMove={() => {
                   if (tooltipTimeout) clearTimeout(tooltipTimeout);
                   const top = yScale(d.avgVal) + margin.top;
@@ -382,16 +405,14 @@ export function GINI({ data, xMetric, colorBy, customMetric }) {
               </g>
             ) : null}
           </g>
-          {/* {data.map((d) => (
+          {data.map((d) => (
             <g style={{ pointerEvents: 'none' }}>
               <text
                 strokeWidth={
                   Math.abs(d.avgVal) < 0.001 || Math.abs(d[xMetric]) < 0.001
                     ? '0'
-                    : ['China', 'United States', 'India', 'Argentina'].indexOf(
-                        d.country
-                      ) > -1
-                    ? '2'
+                    : allLabeledCountries.indexOf(d.country) > -1
+                    ? '5'
                     : '0'
                 }
                 stroke="white"
@@ -400,9 +421,7 @@ export function GINI({ data, xMetric, colorBy, customMetric }) {
                 fill={
                   Math.abs(d.avgVal) < 0.001 || Math.abs(d[xMetric]) < 0.001
                     ? 'none'
-                    : ['China', 'United States', 'India', 'Argentina'].indexOf(
-                        d.country
-                      ) > -1
+                    : allLabeledCountries.indexOf(d.country) > -1
                     ? 'white'
                     : 'none'
                 }
@@ -415,9 +434,7 @@ export function GINI({ data, xMetric, colorBy, customMetric }) {
                 fill={
                   Math.abs(d.avgVal) < 0.001 || Math.abs(d[xMetric]) < 0.001
                     ? 'none'
-                    : ['China', 'United States', 'India', 'Argentina'].indexOf(
-                        d.country
-                      ) > -1
+                    : allLabeledCountries.indexOf(d.country) > -1
                     ? 'black'
                     : 'none'
                 }
@@ -425,7 +442,7 @@ export function GINI({ data, xMetric, colorBy, customMetric }) {
                 {d.country}
               </text>
             </g>
-          ))} */}
+          ))}
         </Group>
       </ScatterSVG>
       {tooltipOpen && (
@@ -446,6 +463,7 @@ export function GINI({ data, xMetric, colorBy, customMetric }) {
 GINI.propTypes = {
   data: PropTypes.array.isRequired,
   xMetric: PropTypes.string.isRequired,
+  selectedCountry: PropTypes.string.isRequired,
   customMetric: PropTypes.object.isRequired,
   colorBy: PropTypes.string.isRequired,
 };
@@ -718,10 +736,10 @@ const RankItem = styled.div`
   flex-flow: row nowrap;
   align-items: center;
   border-bottom: 1px solid #e2e2e2;
-
+  //   background: ${(props) => props.color || 'none'} p {
+  background: ${(props) => props.color || 'none'};
   p {
     font-size: 16px;
-    // padding: 2px;
   }
   p:first-child {
     width: 32px;
@@ -741,11 +759,22 @@ const RankItem = styled.div`
   }
 `;
 const RankSVG = styled.svg`
-  //   background: #fefefe;
   height: 38px;
   width: 100%;
 `;
-export function RankingInfo({ rankingData, customMetric, xMetric }) {
+export function RankingInfo({ rankingData, customMetric, selectedCountry }) {
+  const ele = document.getElementById(selectedCountry);
+  console.log(ele);
+  useEffect(() => {
+    if (ele !== null) {
+      ele.scrollIntoView();
+    }
+  });
+
+  const Ranklistwrapper = document.getElementById('ranklistwrapper');
+  //   console.log(Ranklistwrapper);
+  //   ele.offsetLeft, ele.offsetTop
+
   const margin = { left: 10, right: 25 };
   const xScale = scaleLinear({
     domain: customMetric?.domain,
@@ -764,84 +793,102 @@ export function RankingInfo({ rankingData, customMetric, xMetric }) {
     ])
     .range([DarkTeal, Aqua, Marigold, Squash]);
   return (
-    <div>
-      <RankingWrapper>
-        <TitleBlock color="#fff">
-          <h1>Ranking By {correctMetric(xMetric)}</h1>
-        </TitleBlock>
-        <RankingList className="fadeout">
-          {rankingData.map((x) => (
-            <RankItem key={x.country} id={x.country}>
-              <p>{x.rank}</p>
-              <p>{x.country}</p>
-              <RankSVG>
-                <defs>
-                  <linearGradient id="grayLeft">
-                    <stop offset="0%" stopColor="#f6f6f6" stopOpacity="1" />
-                    <stop offset="100%" stopColor="#f6f6f6" stopOpacity="0" />
-                  </linearGradient>
-                  <linearGradient id="grayRight">
-                    <stop offset="0%" stopColor="#f6f6f6" stopOpacity="0" />
-                    <stop offset="100%" stopColor="#f6f6f6" stopOpacity="1" />
-                  </linearGradient>
-                </defs>
+    <RankingWrapper>
+      <TitleBlock color="#fff">
+        <h1>Ranking By {customMetric.seriesName}</h1>
+      </TitleBlock>
+      <RankingList>
+        {rankingData.map((x) => (
+          <RankItem
+            key={x.country}
+            id={x.country}
+            color={x.country === selectedCountry ? PaleBlue : 'none'}
+          >
+            <p>{x.rank}</p>
+            <p>{x.country}</p>
+            <RankSVG>
+              <defs>
+                <linearGradient id="grayLeft">
+                  <stop offset="0%" stopColor="#f6f6f6" stopOpacity="1" />
+                  <stop offset="100%" stopColor="#f6f6f6" stopOpacity="0" />
+                </linearGradient>
+                <linearGradient id="grayRight">
+                  <stop offset="0%" stopColor="#f6f6f6" stopOpacity="0" />
+                  <stop offset="100%" stopColor="#f6f6f6" stopOpacity="1" />
+                </linearGradient>
+                <linearGradient id="blueLeft">
+                  <stop offset="0%" stopColor={PaleBlue} stopOpacity="1" />
+                  <stop offset="100%" stopColor={PaleBlue} stopOpacity="0" />
+                </linearGradient>
+                <linearGradient id="blueRight">
+                  <stop offset="0%" stopColor={PaleBlue} stopOpacity="0" />
+                  <stop offset="100%" stopColor={PaleBlue} stopOpacity="1" />
+                </linearGradient>
+              </defs>
 
-                <rect
-                  y="6"
-                  x={xScale(x.avgVal) - 16 + margin.left}
-                  width="32"
-                  height="20"
-                  fill={rankingScale(x.avgVal)}
-                />
-                <rect
-                  y="6"
-                  x={xScale(x.avgVal) - 17 + margin.left}
-                  width="13"
-                  height="20"
-                  fill="url(#grayLeft)"
-                />
-                <rect
-                  y="6"
-                  x={xScale(x.avgVal) + 3 + margin.left}
-                  width="13"
-                  height="20"
-                  fill="url(#grayRight)"
-                />
-                <circle
-                  cy="16"
-                  cx={xScale(x.avgVal) + margin.left}
-                  r="7"
-                  fill="none"
-                  stroke="black"
-                  strokeWidth="1.5"
-                />
-                <text
-                  y="20"
-                  x={
-                    xScale(x.avgVal) > 70
-                      ? xScale(x.avgVal) - 35 + margin.left
-                      : xScale(x.avgVal) + 60 + margin.left
-                  }
-                  textAnchor="end"
-                  //   fontFamily="monospace"
-                  fontWeight="600"
-                  fill={rankingScale(x.avgVal)}
-                >
-                  {x.avgVal > 1000
-                    ? `${(x.avgVal / 1000).toFixed(1)}k`
-                    : x.avgVal.toFixed(1)}
-                </text>
-              </RankSVG>
-            </RankItem>
-          ))}
-        </RankingList>
-      </RankingWrapper>
-    </div>
+              <rect
+                y="8"
+                x={xScale(x.avgVal) - 16 + margin.left}
+                width="32"
+                height="20"
+                fill={rankingScale(x.avgVal)}
+              />
+              <rect
+                y="8"
+                x={xScale(x.avgVal) - 17 + margin.left}
+                width="13"
+                height="20"
+                fill={
+                  x.country === selectedCountry
+                    ? 'url(#blueLeft)'
+                    : 'url(#grayLeft)'
+                }
+              />
+              <rect
+                y="8"
+                x={xScale(x.avgVal) + 3 + margin.left}
+                width="13"
+                height="20"
+                fill={
+                  x.country === selectedCountry
+                    ? 'url(#blueRight)'
+                    : 'url(#grayRight)'
+                }
+              />
+              <circle
+                cy="18"
+                cx={xScale(x.avgVal) + margin.left}
+                r="7"
+                fill="none"
+                stroke="black"
+                strokeWidth="1.5"
+              />
+              <text
+                y="24"
+                x={
+                  xScale(x.avgVal) > 70
+                    ? xScale(x.avgVal) - 35 + margin.left
+                    : xScale(x.avgVal) + 60 + margin.left
+                }
+                textAnchor="end"
+                //   fontFamily="monospace"
+                fontWeight="600"
+                fill={rankingScale(x.avgVal)}
+              >
+                {x.avgVal > 1000
+                  ? `${(x.avgVal / 1000).toFixed(1)}k`
+                  : x.avgVal.toFixed(1)}
+              </text>
+            </RankSVG>
+          </RankItem>
+        ))}
+      </RankingList>
+    </RankingWrapper>
   );
 }
 
 RankingInfo.propTypes = {
-  xMetric: PropTypes.string.isRequired,
+  selectedCountry: PropTypes.string.isRequired,
   rankingData: PropTypes.array.isRequired,
   customMetric: PropTypes.object.isRequired,
 };
