@@ -6,8 +6,22 @@ import Hero from './components/Hero';
 import { PresentFutureDashboard } from './components/Minicharts';
 import { maxWidth } from './styleConstants';
 
-const AllContent = styled.h1`
-  margin: 0 auto;
+const Background = styled.div`
+  background: linear-gradient(
+    314.51deg,
+    #35587a 29.1%,
+    #569a85 37.86%,
+    #89b6a2 50.09%,
+    #93bca7 54.77%,
+    #d6eac7 80.28%,
+    #dae8c3 83.32%,
+    #dee5be 88.05%
+  );
+`;
+
+const AllContent = styled.div`
+  border-radius: 8px;
+  margin: 0px auto;
   width: 95vw;
   max-width: ${maxWidth};
 `;
@@ -26,15 +40,17 @@ function App() {
   }, []);
 
   return (
-    <AllContent>
-      {/* <Header />
-      <Hero /> */}
-      {isLoading ? (
-        <p> Loading...</p>
-      ) : (
-        <PresentFutureDashboard data={data} theme="presentWorld" />
-      )}
-    </AllContent>
+    <Background>
+      <AllContent>
+        <Header />
+        <Hero />
+        {isLoading ? (
+          <p> Loading...</p>
+        ) : (
+          <PresentFutureDashboard data={data} theme="presentWorld" />
+        )}
+      </AllContent>
+    </Background>
   );
 }
 

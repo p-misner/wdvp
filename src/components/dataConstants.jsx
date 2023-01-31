@@ -182,10 +182,10 @@ export const metricCategoryOptions = [
   { value: 'sustainability', label: 'Sustainability Metrics' },
 ];
 export const colorByOptions = [
-  { value: 'Correlation', label: 'Color by: Correlation' },
   { value: 'Ranking', label: 'Color by: Ranking' },
-  { value: 'Continent', label: 'Color by: Continent' },
   { value: 'Income', label: 'Color by: Income' },
+  { value: 'Correlation', label: 'Color by: Correlation' },
+  { value: 'Continent', label: 'Color by: Continent' },
 ];
 
 // Custom Metrics
@@ -273,6 +273,8 @@ export const customMetricOptions = [
     Happycorrelation: 'No',
     SEDAcorrelation: 'Weak Positive',
     seriesName: 'Health Expenditure',
+    upperText: 'MORE SPENDING',
+    lowerText: 'LESS SPENDING',
     domain: [0, 15],
   },
   {
@@ -282,6 +284,8 @@ export const customMetricOptions = [
     GINIcorrelation: 'Weak Negative',
     Happycorrelation: 'No',
     SEDAcorrelation: 'Strong Positive',
+    upperText: 'MORE SPENDING PER PERSON',
+    lowerText: 'LESS SPENDING',
     domain: [0, 12000],
   },
   {
@@ -311,6 +315,8 @@ export const customMetricOptions = [
     GINIcorrelation: 'No',
     Happycorrelation: 'No',
     SEDAcorrelation: 'Weak Positive',
+    upperText: 'MORE SPENDING',
+    lowerText: 'LESS SPENDING',
     domain: [0, 20],
   },
 
@@ -345,91 +351,122 @@ export const customMetricOptions = [
   {
     metricTitle: 'politicalrightsscore',
     seriesName: 'Political Rights Score',
+    upperText: 'MORE RIGHTS',
+    lowerText: 'LESS RIGHTS',
     domain: [-10, 50],
   },
   {
     metricTitle: 'civillibertiesscore',
     seriesName: 'Civil Liberties Score',
+    upperText: 'MORE LIBERTIES',
+    lowerText: 'LESS LIBERTIES',
     domain: [0, 100],
   },
   {
     metricTitle: 'politcalstability',
     seriesName: 'Political Stability and Absence of Violence',
+    upperText: 'MORE STABLE',
+    lowerText: 'LESS STABLE',
     domain: [-3, 2],
+
     controlPosition: 'bottom',
   },
   {
     metricTitle: 'goveffectiveness',
     seriesName: 'Government Effectiveness',
-
-    domain: [-3, 3],
+    upperText: 'MORE EFFECTIVE',
+    lowerText: 'LESS EFFECTIVE',
+    domain: [-2.5, 2.5],
     controlPosition: 'bottom',
   },
   {
     metricTitle: 'regulatoryquality',
     seriesName: 'Regulatory Quality',
-    domain: [-3, 2.5],
+    upperText: 'HIGHER',
+    lowerText: 'LOWER',
+    domain: [-2.5, 2.5],
     controlPosition: 'bottom',
   },
   {
     metricTitle: 'ruleoflaw',
     seriesName: 'Rule of Law',
-    domain: [-3, 2.5],
+    domain: [-2.5, 2.5],
+    upperText: 'STRONG',
+    lowerText: 'WEAK',
     controlPosition: 'bottom',
   },
   {
     metricTitle: 'controlcorruption',
     seriesName: 'Control of Corruption',
-    domain: [-3, 2.5],
+    domain: [-2.5, 2.5],
+    upperText: 'HIGHER',
+    lowerText: 'LOWER',
     controlPosition: 'bottom',
   },
   {
     metricTitle: 'judicialeffectiveness',
     seriesName: 'Judicial Effectiveness',
     domain: [0, 100],
+    upperText: 'MORE STABLE',
+    lowerText: 'LESS STABLE',
     controlPosition: 'bottom',
   },
   {
     metricTitle: 'govintegrity',
-    seriesName: 'Goernment Integrity',
+    seriesName: 'Government Integrity',
+    upperText: 'HIGHER',
+
     domain: [0, 100],
     controlPosition: 'bottom',
   },
   {
     metricTitle: 'economicfreedom',
     seriesName: 'Economic Freedom',
+    upperText: 'HIGHER',
+
     domain: [0, 100],
     controlPosition: 'bottom',
   },
   {
     metricTitle: 'finncialfreedom',
     seriesName: 'Financial Freedom',
+    upperText: 'HIGHER',
+
     domain: [0, 100],
     controlPosition: 'bottom',
   },
   {
     metricTitle: 'governmentexpenditure',
     seriesName: 'Government Expenditure',
+    upperText: 'HIGHER',
+
     domain: [0, 100],
   },
   {
     metricTitle: 'CO2eemissionspercapita',
     seriesName: 'CO2 Emissions per Capita',
+    upperText: 'HIGHER EMISSIONS',
+    lowerText: 'LOWER EMISSIONS',
     domain: [0, 40],
   },
   {
     metricTitle: 'renewableshare',
     seriesName: 'Share of Electricity from Renewables Generation',
+    upperText: 'HIGHER',
+    lowerText: 'LOWER',
     domain: [0, 100],
   },
   {
     metricTitle: 'womenparliment',
     seriesName: 'Percent of Seats Held by Women in National Parliaments',
+    upperText: 'MAJORITY WOMEN',
+    lowerText: 'MINORITY WOMEN',
     domain: [0, 70],
   },
   {
     metricTitle: 'militaryspending',
     seriesName: 'Military Spending as Percent of GDP',
+    upperText: 'HIGHER',
     domain: [0, 20],
   },
 ];

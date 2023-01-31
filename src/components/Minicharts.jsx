@@ -1,16 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { GridRows, GridColumns } from '@visx/grid';
-import {
-  scaleLinear,
-  scaleLog,
-  scaleOrdinal,
-  scaleQuantile,
-} from '@visx/scale';
+import { scaleLinear, scaleOrdinal } from '@visx/scale';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { Group } from '@visx/group';
-import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { contourDensity } from 'd3-contour';
 import { geoPath } from 'd3-geo';
 import Select from 'react-select';
@@ -19,7 +13,6 @@ import {
   Carrot,
   lrgFontSize,
   Marigold,
-  maxWidth,
   mediumWeight,
   DarkTeal,
   DarkestBlue,
@@ -33,7 +26,6 @@ import {
   countries,
 } from './dataConstants';
 import { tickFormatter, contourColor } from './utils';
-
 import {
   BackgroundInfo,
   GINI,
@@ -67,7 +59,7 @@ const GridWrapperHoriz = styled.div`
   flex-direction: row;
   overflow-x: scroll;
   overflow-y: hidden;
-  max-width: 1420px;
+  // max-width: 1420px;
 `;
 const GridBox = styled.div`
   min-width: ${(props) =>
@@ -165,7 +157,6 @@ const ExpandArrow = styled.div`
   top: 0px;
   right: 4px;
 `;
-
 function ScatterplotGDP({
   data,
   xMetric,
@@ -690,6 +681,7 @@ GridSection.propTypes = {
 
 const DashboardWrapper = styled.div`
   padding: 32px;
+  background: white;
   border: 2px solid black;
   border-radius: 8px;
   @media (max-width: 600px) {

@@ -74,6 +74,7 @@ export function GINI({
   customMetric,
 }) {
   const [scaleByPop, setScaleByPop] = useState(false);
+  const [showSimilar, setShowSimilar] = useState(false);
 
   const width = 800;
   const height = 600;
@@ -179,12 +180,9 @@ export function GINI({
   }, [hideTooltip]);
 
   const similarCountries = ['China', 'United States', 'India', 'Argentina'];
-  const allLabeledCountries = [
-    'China',
-    'United States',
-    'India',
-    'Argentina',
-  ].concat([selectedCountry]);
+  const allLabeledCountries = showSimilar
+    ? ['China', 'United States', 'India', 'Argentina'].concat([selectedCountry])
+    : [''].concat([selectedCountry]);
 
   return (
     <div style={{ marginBottom: 64, position: 'relative', maxWidth: '800px' }}>
@@ -769,7 +767,7 @@ export function RankingInfo({ rankingData, customMetric, selectedCountry }) {
     if (ele !== null) {
       ele.scrollIntoView();
     }
-  });
+  }, [selectedCountry]);
 
   const Ranklistwrapper = document.getElementById('ranklistwrapper');
   //   console.log(Ranklistwrapper);
@@ -886,7 +884,6 @@ export function RankingInfo({ rankingData, customMetric, selectedCountry }) {
     </RankingWrapper>
   );
 }
-
 RankingInfo.propTypes = {
   selectedCountry: PropTypes.string.isRequired,
   rankingData: PropTypes.array.isRequired,
