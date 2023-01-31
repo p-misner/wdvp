@@ -533,10 +533,25 @@ const LabelDropdownWrapper = styled.div`
   flex-flow: row wrap;
   align-items: center;
   margin-right: 16px;
+  color: #000531;
   p {
     margin-right: 4px;
     opacity: 0.7;
     font-weight: 500;
+    white-space: nowrap;
+  }
+  @media (max-width: 900px) {
+    margin-bottom: 8px;
+    flex-flow: row nowrap;
+    justify-content: flex-end;
+  }
+  @media (max-width: 500px) {
+    p {
+      font-size: 14px;
+      white-space: normal;
+      flex-flow: row wrap;
+      max-width: 100px;
+    }
   }
 `;
 function ControlPanel({ controllersObj }) {
@@ -549,9 +564,23 @@ function ControlPanel({ controllersObj }) {
             styles={{
               container: (baseStyles) => ({
                 ...baseStyles,
+                color: '',
                 paddingRight: '16px',
                 fontSize: '18px',
                 minWidth: '250px',
+              }),
+              option: (provided) => ({
+                ...provided,
+                color: '#000531',
+              }),
+              control: (provided) => ({
+                ...provided,
+                color: '#000531',
+                borderColor: '#B3B4C1',
+              }),
+              singleValue: (provided) => ({
+                ...provided,
+                color: '#000531',
               }),
             }}
             defaultValue={{ value: x.defaultState, label: x.defaultState }}
@@ -692,19 +721,44 @@ const DashboardWrapper = styled.div`
 const DashboardTitleWrapper = styled.div`
   display: flex;
   flex-direction: row;
-  border-bottom: 1px dashed black;
-  padding-bottom: 16px;
+  border-bottom: 1px dashed #000531;
+  padding-bottom: 24px;
   margin-bottom: 24px;
+  color: #000531;
   h2 {
-    font-size: 32px;
+    font-size: 28px;
     font-weight: 600;
     margin-right: 24px;
-    white-space: nowrap;
+    line-height: 36px;
+    flex-grow: 1;
+    min-width: 500px;
   }
   p {
     font-size: 18px;
-    line-height: 22px;
+    line-height: 24px;
     max-width: 800px;
+    flex-grow: 1;
+  }
+  @media (max-width: 1200px) {
+    h2 {
+      min-width: 400px;
+    }
+  }
+  @media (max-width: 900px) {
+    flex-direction: column;
+    h2 {
+      min-width: none;
+      margin-bottom: 8px;
+    }
+  }
+  @media (max-width: 550px) {
+    h2 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    p {
+      font-size: 16px;
+    }
   }
 `;
 // eslint-disable-next-line import/prefer-default-export
