@@ -28,16 +28,19 @@ import {
   Squash,
 } from '../styleConstants';
 import {
-  countries,
-  metricCategoryOptions,
   colorByOptions,
   xMetricOptions,
   customMetricOptions,
   defaultSelectedMetric,
 } from './dataConstants';
-import { tickFormatter } from './utils';
+import { tickFormatter, contourColor } from './utils';
 
-import { BackgroundInfo, GINI, Legend } from './BespokeLargeCharts';
+import {
+  BackgroundInfo,
+  GINI,
+  Legend,
+  RankingInfo,
+} from './BespokeLargeCharts';
 
 const SectionWrapper = styled.div``;
 
@@ -131,7 +134,7 @@ const BottomInfoWrapper = styled.div`
   height: ${(props) => (props.open ? '180px' : '40px')};
   width: 100%;
   position: absolute;
-  background: #ffd;
+  background: #fff;
   left: 0px;
   bottom: 0px;
   border-radius: 8px 8px 0px 0px;
@@ -297,8 +300,14 @@ function ScatterplotGDP({ data, xMetric, colorBy, metricTitle, customMetric }) {
                     // eslint-disable-next-line react/no-array-index-key
                     key={`contour${i}}`}
                     d={pathGenerator(x)}
-                    fill={Carrot}
-                    stroke={Carrot}
+                    fill={contourColor({
+                      xMetric,
+                      customMetric,
+                    })}
+                    stroke={contourColor({
+                      xMetric,
+                      customMetric,
+                    })}
                     fillOpacity={i > 3 ? 0.3 : 0.2}
                     strokeWidth={0.5}
                   />
@@ -426,12 +435,7 @@ const HeroChart = styled.div`
     font-weight: ${mediumWeight};
   }
 `;
-const LegendTitle = styled.h1`
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  text-transform: capitalize;
-`;
+
 function LargeChart({ dataSeries, xMetric, colorBy, size }) {
   // first do fully for GINI
   const customMetric = customMetricOptions.find(
@@ -457,11 +461,23 @@ function LargeChart({ dataSeries, xMetric, colorBy, size }) {
             xMetric={xMetric}
             colorBy={colorBy}
           />
-          <BackgroundInfo />
-          <LegendTitle style={{ marginTop: '24px' }}>
-            {' '}
-            Top Ranked Countries
-          </LegendTitle>
+          {colorBy === 'Correlation' && (
+            <BackgroundInfo xMetric={xMetric} customMetric={customMetric} />
+          )}
+          {colorBy === 'Ranking' && (
+            <RankingInfo
+              xMetric={xMetric}
+              customMetric={customMetric}
+              rankingData={dataSeries.data
+                .filter((x) => x.avgVal !== null)
+                .sort((a, b) => b.avgVal - a.avgVal)
+                .map((x, i) => ({
+                  country: x.country,
+                  avgVal: x.avgVal,
+                  rank: i + 1,
+                }))}
+            />
+          )}
         </Left>
       </SideSideWrapper>
     </HeroChart>

@@ -2,12 +2,7 @@ import React, { useState, useCallback } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { GridRows, GridColumns } from '@visx/grid';
-import {
-  scaleLinear,
-  scaleLog,
-  scaleOrdinal,
-  scaleQuantile,
-} from '@visx/scale';
+import { scaleLinear, scaleOrdinal } from '@visx/scale';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { Group } from '@visx/group';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
@@ -21,8 +16,12 @@ import {
   regFontSize,
   DarkestBlue,
   DarkTeal,
+  SeafoamGreen,
+  Melon,
+  PaleBlue,
+  PaleGreen,
 } from '../styleConstants';
-import { tickFormatter } from './utils';
+import { tickFormatter, contourColor } from './utils';
 
 const ScatterSVG = styled.svg``;
 const InChartButtonWrapper = styled.div`
@@ -75,7 +74,6 @@ export function GINI({ data, xMetric, colorBy, customMetric }) {
   const yMax = height - margin.top - margin.bottom;
 
   // domain changes depending on metric (not based on min max)
-
   const controlPosition = customMetric?.controlPosition
     ? customMetric.controlPosition
     : 'top';
@@ -262,8 +260,11 @@ export function GINI({ data, xMetric, colorBy, customMetric }) {
                     // eslint-disable-next-line react/no-array-index-key
                     key={`contour${i}}`}
                     d={pathGenerator(x)}
-                    fill={Carrot}
-                    stroke={Carrot}
+                    fill={contourColor({
+                      xMetric,
+                      customMetric,
+                    })}
+                    stroke={contourColor({ customMetric, xMetric })}
                     fillOpacity={i > 3 ? 0.3 : 0.2}
                     strokeWidth={0.5}
                   />
@@ -488,7 +489,7 @@ const PillsLegendItem = styled.div`
     opacity: 0.7;
   }
 `;
-const RankingWrapper = styled.div`
+const RankingLegendWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -538,15 +539,41 @@ function IncomeLegend() {
     </StripLegendWrapper>
   );
 }
+function CorrelationLegend() {
+  return (
+    <StripLegendWrapper>
+      <StripLegendItem>
+        <ColorRect color={Aqua} />
+        <p>Strong Positive </p>
+      </StripLegendItem>
+      <StripLegendItem>
+        <ColorRect color={PaleGreen} />
+        <p>Weak Negative</p>
+      </StripLegendItem>
+      <StripLegendItem>
+        <ColorRect color={PaleBlue} />
+        <p>None</p>
+      </StripLegendItem>
+      <StripLegendItem>
+        <ColorRect color={Melon} />
+        <p>Weak Positive</p>
+      </StripLegendItem>
+      <StripLegendItem>
+        <ColorRect color={Carrot} />
+        <p>Strong Negative</p>
+      </StripLegendItem>
+    </StripLegendWrapper>
+  );
+}
 function RankingLegend() {
   return (
-    <RankingWrapper>
+    <RankingLegendWrapper>
       <GradientRect />
       <LabelWrapper>
         <p> Lower</p>
         <p> Higher</p>
       </LabelWrapper>
-    </RankingWrapper>
+    </RankingLegendWrapper>
   );
 }
 function ContinentLegend() {
@@ -580,7 +607,7 @@ const LegendTitle = styled.h1`
   margin-bottom: 12px;
   text-transform: capitalize;
 `;
-export function Legend({ xMetric, colorBy, customMetric }) {
+export function Legend({ colorBy }) {
   return (
     <div>
       <LegendTitle>Legend {colorBy}</LegendTitle>
@@ -588,15 +615,15 @@ export function Legend({ xMetric, colorBy, customMetric }) {
         <IncomeLegend />
       ) : colorBy === 'Ranking' ? (
         <RankingLegend />
-      ) : (
+      ) : colorBy === 'Continent' ? (
         <ContinentLegend />
+      ) : (
+        <CorrelationLegend />
       )}
     </div>
   );
 }
 Legend.propTypes = {
-  xMetric: PropTypes.string.isRequired,
-  customMetric: PropTypes.object.isRequired,
   colorBy: PropTypes.string.isRequired,
 };
 
@@ -622,29 +649,57 @@ const TitleColumn = styled.p`
 const TitleBlock = styled.div`
   padding: 12px 16px;
   border-bottom: 2px solid black;
-  background: #e2e2e2;
+  background: ${(props) => props.color || '#e2e2e2'};
   border-radius: 8px 8px 0px 0px;
   h1 {
     font-size: 20px;
     font-weight: 600;
   }
 `;
-export function BackgroundInfo() {
+export function BackgroundInfo({ xMetric, customMetric }) {
+  function correctMetric(item) {
+    switch (item) {
+      case 'avgGDPpercapita':
+        return 'Average GDP per Capita';
+      case 'latestGDPpercapita':
+        return 'Latest GDP per Capita';
+      case 'GINI':
+        return 'GINI Index';
+      case 'SEDA':
+        return 'SEDA';
+      case 'avgHappyPlanet':
+        return 'Happy Planet Index';
+      default:
+        return item;
+    }
+  }
+  function correctVar(item) {
+    switch (item) {
+      case 'avgGDPpercapita':
+        return 'GDPcorrelation';
+      case 'latestGDPpercapita':
+        return 'GDPcorrelation';
+      case 'GINI':
+        return 'GINIcorrelation';
+      case 'SEDA':
+        return 'SEDAcorrelation';
+      case 'avgHappyPlanet':
+        return 'Happycorrelation';
+      default:
+        return item;
+    }
+  }
   return (
     <BackgroundInfoWrapper>
-      <TitleBlock>
-        <h1>No Strong Correlation with GDP Growth</h1>
+      <TitleBlock color={contourColor({ xMetric, customMetric })}>
+        <h1>
+          {customMetric[correctVar(xMetric)]} Correlation with{' '}
+          {correctMetric(xMetric)}
+        </h1>
       </TitleBlock>
       <TwoColumnInfo>
         <TitleColumn>Definition: </TitleColumn>
         <p>GDP Growth means how quickly an economy is growing. </p>
-      </TwoColumnInfo>
-      <TwoColumnInfo>
-        <TitleColumn>Notes: </TitleColumn>
-        <p>
-          The higher a country’s GDP is does not have a strong negative or
-          positive correlation with that country’s GDP Growth.{' '}
-        </p>
       </TwoColumnInfo>
       <TwoColumnInfo>
         <TitleColumn>Source: </TitleColumn>
@@ -653,3 +708,157 @@ export function BackgroundInfo() {
     </BackgroundInfoWrapper>
   );
 }
+BackgroundInfo.propTypes = {
+  xMetric: PropTypes.string.isRequired,
+  customMetric: PropTypes.object.isRequired,
+};
+
+const RankingWrapper = styled.div`
+  h1 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    text-transform: capitalize;
+  }
+  border: 2px solid black;
+  border-radius: 8px;
+  margin-top: 24px;
+`;
+const RankingList = styled.div`
+  display: flex;
+  flex-flow: column nowrap;
+  overflow-y: scroll;
+  max-height: 400px;
+  margin: 12px;
+`;
+const RankItem = styled.div`
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  border-bottom: 1px solid #e2e2e2;
+
+  p {
+    font-size: 16px;
+    // padding: 2px;
+  }
+  p:first-child {
+    width: 32px;
+    padding-right: 12px;
+    overflow: hidden;
+    text-align: right;
+    font-weight: 600;
+  }
+  p:nth-child(2) {
+    width: 150px;
+    padding-right: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  :nth-child(even) {
+    // background: #f9f9f9;
+  }
+`;
+const RankSVG = styled.svg`
+  //   background: #fefefe;
+  height: 38px;
+  width: 100%;
+`;
+export function RankingInfo({ rankingData, customMetric }) {
+  const margin = { left: 10, right: 25 };
+  const xScale = scaleLinear({
+    domain: customMetric?.domain,
+    range: [margin.left, 353 - margin.right],
+    nice: true,
+  });
+
+  const BottomDomain = Math.min(...rankingData.map((x) => x.avgVal));
+  const TopDomain = Math.max(...rankingData.map((x) => x.avgVal));
+  const rankingScale = scaleLinear()
+    .domain([
+      BottomDomain,
+      BottomDomain + (TopDomain - BottomDomain) / 3,
+      BottomDomain + (2 * (TopDomain - BottomDomain)) / 3,
+      TopDomain,
+    ])
+    .range([DarkTeal, Aqua, Marigold, Squash]);
+  return (
+    <div>
+      <RankingWrapper>
+        <TitleBlock color="#fff">
+          <h1>[Metric] Ranking</h1>
+        </TitleBlock>
+        <RankingList className="fadeout">
+          {rankingData.map((x) => (
+            <RankItem key={x.country} id={x.country}>
+              <p>{x.rank}</p>
+              <p>{x.country}</p>
+              <RankSVG>
+                <defs>
+                  <linearGradient id="grayLeft">
+                    <stop offset="0%" stopColor="#f6f6f6" stopOpacity="1" />
+                    <stop offset="100%" stopColor="#f6f6f6" stopOpacity="0" />
+                  </linearGradient>
+                  <linearGradient id="grayRight">
+                    <stop offset="0%" stopColor="#f6f6f6" stopOpacity="0" />
+                    <stop offset="100%" stopColor="#f6f6f6" stopOpacity="1" />
+                  </linearGradient>
+                </defs>
+
+                <rect
+                  y="6"
+                  x={xScale(x.avgVal) - 16 + margin.left}
+                  width="32"
+                  height="20"
+                  fill={rankingScale(x.avgVal)}
+                />
+                <rect
+                  y="6"
+                  x={xScale(x.avgVal) - 17 + margin.left}
+                  width="13"
+                  height="20"
+                  fill="url(#grayLeft)"
+                />
+                <rect
+                  y="6"
+                  x={xScale(x.avgVal) + 3 + margin.left}
+                  width="13"
+                  height="20"
+                  fill="url(#grayRight)"
+                />
+                <circle
+                  cy="16"
+                  cx={xScale(x.avgVal) + margin.left}
+                  r="7"
+                  fill="none"
+                  stroke="black"
+                  strokeWidth="1.5"
+                />
+                <text
+                  y="20"
+                  x={
+                    xScale(x.avgVal) > 70
+                      ? xScale(x.avgVal) - 35 + margin.left
+                      : xScale(x.avgVal) + 60 + margin.left
+                  }
+                  textAnchor="end"
+                  //   fontFamily="monospace"
+                  fontWeight="600"
+                  fill={rankingScale(x.avgVal)}
+                >
+                  {x.avgVal > 1000
+                    ? `${(x.avgVal / 1000).toFixed(1)}k`
+                    : x.avgVal.toFixed(1)}
+                </text>
+              </RankSVG>
+            </RankItem>
+          ))}
+        </RankingList>
+      </RankingWrapper>
+    </div>
+  );
+}
+
+RankingInfo.propTypes = {
+  rankingData: PropTypes.array.isRequired,
+  customMetric: PropTypes.object.isRequired,
+};
