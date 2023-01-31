@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/wdvp/static/css/main.41e5c4be.css",
+    "main.js": "/wdvp/static/js/main.f75d197d.js",
+    "static/js/787.94cf8919.chunk.js": "/wdvp/static/js/787.94cf8919.chunk.js",
+    "index.html": "/wdvp/index.html",
+    "main.41e5c4be.css.map": "/wdvp/static/css/main.41e5c4be.css.map",
+    "main.f75d197d.js.map": "/wdvp/static/js/main.f75d197d.js.map",
+    "787.94cf8919.chunk.js.map": "/wdvp/static/js/787.94cf8919.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.41e5c4be.css",
+    "static/js/main.f75d197d.js"
+  ]
+}
