@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-import Header from './components/Header';
+import { Header, Footer } from './components/Header';
 import Hero from './components/Hero';
 import { PresentFutureDashboard } from './components/Minicharts';
 import { maxWidth } from './styleConstants';
@@ -17,6 +17,9 @@ const Background = styled.div`
     #dae8c3 83.32%,
     #dee5be 88.05%
   );
+  * {
+    font-family: Inter;
+  }
 `;
 
 const AllContent = styled.div`
@@ -49,6 +52,7 @@ function App() {
         ) : (
           <PresentFutureDashboard data={data} theme="presentWorld" />
         )}
+        <Footer />
       </AllContent>
     </Background>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { GridRows, GridColumns } from '@visx/grid';
@@ -59,8 +59,7 @@ const GridWrapperHoriz = styled.div`
   flex-direction: row;
   overflow-x: scroll;
   overflow-y: hidden;
-  // max-width: 1420px;
-`;
+x`;
 const GridBox = styled.div`
   min-width: ${(props) =>
     props.pageLayout.layout === 'highlight' ? '200px' : '100px'};
@@ -68,7 +67,7 @@ const GridBox = styled.div`
     props.pageLayout.layout === 'highlight' ? '16px' : '0px'};
   height: 200px;
   position: relative;
-  border: 1px solid black;
+  border: 1px solid #000531;
   border-radius: 8px 8px 0px 0px;
   padding: 0px 16px 16px 16px;
   & h3 {
@@ -119,7 +118,7 @@ const GraphContents = styled.div`
 `;
 const BottomInfoWrapper = styled.div`
   cursor: ${(props) => (props.open ? 'default' : 'n-resize')};
-  border: 1px solid black;
+  border: 1px solid #000531;
   height: ${(props) => (props.open ? '180px' : '40px')};
   width: 100%;
   position: absolute;
@@ -233,7 +232,7 @@ function ScatterplotGDP({
       'High Income',
     ])
     .range([DarkestBlue, Aqua, Marigold, Squash])
-    .unknown('black');
+    .unknown('#000531');
 
   // contour
   const contour = contourDensity()
@@ -261,21 +260,21 @@ function ScatterplotGDP({
             scale={yScale}
             width={xMax}
             height={yMax}
-            stroke="#e0e0e0"
+            stroke="#B3B4C1"
           />
           <GridColumns
             scale={xScale}
             width={xMax}
             height={yMax}
-            stroke="#e0e0e0"
+            stroke="#B3B4C1"
           />
           <AxisBottom
             top={yMax}
             scale={xScale}
             numTicks={2}
-            stroke="gray"
+            stroke="#999BAD"
             strokeWidth="2px"
-            tickStroke="#e0e0e0"
+            tickStroke="#B3B4C1"
             tickLabelProps={() => ({
               opacity: 0.6,
               fontSize: 16,
@@ -286,7 +285,7 @@ function ScatterplotGDP({
           <AxisLeft
             scale={yScale}
             hideAxisLine
-            tickStroke="#e0e0e0"
+            tickStroke="#B3B4C1"
             tickLength={16}
             tickLabelProps={() => ({
               opacity: 0.6,
@@ -339,10 +338,10 @@ function ScatterplotGDP({
                     ? continentScale(d.continent)
                     : colorBy === 'Income'
                     ? incomeScale(d.incomeLevel)
-                    : 'black'
+                    : '#000531'
                 }
                 fillOpacity="1"
-                stroke="black"
+                stroke="#000531"
                 strokeWidth={d.country === selectedCountry ? '2' : '0.25'}
               />
             ))}
@@ -438,6 +437,11 @@ PlotBox.propTypes = {
 const SideSideWrapper = styled.div`
   display: flex;
   flex-direction: row;
+  max-width: 1350px;
+  margin: 0px auto;
+  @media (max-width: 1000px) {
+    flex-flow: column wrap;
+  }
 `;
 const Left = styled.div`
   display: flex;
@@ -446,8 +450,9 @@ const Left = styled.div`
 `;
 const HeroChart = styled.div`
   h3 {
-    font-size: ${lrgFontSize};
-    font-weight: ${mediumWeight};
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
   }
 `;
 
@@ -456,15 +461,37 @@ function LargeChart({ dataSeries, xMetric, colorBy, selectedCountry, size }) {
   const customMetric = customMetricOptions.find(
     (item) => item.metricTitle === dataSeries.metricTitle
   );
+  function useWindowSize() {
+    // Initialize state with undefined width/height so server and client renders match
+    // Learn more here: https://joshwcomeau.com/react/the-perils-of-rehydration/
+    const [windowSize, setWindowSize] = useState({
+      width: undefined,
+      height: undefined,
+    });
+    useEffect(() => {
+      // Handler to call on window resize
+      function handleResize() {
+        // Set window width/height to state
+        setWindowSize({
+          width: window.innerWidth,
+          height: window.innerHeight,
+        });
+      }
+      // Add event listener
+      window.addEventListener('resize', handleResize);
+      // Call handler right away so state gets updated with initial window size
+      handleResize();
+      // Remove event listener on cleanup
+      return () => window.removeEventListener('resize', handleResize);
+    }, []); // Empty array ensures that effect is only run on mount
+    return windowSize;
+  }
+  const windowSize = useWindowSize();
   return (
     <HeroChart>
-      <h3>
-        {customMetric?.seriesName
-          ? customMetric.seriesName
-          : dataSeries.metricTitle}
-      </h3>
       <SideSideWrapper>
         <GINI
+          windowSize={windowSize}
           customMetric={customMetric}
           data={dataSeries.data}
           xMetric={xMetric}
@@ -480,7 +507,7 @@ function LargeChart({ dataSeries, xMetric, colorBy, selectedCountry, size }) {
           {colorBy === 'Correlation' && (
             <BackgroundInfo xMetric={xMetric} customMetric={customMetric} />
           )}
-          {colorBy === 'Ranking' && (
+          {colorBy === 'Ranking' && windowSize.width > 1300 && (
             <RankingInfo
               selectedCountry={selectedCountry}
               customMetric={customMetric}
@@ -500,6 +527,25 @@ function LargeChart({ dataSeries, xMetric, colorBy, selectedCountry, size }) {
           )}
         </Left>
       </SideSideWrapper>
+      {colorBy === 'Ranking' && windowSize.width <= 1300 && (
+        <RankingInfo
+          selectedCountry={selectedCountry}
+          customMetric={customMetric}
+          position="bottom"
+          rankingData={dataSeries.data
+            .filter(
+              (x) =>
+                x.avgVal !== null &&
+                (Math.abs(x.avgVal) > 0.001 || Math.abs(x[xMetric]) > 0.001)
+            )
+            .sort((a, b) => b.avgVal - a.avgVal)
+            .map((x, i) => ({
+              country: x.country,
+              avgVal: x.avgVal,
+              rank: i + 1,
+            }))}
+        />
+      )}
     </HeroChart>
   );
 }
@@ -523,7 +569,8 @@ const SelectWrapper = styled.div`
   display: flex;
   flex-flow: row nowrap;
   margin-bottom: 24px;
-  justify-content: center;
+  justify-content: space-around;
+  // background: red;
   @media (max-width: 900px) {
     flex-flow: row wrap;
   }
@@ -532,9 +579,12 @@ const LabelDropdownWrapper = styled.div`
   display: flex;
   flex-flow: row wrap;
   align-items: center;
+  justify-content: center;
   margin-right: 16px;
   color: #000531;
+  // background: orange;
   p {
+    text-align: left;
     margin-right: 4px;
     opacity: 0.7;
     font-weight: 500;
@@ -545,12 +595,16 @@ const LabelDropdownWrapper = styled.div`
     flex-flow: row nowrap;
     justify-content: flex-end;
   }
-  @media (max-width: 500px) {
+  @media (max-width: 590px) {
     p {
-      font-size: 14px;
       white-space: normal;
       flex-flow: row wrap;
-      max-width: 100px;
+    }
+    .leftAlignDropdown {
+      display: flex;
+      flex-flow: row wrap;
+      align-items: center;
+      justify-content: center;
     }
   }
 `;
@@ -559,34 +613,36 @@ function ControlPanel({ controllersObj }) {
     <SelectWrapper>
       {controllersObj.map((x) => (
         <LabelDropdownWrapper key={x.defaultState}>
-          <p> {x.dropdownLabel.toUpperCase()}:</p>
-          <Select
-            styles={{
-              container: (baseStyles) => ({
-                ...baseStyles,
-                color: '',
-                paddingRight: '16px',
-                fontSize: '18px',
-                minWidth: '250px',
-              }),
-              option: (provided) => ({
-                ...provided,
-                color: '#000531',
-              }),
-              control: (provided) => ({
-                ...provided,
-                color: '#000531',
-                borderColor: '#B3B4C1',
-              }),
-              singleValue: (provided) => ({
-                ...provided,
-                color: '#000531',
-              }),
-            }}
-            defaultValue={{ value: x.defaultState, label: x.defaultState }}
-            options={x.options}
-            onChange={(a) => x.changeState(a.value)}
-          />
+          <div className="leftAlignDropdown">
+            <p> {x.dropdownLabel.toUpperCase()}:</p>
+            <Select
+              styles={{
+                container: (baseStyles) => ({
+                  ...baseStyles,
+                  color: '',
+                  paddingRight: '16px',
+                  fontSize: '18px',
+                  minWidth: '250px',
+                }),
+                option: (provided) => ({
+                  ...provided,
+                  color: '#000531',
+                }),
+                control: (provided) => ({
+                  ...provided,
+                  color: '#000531',
+                  borderColor: '#B3B4C1',
+                }),
+                singleValue: (provided) => ({
+                  ...provided,
+                  color: '#000531',
+                }),
+              }}
+              defaultValue={{ value: x.defaultState, label: x.defaultState }}
+              options={x.options}
+              onChange={(a) => x.changeState(a.value)}
+            />
+          </div>
         </LabelDropdownWrapper>
       ))}
     </SelectWrapper>
@@ -596,6 +652,13 @@ ControlPanel.propTypes = {
   controllersObj: PropTypes.array.isRequired,
 };
 
+const HighlightChartTitle = styled.h3`
+  color: #000531;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  margin: 0px 8px 12px 12px;
+`;
 function HighlightSection({
   setPageLayout,
   pageLayout,
@@ -606,8 +669,16 @@ function HighlightSection({
   data,
   presentWorldControllers,
 }) {
+  const customMetric = customMetricOptions.find(
+    (item) => item.metricTitle === pageLayout.selectedMetric.metricTitle
+  );
   return (
     <SectionWrapper>
+      <HighlightChartTitle>
+        {customMetric
+          ? customMetric.seriesName
+          : pageLayout.selectedMetric.metricTitle}
+      </HighlightChartTitle>
       <ControlPanel controllersObj={presentWorldControllers} />
       <LargeChart
         size="large"
@@ -622,8 +693,20 @@ function HighlightSection({
       <button
         onClick={() => setPageLayout({ layout: 'grid', selectedMetric: {} })}
         type="button"
+        style={{
+          textAlign: 'right',
+          color: '#fff',
+          border: '1px solid #000531',
+          padding: '6px 12px',
+          background: '#000531',
+          borderRadius: 8,
+          fontWeight: 600,
+          fontSize: 16,
+          marginTop: 24,
+          marginBottom: 16,
+        }}
       >
-        Return to Grid
+        See as Grid
       </button>
       <GridWrapperHoriz>
         {data.map((x) => (
@@ -711,7 +794,7 @@ GridSection.propTypes = {
 const DashboardWrapper = styled.div`
   padding: 32px;
   background: white;
-  border: 2px solid black;
+  border: 2px solid #000531;
   border-radius: 8px;
   @media (max-width: 600px) {
     padding: 16px;
@@ -725,6 +808,7 @@ const DashboardTitleWrapper = styled.div`
   padding-bottom: 24px;
   margin-bottom: 24px;
   color: #000531;
+  // background: red;
   h2 {
     font-size: 28px;
     font-weight: 600;
@@ -755,6 +839,7 @@ const DashboardTitleWrapper = styled.div`
     h2 {
       font-size: 24px;
       margin-bottom: 8px;
+      min-width: 30px;
     }
     p {
       font-size: 16px;
@@ -798,9 +883,9 @@ export function PresentFutureDashboard({ data, theme }) {
       <DashboardTitleWrapper>
         <h2>Dashboard of the Present Future</h2>
         <p>
-          Understand and explore how 174 listed countries are doing on 37
-          different metrics and how specific countries compare to the globe and
-          similar countries.
+          Understand and explore how 172 listed countries are doing on 32
+          different metrics and how specific countries rank against the rest of
+          the world.
         </p>
       </DashboardTitleWrapper>
       {pageLayout.layout === 'highlight' ? (

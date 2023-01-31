@@ -29,10 +29,16 @@ import {
   correctMetric,
 } from './utils';
 
-const ScatterSVG = styled.svg``;
+const ScatterSVG = styled.svg`
+  width: 800px;
+  @media (max-width: 1000px) {
+    width: 100%;
+  }
+`;
 const InChartButtonWrapper = styled.div`
   position: absolute;
-  top: ${(props) => (props.position === 'bottom' ? '460px' : '10px')};
+  top: ${(props) =>
+    props.position === 'bottom' ? (!props.width ? '480px' : '10px') : '10px'};
   right: 20px;
   background: white;
   padding: 2px;
@@ -41,21 +47,21 @@ const InChartButtonWrapper = styled.div`
   }
 `;
 const InChartButton = styled.button`
-  background: ${(props) => (props.active ? 'black' : 'none')};
-  color: ${(props) => (props.active ? 'white' : 'black')};
-  border: 1px solid black;
+  background: ${(props) => (props.active ? '#000531' : 'none')};
+  color: ${(props) => (props.active ? 'white' : '#000531')};
+  border: 1px solid #000531;
   border-radiys: 2px;
   padding: 4px 6px;
   font-size: ${regFontSize};
 
   &:hover {
-    background: ${(props) => (props.active ? 'black' : 'lightgray')};
+    background: ${(props) => (props.active ? '#000531' : '#B3B4C1')};
   }
 `;
 const SVGOverline = styled.text`
   font-size: 14px;
   font-weight: 600;
-  fill: #6e6d6d;
+  fill: #999bad;
   pointer-events: none;
 `;
 const SVGOverlineHeavy = styled.text`
@@ -65,19 +71,27 @@ const SVGOverlineHeavy = styled.text`
   stroke: white;
   pointer-events: none;
 `;
-
+const GINIWrapper = styled.div`
+  margin-bottom: 8px;
+  position: relative;
+  width: 800px;
+  @media (max-width: 1000px) {
+    width: 100%;
+  }
+`;
 export function GINI({
   data,
   xMetric,
   colorBy,
   selectedCountry,
   customMetric,
+  windowSize,
 }) {
   const [scaleByPop, setScaleByPop] = useState(false);
   const [showSimilar, setShowSimilar] = useState(false);
 
-  const width = 800;
-  const height = 600;
+  const width = windowSize.width < 800 ? 600 : 800;
+  const height = windowSize.width < 800 ? 400 : 620;
 
   // TO DO: replace with spacing constants
   const margin = { top: 20, right: 10, bottom: 60, left: 52 };
@@ -185,8 +199,11 @@ export function GINI({
     : [''].concat([selectedCountry]);
 
   return (
-    <div style={{ marginBottom: 64, position: 'relative', maxWidth: '800px' }}>
-      <InChartButtonWrapper position={controlPosition}>
+    <GINIWrapper>
+      <InChartButtonWrapper
+        width={windowSize.width < 800}
+        position={controlPosition}
+      >
         <p> Scale by:</p>
         <InChartButton
           active={!scaleByPop}
@@ -205,7 +222,6 @@ export function GINI({
       </InChartButtonWrapper>
 
       <ScatterSVG
-        width="100%"
         height={height}
         viewBox={`0 0 ${width} ${height}`}
         ref={containerRef}
@@ -220,7 +236,7 @@ export function GINI({
             refY="3.5"
             orient="auto"
           >
-            <polygon fill="gray" points="0 0, 10 3.5, 0 7" />
+            <polygon fill="#999BAD" points="0 0, 10 3.5, 0 7" />
           </marker>
         </defs>
         <Group left={margin.left} top={margin.top}>
@@ -228,28 +244,28 @@ export function GINI({
             scale={yScale}
             width={xMax}
             height={yMax}
-            stroke="#e0e0e0"
+            stroke="#B3B4C1"
           />
           <GridColumns
             scale={xScale}
             width={xMax}
             height={yMax}
-            stroke="#e0e0e0"
+            stroke="#B3B4C1"
           />
           <AxisBottom
             top={yMax}
             scale={xScale}
             numTicks={5}
-            stroke="gray"
+            stroke="#B3B4C1"
             strokeWidth="2px"
-            tickStroke="#e0e0e0"
-            label={xMetric}
-            labelOffset={20}
-            labelProps={() => ({
-              textAnchor: 'start',
-              opacity: 0.6,
-              fontSize: 16,
-            })}
+            tickStroke="#B3B4C1"
+            // label={xMetric}
+            // labelOffset={20}
+            // labelProps={() => ({
+            //   textAnchor: 'start',
+            //   opacity: 0.6,
+            //   fontSize: 16,
+            // })}
             hideAxisLine
             tickLabelProps={() => ({
               opacity: 0.6,
@@ -262,7 +278,7 @@ export function GINI({
             <AxisLeft
               scale={yScale}
               hideAxisLine
-              tickStroke="#e0e0e0"
+              tickStroke="#B3B4C1"
               tickLength={16}
               tickLabelProps={() => ({
                 opacity: 0.6,
@@ -278,7 +294,7 @@ export function GINI({
             x2={width - margin.right - margin.left}
             y1={yScale(0) - 1.5}
             y2={yScale(0) - 1.5}
-            stroke="gray"
+            stroke="#999BAD"
             strokeWidth="3"
           />
           <g className="contourGroup">
@@ -323,9 +339,9 @@ export function GINI({
                     ? continentScale(d.continent)
                     : colorBy === 'Income'
                     ? incomeScale(d.incomeLevel)
-                    : 'black'
+                    : '#000531'
                 }
-                fillOpacity="1"
+                fillOpacity="0.8"
                 strokeWidth={
                   d.country === selectedCountry
                     ? '3'
@@ -333,11 +349,11 @@ export function GINI({
                     ? '2'
                     : '1'
                 }
-                stroke="black"
+                stroke="#000531"
                 onMouseEnter={function (e) {
                   e.target.style['-webkit-filter'] =
-                    'drop-shadow(-2px -2px 0px black)';
-                  e.target.style.filter = 'drop-shadow(-2px -2px 0px black)';
+                    'drop-shadow(-2px -2px 0px #000531)';
+                  e.target.style.filter = 'drop-shadow(-2px -2px 0px #000531)';
                 }}
                 onMouseMove={() => {
                   if (tooltipTimeout) clearTimeout(tooltipTimeout);
@@ -370,7 +386,7 @@ export function GINI({
                   y1="60"
                   x2="10"
                   y2="20"
-                  stroke="gray"
+                  stroke="#999BAD"
                   strokeWidth="1"
                   markerEnd="url(#arrowhead)"
                 />
@@ -396,7 +412,7 @@ export function GINI({
                   y1={height - margin.top - margin.bottom - 60}
                   x2="10"
                   y2={height - margin.top - margin.bottom - 20}
-                  stroke="gray"
+                  stroke="#999BAD"
                   strokeWidth="1"
                   markerEnd="url(#arrowhead)"
                 />
@@ -433,7 +449,7 @@ export function GINI({
                   Math.abs(d.avgVal) < 0.001 || Math.abs(d[xMetric]) < 0.001
                     ? 'none'
                     : allLabeledCountries.indexOf(d.country) > -1
-                    ? 'black'
+                    ? '#000531'
                     : 'none'
                 }
               >
@@ -455,7 +471,7 @@ export function GINI({
           <p> value: {tooltipData.avgVal}</p>
         </TooltipInPortal>
       )}
-    </div>
+    </GINIWrapper>
   );
 }
 GINI.propTypes = {
@@ -463,13 +479,14 @@ GINI.propTypes = {
   xMetric: PropTypes.string.isRequired,
   selectedCountry: PropTypes.string.isRequired,
   customMetric: PropTypes.object.isRequired,
+  windowSize: PropTypes.object.isRequired,
   colorBy: PropTypes.string.isRequired,
 };
 
 const StripLegendWrapper = styled.div`
   display: flex;
   flex-direction: row;
-  //   min-width: 00px;
+  min-width: 30vw;
   & :first-child div {
     border-radius: 8px 0px 0px 8px;
   }
@@ -490,22 +507,29 @@ const StripLegendItem = styled.div`
 const ColorRect = styled.div`
   width: 100%;
   height: 24px;
-  background: ${(props) => props.color || 'gray'};
+  background: ${(props) => props.color || '#999BAD'};
   opacity: 0.9;
-  border: 2px solid black;
+  border: 2px solid #000531;
 `;
 const SmallColorRect = styled.div`
   width: 20px;
+  min-width: 20px;
   height: 20px;
-  background: ${(props) => props.color || 'gray'};
+  background: ${(props) => props.color || '#999BAD'};
   opacity: 0.9;
-  border: 2px solid black;
+  border: 2px solid #000531;
   border-radius: 8px;
 `;
 const PillsLegendWrapper = styled.div`
   justify-content: center;
   display: flex;
   flex-flow: row wrap;
+  @media (max-width: 1300px) {
+    flex-flow: column wrap;
+  }
+  @media (max-width: 1000px) {
+    flex-flow: row wrap;
+  }
 `;
 const PillsLegendItem = styled.div`
   display: flex;
@@ -534,7 +558,7 @@ const GradientRect = styled.div`
     ${Marigold},
     ${Squash}
   );
-  border: 2px solid black;
+  border: 2px solid #000531;
   border-radius: 8px;
   height: 24px;
 `;
@@ -548,51 +572,45 @@ const LabelWrapper = styled.div`
 `;
 
 function IncomeLegend() {
+  // wouldn't it be fun if the symbols weren't rectangles but the continent shape instead??
   return (
-    <StripLegendWrapper>
-      <StripLegendItem>
-        <ColorRect color={DarkestBlue} />
-        <p>Low </p>
-      </StripLegendItem>
-      <StripLegendItem>
-        <ColorRect color={Aqua} />
-        <p>Lower Middle</p>
-      </StripLegendItem>
-      <StripLegendItem>
-        <ColorRect color={Marigold} />
-        <p>Upper Middle</p>
-      </StripLegendItem>
-      <StripLegendItem>
-        <ColorRect color={Squash} />
-        <p>High</p>
-      </StripLegendItem>
-    </StripLegendWrapper>
+    <PillsLegendWrapper>
+      <PillsLegendItem>
+        <SmallColorRect color={DarkestBlue} /> <p>Low</p>
+      </PillsLegendItem>
+      <PillsLegendItem>
+        <SmallColorRect color={Aqua} /> <p>Lower Middle</p>
+      </PillsLegendItem>
+      <PillsLegendItem>
+        <SmallColorRect color={Marigold} /> <p>Upper Middle</p>
+      </PillsLegendItem>
+      <PillsLegendItem>
+        <SmallColorRect color={Squash} /> <p>High</p>
+      </PillsLegendItem>
+    </PillsLegendWrapper>
   );
 }
+
 function CorrelationLegend() {
+  // wouldn't it be fun if the symbols weren't rectangles but the continent shape instead??
   return (
-    <StripLegendWrapper>
-      <StripLegendItem>
-        <ColorRect color={Aqua} />
-        <p>Strong Positive </p>
-      </StripLegendItem>
-      <StripLegendItem>
-        <ColorRect color={PaleGreen} />
-        <p>Weak Negative</p>
-      </StripLegendItem>
-      <StripLegendItem>
-        <ColorRect color={PaleBlue} />
-        <p>None</p>
-      </StripLegendItem>
-      <StripLegendItem>
-        <ColorRect color={Melon} />
-        <p>Weak Positive</p>
-      </StripLegendItem>
-      <StripLegendItem>
-        <ColorRect color={Carrot} />
-        <p>Strong Negative</p>
-      </StripLegendItem>
-    </StripLegendWrapper>
+    <PillsLegendWrapper>
+      <PillsLegendItem>
+        <SmallColorRect color={Aqua} /> <p>Strong Positive</p>
+      </PillsLegendItem>
+      <PillsLegendItem>
+        <SmallColorRect color={PaleGreen} /> <p>Weak Positive</p>
+      </PillsLegendItem>
+      <PillsLegendItem>
+        <SmallColorRect color={PaleBlue} /> <p>None</p>
+      </PillsLegendItem>
+      <PillsLegendItem>
+        <SmallColorRect color={Melon} /> <p>Weak Positive</p>
+      </PillsLegendItem>
+      <PillsLegendItem>
+        <SmallColorRect color={Squash} /> <p>Strong Negative</p>
+      </PillsLegendItem>
+    </PillsLegendWrapper>
   );
 }
 function RankingLegend() {
@@ -639,8 +657,7 @@ const LegendTitle = styled.h1`
 `;
 export function Legend({ colorBy }) {
   return (
-    <div>
-      <LegendTitle>Legend {colorBy}</LegendTitle>
+    <div style={{ paddingTop: '12px' }}>
       {colorBy === 'Income' ? (
         <IncomeLegend />
       ) : colorBy === 'Ranking' ? (
@@ -660,7 +677,7 @@ Legend.propTypes = {
 const BackgroundInfoWrapper = styled.div`
   margin-top: 24px;
   width: 100%;
-  border: 2px solid black;
+  border: 2px solid #000531;
   border-radius: 8px;
 `;
 const TwoColumnInfo = styled.div`
@@ -677,8 +694,8 @@ const TitleColumn = styled.p`
   max-width: 80px;
 `;
 const TitleBlock = styled.div`
-  padding: 12px 16px;
-  border-bottom: 2px solid black;
+  padding: 12px 16px 0px 16px;
+  border-bottom: 2px solid #000531;
   background: ${(props) => props.color || '#e2e2e2'};
   border-radius: 8px 8px 0px 0px;
   h1 {
@@ -718,24 +735,26 @@ const RankingWrapper = styled.div`
     margin-bottom: 12px;
     text-transform: capitalize;
   }
-  border: 2px solid black;
+  border: 2px solid #000531;
   border-radius: 8px;
-  margin-top: 24px;
+  margin-top: ${(props) => (props.position === 'bottom' ? '0px' : '24px')};
 `;
 const RankingList = styled.div`
   display: flex;
   flex-flow: column nowrap;
   overflow-y: scroll;
-  max-height: 400px;
+  max-height: ${(props) => (props.position === 'bottom' ? '180px' : '390px')};
   margin: 12px;
 `;
 const RankItem = styled.div`
+  color: #000531;
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
   border-bottom: 1px solid #e2e2e2;
-  //   background: ${(props) => props.color || 'none'} p {
+  border: ${(props) => `1px solid ${props.color}` || 'none'};
   background: ${(props) => props.color || 'none'};
+  color: ${(props) => (props.color === '#000531' ? 'white' : 'black')};
   p {
     font-size: 16px;
   }
@@ -760,7 +779,12 @@ const RankSVG = styled.svg`
   height: 38px;
   width: 100%;
 `;
-export function RankingInfo({ rankingData, customMetric, selectedCountry }) {
+export function RankingInfo({
+  position,
+  rankingData,
+  customMetric,
+  selectedCountry,
+}) {
   const ele = document.getElementById(selectedCountry);
   console.log(ele);
   useEffect(() => {
@@ -768,10 +792,6 @@ export function RankingInfo({ rankingData, customMetric, selectedCountry }) {
       ele.scrollIntoView();
     }
   }, [selectedCountry]);
-
-  const Ranklistwrapper = document.getElementById('ranklistwrapper');
-  //   console.log(Ranklistwrapper);
-  //   ele.offsetLeft, ele.offsetTop
 
   const margin = { left: 10, right: 25 };
   const xScale = scaleLinear({
@@ -791,20 +811,20 @@ export function RankingInfo({ rankingData, customMetric, selectedCountry }) {
     ])
     .range([DarkTeal, Aqua, Marigold, Squash]);
   return (
-    <RankingWrapper>
+    <RankingWrapper position={position}>
       <TitleBlock color="#fff">
         <h1>Ranking By {customMetric.seriesName}</h1>
       </TitleBlock>
-      <RankingList>
+      <RankingList position={position}>
         {rankingData.map((x) => (
           <RankItem
             key={x.country}
             id={x.country}
-            color={x.country === selectedCountry ? PaleBlue : 'none'}
+            color={x.country === selectedCountry ? '#000531' : 'none'}
           >
             <p>{x.rank}</p>
             <p>{x.country}</p>
-            <RankSVG>
+            <RankSVG viewBox="0 0 353 38">
               <defs>
                 <linearGradient id="grayLeft">
                   <stop offset="0%" stopColor="#f6f6f6" stopOpacity="1" />
@@ -858,7 +878,7 @@ export function RankingInfo({ rankingData, customMetric, selectedCountry }) {
                 cx={xScale(x.avgVal) + margin.left}
                 r="7"
                 fill="none"
-                stroke="black"
+                stroke="#000531"
                 strokeWidth="1.5"
               />
               <text
@@ -888,4 +908,8 @@ RankingInfo.propTypes = {
   selectedCountry: PropTypes.string.isRequired,
   rankingData: PropTypes.array.isRequired,
   customMetric: PropTypes.object.isRequired,
+  position: PropTypes.string,
+};
+RankingInfo.defaultProps = {
+  position: 'side',
 };

@@ -9,7 +9,7 @@ import {
 } from '../styleConstants';
 
 const HeaderWrapper = styled.div`
-  border-bottom: 2px solid ${fontColor};
+  border-bottom: 2px solid #000531;
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
@@ -19,19 +19,29 @@ const HeaderWrapper = styled.div`
   padding-bottom: 24px;
   margin-bottom: 32px;
 `;
+const FooterWrapper = styled.div`
+  border-top: 2px solid #000531;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 32px;
+  padding-bottom: 64px;
+  margin-top: 64px;
+`;
 
 const AppTitle = styled.h2`
   font-size: 24px;
-  font-weight: ${boldWeight};
+  font-weight: 600;
+  color: #000531;
+  opacity: 0;
 `;
-const NavLink = styled.h3`
+const Section = styled.h3`
   font-size: ${medFontSize};
   font-weight: ${regularWeight};
-  opacity: 0;
-  width: 180px;
 `;
 
-function Header() {
+export function Header() {
   return (
     <HeaderWrapper>
       <svg
@@ -180,9 +190,19 @@ function Header() {
           fill="#215d9e"
         />
       </svg>
-      <AppTitle>Dashboard of the Present Future</AppTitle>
-      <NavLink>About</NavLink>
+      {/* <AppTitle>Dashboard of the Present Future</AppTitle> */}
+      <AppTitle>.</AppTitle>
     </HeaderWrapper>
   );
 }
-export default Header;
+
+export function Footer() {
+  return (
+    <FooterWrapper>
+      <Section>Thank you for checking this out! </Section>
+      <Section>
+        Created by Priya Misner for the World Data Viz Prize, 2023
+      </Section>
+    </FooterWrapper>
+  );
+}
