@@ -23,6 +23,7 @@
     "implicit-arrow-linebreak": "off",
     "no-nested-ternary": "warn",
     "indent": "off",
+    "react/jsx-indent": "off",
     "function-paren-newline": "off",
     "nonblock-statement-body-position": "off"
   }
