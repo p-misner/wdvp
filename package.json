@@ -2,6 +2,7 @@
   "name": "wdvp",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://p-misner.github.io/wdvp",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -13,12 +14,15 @@
     "@visx/responsive": "^3.0.0",
     "@visx/scale": "^3.0.0",
     "@visx/tooltip": "^3.0.0",
+    "d3-beeswarm": "^0.0.5",
     "d3-contour": "^4.0.2",
+    "d3-force": "^3.0.0",
     "d3-geo": "^3.1.0",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
+    "react-select": "^5.7.0",
     "styled-components": "^5.3.6",
     "web-vitals": "^2.1.4"
   },
@@ -26,7 +30,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -54,6 +60,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.32.1",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "gh-pages": "^5.0.0",
     "prettier": "^2.8.3"
   }
 }

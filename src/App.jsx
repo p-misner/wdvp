@@ -3,16 +3,26 @@ import styled from 'styled-components';
 
 import Header from './components/Header';
 import Hero from './components/Hero';
-import ExploreSections from './components/ExploreSections';
-import {
-  CountryCompareSection,
-  PresentWorldSection,
-  PastDecadeSection,
-} from './components/Minicharts';
+import { PresentFutureDashboard } from './components/Minicharts';
 import { maxWidth } from './styleConstants';
 
-const AllContent = styled.h1`
-  margin: 0 auto;
+const Background = styled.div`
+  background: linear-gradient(
+    314.51deg,
+    #35587a 29.1%,
+    #569a85 37.86%,
+    #89b6a2 50.09%,
+    #93bca7 54.77%,
+    #d6eac7 80.28%,
+    #dae8c3 83.32%,
+    #dee5be 88.05%
+  );
+`;
+
+const AllContent = styled.div`
+  border-radius: 8px;
+  margin: 0px auto;
+  width: 95vw;
   max-width: ${maxWidth};
 `;
 
@@ -20,19 +30,6 @@ function App() {
   const [theme, setTheme] = useState('presentWorld');
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState();
-
-  function sectionReturn(item) {
-    switch (item) {
-      case 'presentWorld':
-        return <PresentWorldSection data={data} />;
-      case 'pastDecade':
-        return <PastDecadeSection />;
-      case 'countryCompare':
-        return <CountryCompareSection />;
-      default:
-        return <p>Something went wrong</p>;
-    }
-  }
   useEffect(() => {
     fetch('presentDayAvgLatest.json')
       .then((response) => response.json())
@@ -43,12 +40,17 @@ function App() {
   }, []);
 
   return (
-    <AllContent>
-      <Header />
-      <Hero />
-      <ExploreSections theme={theme} setTheme={setTheme} />
-      {isLoading ? <p> Loading...</p> : sectionReturn(theme)}
-    </AllContent>
+    <Background>
+      <AllContent>
+        <Header />
+        <Hero />
+        {isLoading ? (
+          <p> Loading...</p>
+        ) : (
+          <PresentFutureDashboard data={data} theme="presentWorld" />
+        )}
+      </AllContent>
+    </Background>
   );
 }
 
