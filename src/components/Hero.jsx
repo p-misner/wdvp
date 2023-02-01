@@ -82,9 +82,9 @@ function Hero() {
           <CopyFlex>
             <BodyCopy>
               There’s a huge wealth of information on the state of the world but
-              the sheer volume of data can make it challenging to understand
-              what’s going on. By viewing data through different lenses, key
-              insights can emerge.
+              the sheer volume of data can make it challenging to make sense of
+              everything. By viewing data through different lenses, key insights
+              can emerge.
             </BodyCopy>
             <BodyCopy>
               Using data provided as part of the World Government Summit’s

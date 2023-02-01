@@ -5,6 +5,8 @@ import { Header, Footer } from './components/Header';
 import Hero from './components/Hero';
 import { PresentFutureDashboard } from './components/Minicharts';
 import { maxWidth } from './styleConstants';
+import { DataCard } from './components/DataCards';
+import { LookBackChart } from './components/LookBackChart';
 
 const Background = styled.div`
   background: linear-gradient(
@@ -57,11 +59,16 @@ function App() {
       <AllContent>
         <Header />
         <Hero />
+        <DataCard />
         {isLoading ? (
           <p> Loading...</p>
         ) : (
           <PresentFutureDashboard data={data} theme="presentWorld" />
         )}
+      </AllContent>
+      {/* <LookBackChart /> */}
+
+      <AllContent>
         <Footer />
       </AllContent>
     </Background>

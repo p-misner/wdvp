@@ -800,7 +800,9 @@ GridSection.propTypes = {
 const DashboardWrapper = styled.div`
   padding: 32px;
   background: white;
-  border: 2px solid #000531;
+  border: 1px solid #000531;
+  box-shadow: 0px 4px 10px 10px rgba(0, 5, 49, 0.08);
+
   border-radius: 8px;
   @media (max-width: 600px) {
     padding: 16px;
