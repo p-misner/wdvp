@@ -889,9 +889,9 @@ export function PresentFutureDashboard({ data, theme }) {
       <DashboardTitleWrapper>
         <h2>Dashboard of the Present Future</h2>
         <p>
-          Understand and explore how 172 listed countries are doing on 32
-          different metrics and how specific countries rank against the rest of
-          the world.
+          Understand and explore how countries around the world are doing on
+          variety different metrics. Highlight specific countries, compare
+          against differnt metrics and change how charts are styled.
         </p>
       </DashboardTitleWrapper>
       {pageLayout.layout === 'highlight' ? (

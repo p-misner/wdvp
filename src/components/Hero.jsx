@@ -69,6 +69,9 @@ const HorizontalHeroText = styled.div`
   }
 `;
 
+const Bolded = styled.span`
+  font-weight: 500;
+`;
 function Hero() {
   return (
     <HeroWrapper>
@@ -78,20 +81,19 @@ function Hero() {
           <HeroText style={{ flexShrink: '0' }}>of Data</HeroText>
           <CopyFlex>
             <BodyCopy>
-              Lorem ipsum dolor sit amet consectetur. At nec massa amet mattis
-              faucibus massa vivamus tempus. Risus ac faucibus scelerisque
-              volutpat sed. Eu posuere etiam sagittis massa ut ac ultrices
-              consequat. Volutpat placerat ultricies neque velit nisl proin
-              luctus maecenas porttitor. Interdum sit cras platea suscipit
-              ornare eu diam elit sollicitudin. Scelerisque ultrices tellus eu
-              diam. Consequat turpis viverra gravida duis ac.
+              There’s a huge wealth of information on the state of the world but
+              the sheer volume of data can make it challenging to understand
+              what’s going on. By viewing data through different lenses, key
+              insights can emerge.
             </BodyCopy>
             <BodyCopy>
-              Lorem ipsum dolor sit amet consectetur. At nec massa amet mattis
-              faucibus massa vivamus tempus. Risus ac faucibus scelerisque
-              volutpat sed. Eu posuere etiam sagittis massa ut ac ultrices
-              consequat. Volutpat placerat ultricies neque velit nisl proin
-              luctus maece.
+              Using data provided as part of the World Government Summit’s
+              <Bolded> World Data Visualization Prize 2023</Bolded>, this
+              website helps you explore how the world as a whole or specific
+              countries are doing. View everything through one country&apos;s
+              perspective, explore the data through specfic lens (like income
+              levels, world ranking, overall trend) or look at certain metrics
+              over the past decade- the choice is yours!
             </BodyCopy>
           </CopyFlex>
         </HorizontalHeroText>
