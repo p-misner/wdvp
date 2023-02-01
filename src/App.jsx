@@ -7,6 +7,7 @@ import { PresentFutureDashboard } from './components/Minicharts';
 import { maxWidth } from './styleConstants';
 import { DataCard } from './components/DataCards';
 import { LookBackChart } from './components/LookBackChart';
+import { useWindowSize } from './components/utils';
 
 const Background = styled.div`
   background: linear-gradient(
@@ -54,6 +55,7 @@ function App() {
       });
   }, []);
 
+  const pageDimen = useWindowSize();
   return (
     <Background>
       <AllContent>
@@ -66,7 +68,7 @@ function App() {
           <PresentFutureDashboard data={data} theme="presentWorld" />
         )}
       </AllContent>
-      {/* <LookBackChart /> */}
+      <LookBackChart windowSize={pageDimen} />
 
       <AllContent>
         <Footer />

@@ -1,3 +1,157 @@
+export const pastDataArray = [
+  {
+    metricTitle: 'Health Expenditure Per Capita',
+    category: 'Global Health',
+    dataType: 'current expenditure per capita (current US$)',
+    conclusion: 'Upward Trend',
+    data: [
+      {
+        year: '2009',
+        value: '874',
+      },
+      {
+        year: '2010',
+        value: '912',
+      },
+      {
+        year: '2011',
+        value: '986',
+      },
+      {
+        year: '2012',
+        value: '996',
+      },
+      {
+        year: '2013',
+        value: '1012',
+      },
+      {
+        year: '2014',
+        value: '1035',
+      },
+      {
+        year: '2015',
+        value: '994',
+      },
+      {
+        year: '2016',
+        value: '1016',
+      },
+      {
+        year: '2017',
+        value: '1057',
+      },
+      {
+        year: '2018',
+        value: '1103',
+      },
+      {
+        year: '2019',
+        value: '1122',
+      },
+    ],
+  },
+  {
+    metricTitle: 'Infant Mortality',
+    category: 'Global Health',
+    dataType: 'mortality per 1000 live births (%)',
+    conclusion: 'Steady Downward Trend',
+    data: [
+      {
+        year: '2009',
+        value: '38.6',
+      },
+      {
+        year: '2010',
+        value: '37.2',
+      },
+      {
+        year: '2011',
+        value: '35.8',
+      },
+      {
+        year: '2012',
+        value: '34.5',
+      },
+      {
+        year: '2013',
+        value: '33.3',
+      },
+      {
+        year: '2014',
+        value: '32.2',
+      },
+      {
+        year: '2015',
+        value: '31.2',
+      },
+      {
+        year: '2016',
+        value: '30.3',
+      },
+      {
+        year: '2017',
+        value: '29.4',
+      },
+      {
+        year: '2018',
+        value: '29',
+      },
+      {
+        year: '2019',
+        value: '28',
+      },
+      {
+        year: '2020',
+        value: '27',
+      },
+    ],
+  },
+  {
+    metricTitle: 'Maternal Mortality',
+    category: 'Global Health',
+    dataType: '# of Maternal Deaths',
+    conclusion: 'Steady Downward Trend',
+    data: [
+      {
+        year: '2009',
+        value: '354,000',
+      },
+      {
+        year: '2010',
+        value: '343,000',
+      },
+      {
+        year: '2011',
+        value: '334,000',
+      },
+      {
+        year: '2012',
+        value: '326,000',
+      },
+      {
+        year: '2013',
+        value: '319,000',
+      },
+      {
+        year: '2014',
+        value: '313,000',
+      },
+      {
+        year: '2015',
+        value: '306000',
+      },
+      {
+        year: '2016',
+        value: '300000',
+      },
+      {
+        year: '2017',
+        value: '295000',
+      },
+    ],
+  },
+];
 export const countries = [
   'None Selected',
   'Afghanistan',
