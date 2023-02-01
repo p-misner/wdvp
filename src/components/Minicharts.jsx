@@ -711,7 +711,7 @@ function HighlightSection({
             marginBottom: 16,
           }}
         >
-          See as Grid
+          View as Grid
         </button>
       </GridTitleHoriz>
       <GridWrapperHoriz>
@@ -891,9 +891,9 @@ export function PresentFutureDashboard({ data, theme }) {
       <DashboardTitleWrapper>
         <h2>Dashboard of the Present Future</h2>
         <p>
-          Understand and explore how countries around the world are doing on
-          variety different metrics. Highlight specific countries, compare
-          against differnt metrics and change how charts are styled.
+          Understand how countries around the world are faring on a variety of
+          metrics. Explore the data to see where these insights came from and
+          discover your own stories.
         </p>
       </DashboardTitleWrapper>
       {pageLayout.layout === 'highlight' ? (

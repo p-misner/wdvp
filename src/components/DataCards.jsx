@@ -56,7 +56,7 @@ const Title = styled.h3`
 `;
 
 const GridWrapper = styled.div`
-  padding: 100px 0px 200px 0px;
+  padding: 0px 0px 128px 0px;
   //   background: red;
 `;
 const Bolded = styled.span`
@@ -115,7 +115,7 @@ export function DataCard() {
           </p>
         </DataCardWrapper>
 
-        <HighlightedDataCardWrapper>
+        {/* <HighlightedDataCardWrapper>
           <p>
             Interested in <BoldedWhite>discovering more stories</BoldedWhite>{' '}
             like this within the data? Explore the data in the Dashboard of the
@@ -123,7 +123,7 @@ export function DataCard() {
             more.
           </p>
           <CardImage src={arrow} alt="arrow pointing down" />
-        </HighlightedDataCardWrapper>
+        </HighlightedDataCardWrapper> */}
       </DataCardGrid>
     </GridWrapper>
   );

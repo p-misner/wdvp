@@ -103,6 +103,13 @@ const Bolded = styled.span`
 const PastSVG = styled.svg`
   margin: 0px auto;
 `;
+const HighlightChartTitle = styled.h3`
+  margin: 0px 8px 16px 12px;
+  color: #000531;
+
+  font-size: 24px;
+  font-weight: 600;
+`;
 // eslint-disable-next-line import/prefer-default-export
 export function LookBackChart({ windowSize }) {
   const [pastData, setPastData] = useState(pastDataArray[0]);
@@ -156,16 +163,17 @@ export function LookBackChart({ windowSize }) {
       <AllContent>
         <DashboardTitleWrapper>
           <div>
-            <h3>A Look Into the Past for</h3>
-            <h2>{pastData.metricTitle}</h2>
+            {/* <h3>A Look Into the Past for</h3> */}
+            {/* <h2>{pastData.metricTitle}</h2> */}
+            <h2>A Look into the Past</h2>
           </div>
 
           <p>
             For some of the metrics listed in the Dashboard of the Present
-            Future, look back on the world average for the metric and it&apos;s
-            trend over time
+            Future, take a journey back in time of the world average.
           </p>
         </DashboardTitleWrapper>
+        <HighlightChartTitle>{pastData.metricTitle}</HighlightChartTitle>
         {pastData?.category === 'Global Health' && (
           <PastSVG width={width} height={height}>
             <defs>

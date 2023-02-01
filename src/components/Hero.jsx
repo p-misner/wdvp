@@ -84,16 +84,23 @@ function Hero() {
               There’s a huge wealth of information on the state of the world but
               the sheer volume of data can make it challenging to make sense of
               everything. By viewing data through different lenses, key insights
-              can emerge.
+              emerge.
             </BodyCopy>
             <BodyCopy>
-              Using data provided as part of the World Government Summit’s
+              Using data provided as part of the{' '}
+              <a
+                style={{ color: '#000531' }}
+                href="https://www.priyamisner.com"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                World Government Summit’s
+              </a>
               <Bolded> World Data Visualization Prize 2023</Bolded>, this
-              website helps you explore how the world as a whole or specific
-              countries are doing. View everything through one country&apos;s
-              perspective, explore the data through specfic lens (like income
-              levels, world ranking, overall trend) or look at certain metrics
-              over the past decade- the choice is yours!
+              website helps you explore how specific countries or the entire
+              world measures up. Explore the data through specific lens (like
+              income levels, world ranking, overall trend) or look at certain
+              metrics over the past decade- the choice is yours!
             </BodyCopy>
           </CopyFlex>
         </HorizontalHeroText>

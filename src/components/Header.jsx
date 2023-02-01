@@ -1,6 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import { medFontSize, medSpacing, regularWeight } from '../styleConstants';
+import {
+  Aqua,
+  medFontSize,
+  medSpacing,
+  regularWeight,
+} from '../styleConstants';
 
 const HeaderWrapper = styled.div`
   border-bottom: 2px solid #000531;
@@ -35,6 +40,9 @@ const Section = styled.h3`
   font-weight: ${regularWeight};
 `;
 
+const LinkA = styled.a`
+  color: ${Aqua};
+`;
 export function Header() {
   return (
     <HeaderWrapper>
@@ -195,7 +203,15 @@ export function Footer() {
     <FooterWrapper>
       <Section>Thank you for checking this out! </Section>
       <Section>
-        Created by Priya Misner for the World Data Viz Prize, 2023
+        Created by{' '}
+        <LinkA
+          href="https://www.priyamisner.com"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Priya Misner{' '}
+        </LinkA>{' '}
+        for the World Data Viz Prize, 2023
       </Section>
     </FooterWrapper>
   );
