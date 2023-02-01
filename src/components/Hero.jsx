@@ -84,7 +84,7 @@ function Hero() {
               There’s a huge wealth of information on the state of the world but
               the sheer volume of data can make it challenging to make sense of
               everything. By viewing data through different lenses, key insights
-              emerge.
+              and stories emerge.
             </BodyCopy>
             <BodyCopy>
               Using data provided as part of the{' '}
