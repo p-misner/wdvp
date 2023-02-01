@@ -884,7 +884,6 @@ export function RankingInfo({
   colorBy,
 }) {
   const ele = document.getElementById(selectedCountry);
-  console.log(ele);
   useEffect(() => {
     if (ele !== null) {
       ele.scrollIntoView();
