@@ -159,6 +159,10 @@ const BottomInfoContents = styled.div`
     text-overflow: ellipsis;
     overflow: hidden;
   }
+  p {
+    margin: 12px;
+    visibility: ${(props) => (props.open ? 'visible' : 'hidden')};
+  }
 `;
 const ScatterSVG = styled.svg``;
 
@@ -386,7 +390,7 @@ function PlotBox({
         onClick={() => (open ? null : setOpen(true))}
         open={open}
       >
-        <BottomInfoContents>
+        <BottomInfoContents open={open}>
           <h3>
             {' '}
             {customMetric?.seriesName
@@ -401,6 +405,7 @@ function PlotBox({
           >
             ⓧ
           </button>
+          <p>{customMetric?.definition}</p>
         </BottomInfoContents>
       </BottomInfoWrapper>
     </GridBox>
@@ -458,9 +463,9 @@ function LargeChart({ dataSeries, xMetric, colorBy, selectedCountry, size }) {
           <HighlightChartTitle>
             <h3>{customMetric.seriesName}</h3>
             <p>
-              {customMetric.subtitle} {correctMetric(xMetric)}. Different Metric
-              + Color combinations will reveal different ways of looking at the
-              same data.
+              {customMetric.subtitle} {correctMetric(xMetric)}. Different metric
+              + chart styling combinations will reveal different ways of looking
+              at the same data.
             </p>
           </HighlightChartTitle>
 
@@ -479,6 +484,7 @@ function LargeChart({ dataSeries, xMetric, colorBy, selectedCountry, size }) {
             customMetric={customMetric}
             xMetric={xMetric}
             colorBy={colorBy}
+            windowSize={windowSize}
           />
           {/* {colorBy === 'Correlation' && (
             <BackgroundInfo xMetric={xMetric} customMetric={customMetric} />
@@ -640,7 +646,8 @@ const HighlightChartTitle = styled.div`
   color: #000531;
 
   p {
-    max-width: 1000px;
+    max-width: 780px;
+    // width: 60vw;
     font-size: 16px;
     line-height: 20px;
   }
@@ -650,6 +657,19 @@ const HighlightChartTitle = styled.div`
   }
 `;
 
+const GridTitleHoriz = styled.div`
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  padding-top: 12px;
+  border-top: 1px dashed #000531;
+  h3 {
+    font-size: 20px;
+    font-weight: 500;
+  }
+`;
 function HighlightSection({
   setPageLayout,
   pageLayout,
@@ -673,24 +693,27 @@ function HighlightSection({
         setPageLayout={setPageLayout}
         chartType={theme === 'presentWorld' ? 'scattercontour' : 'bubble'}
       />
-      <button
-        onClick={() => setPageLayout({ layout: 'grid', selectedMetric: {} })}
-        type="button"
-        style={{
-          textAlign: 'right',
-          color: '#fff',
-          border: '1px solid #000531',
-          padding: '6px 12px',
-          background: '#000531',
-          borderRadius: 8,
-          fontWeight: 600,
-          fontSize: 16,
-          marginTop: 24,
-          marginBottom: 16,
-        }}
-      >
-        See as Grid
-      </button>
+      <GridTitleHoriz>
+        <h3> Choose another metric: </h3>
+        <button
+          onClick={() => setPageLayout({ layout: 'grid', selectedMetric: {} })}
+          type="button"
+          style={{
+            cursor: 'pointer',
+            textAlign: 'right',
+            color: '#fff',
+            border: '1px solid #000531',
+            padding: '6px 12px',
+            background: '#000531',
+            borderRadius: 8,
+            fontWeight: 600,
+            fontSize: 16,
+            marginBottom: 16,
+          }}
+        >
+          See as Grid
+        </button>
+      </GridTitleHoriz>
       <GridWrapperHoriz>
         {data.map((x) => (
           <PlotBox
@@ -851,7 +874,7 @@ export function PresentFutureDashboard({ data, theme }) {
       defaultState: colorBy,
       options: colorByOptions,
       changeState: setColorBy,
-      dropdownLabel: 'Color Chart By',
+      dropdownLabel: 'Style Chart By',
     },
     {
       defaultState: selectedCountry,

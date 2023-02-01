@@ -203,6 +203,8 @@ export const customMetricOptions = [
     lowerText: 'LESS EQUAL',
     upperText: 'MORE EQUAL',
     subtitle: 'See the relationship between how equal a country is and their',
+    definition:
+      'Inequality in the distribution of family income. Lower is better.',
   },
   {
     metricTitle: 'happyplanetindex',
@@ -215,6 +217,8 @@ export const customMetricOptions = [
     upperText: 'HAPPIER',
     subtitle:
       'See the relationship between the happiness of a country and their',
+    definition:
+      'A combo of well being, life expectancy, inequalities and ecological footprint. Higher is better.',
   },
   {
     metricTitle: 'humandevelopmentindex',
@@ -227,6 +231,8 @@ export const customMetricOptions = [
     controlPosition: 'bottom',
     lowerText: 'LESS DEVELOPED',
     upperText: 'MORE DEVELOPED',
+    definition:
+      'Tracks basic dimensions of human development: long and healthy life, access to knowledge and standard of living. Higher is better.',
     subtitle:
       'A summary measure of average achievement in key areas of human development, see how a this index relates to ',
   },
@@ -241,6 +247,8 @@ export const customMetricOptions = [
     controlPosition: 'bottom',
     upperText: 'MORE SUSTAINABLE',
     lowerText: 'LESS SUSTAINABLE',
+    definition:
+      'an assessment based on 40 indicators in sustainability, economics, & investments. Higher is better.',
     subtitle:
       'A way to understand a country’s overall social and economic conditions, see how a SEDA relates to ',
   },
@@ -254,6 +262,8 @@ export const customMetricOptions = [
     domain: [-15, 20],
     upperText: 'ECONOMY GROWING',
     lowerText: 'ECONOMY SHRINKING',
+    definition:
+      'Compares the year-over-year change in a country’s economic output to measure how fast an economy is growing.',
     subtitle:
       'See the relationship between the growth rate of a country’s GDP relates to',
   },
@@ -266,6 +276,7 @@ export const customMetricOptions = [
     SEDAcorrelation: 'Strong Positive',
     domain: [0, 23000],
     upperText: 'WEALTHIER',
+    definition: 'A measure of a country’s economic output.',
     subtitle:
       'A measure of a country’s wealth, see how  Gross Domestic Product (GDP) relates to',
   },
@@ -278,6 +289,9 @@ export const customMetricOptions = [
     SEDAcorrelation: 'Strong Positive',
     domain: [0, 125000],
     upperText: 'WEALTHIER',
+    definition:
+      'A measure of a country’s economic output divided by the country’s population',
+    subtitle: 'See how a country’s GDP on a per person level relates to',
   },
   {
     metricTitle: 'healthexpenditure',
@@ -285,10 +299,13 @@ export const customMetricOptions = [
     GINIcorrelation: 'No',
     Happycorrelation: 'No',
     SEDAcorrelation: 'Weak Positive',
-    seriesName: 'Health Expenditure',
+    seriesName: 'Percent of GDP Spent on Health',
     upperText: 'MORE SPENDING',
     lowerText: 'LESS SPENDING',
     domain: [0, 15],
+    definition: 'Amount spent on health care as a percentage of GDP.',
+    subtitle:
+      'See how the amount a country spends on health care as a percentage of total GDP relates to',
   },
   {
     metricTitle: 'healthexpenditureperperson',
@@ -300,6 +317,10 @@ export const customMetricOptions = [
     upperText: 'MORE SPENDING PER PERSON',
     lowerText: 'LESS SPENDING',
     domain: [0, 12000],
+    definition:
+      'Amount spent on health care per person as a percentage of GDP.',
+    subtitle:
+      'See how a the amount a country spends on health care on a per person level relates to',
   },
   {
     metricTitle: 'infantmortality',
@@ -310,6 +331,9 @@ export const customMetricOptions = [
     SEDAcorrelation: 'No',
     domain: [0, 100],
     upperText: 'HIGHER MORTALITY',
+    definition: 'Infant mortalities per 1,000 live births.',
+    subtitle:
+      'Measured as mortalities per 1,000 live births, see how Infant Mortality relates to',
   },
   {
     metricTitle: 'maternalmortalityper100000livebirths',
@@ -320,6 +344,10 @@ export const customMetricOptions = [
     SEDAcorrelation: 'Strong Negative',
     domain: [0, 1200],
     upperText: 'HIGHER MORTALITY',
+    definition: 'Maternal mortalities per 100,000 live births.',
+
+    subtitle:
+      'Measured as mortalities per 100,000 live births, see how Maternal Mortality relates to',
   },
   {
     metricTitle: 'educationexpenditure',
@@ -331,6 +359,9 @@ export const customMetricOptions = [
     upperText: 'MORE SPENDING',
     lowerText: 'LESS SPENDING',
     domain: [0, 20],
+    definition: 'Amount spent on education as a percentage of GDP',
+    subtitle:
+      'See how the amount a country spends on educaiton as a percentage of total GDP relates to',
   },
 
   {
@@ -342,145 +373,289 @@ export const customMetricOptions = [
     SEDAcorrelation: 'Strong Negative',
     domain: [0, 100],
     upperText: 'MORE KIDS OUT OF SCHOOL',
+    definition: 'Percentage of primary-aged children are not attending school',
+    subtitle:
+      'See how the percent of primary-aged children not attending school relates to',
   },
   {
     metricTitle: 'unemployment',
     seriesName: 'Percent Unemployment',
+    GINIcorrelation: 'No',
+    Happycorrelation: 'No',
+    GDPcorrelation: 'Weak Negative',
+    SEDAcorrelation: 'No',
     domain: [0, 30],
+    definition: 'Percentage of labor force out of work',
+    subtitle: 'See how the percent of the labor force is unemployed relates to',
   },
   {
     metricTitle: 'ofpopulationinextremepoverty',
     seriesName: 'Percent of Population in Extreme Poverity',
+    GDPcorrelation: 'Strong Negative',
+    GINIcorrelation: 'No',
+    Happycorrelation: 'No',
+    SEDAcorrelation: 'Strong Negative',
     domain: [0, 30],
     upperText: 'MORE IN EXTREME POVERTY ',
+    definition: 'Percentage of population earning less than $1.90 USD a day',
+    subtitle:
+      'Extreme Poverty is defined as earning less than $1.90 USD a day per person. See how this relates to ',
   },
   {
     metricTitle: 'ofpopulationwithaccesstoelectricity',
     seriesName: 'Percent of Population with Access to Electricity',
+    GDPcorrelation: 'Strong Positive',
+    GINIcorrelation: 'No',
+    Happycorrelation: 'No',
+    SEDAcorrelation: 'Strong Positive',
     domain: [0, 100],
     controlPosition: 'bottom',
     lowerText: 'LESS ACCESS ',
+    definition: 'Percentage of population with access to electricity',
+    subtitle: 'See how the a population’s access to electricity to',
   },
   {
     metricTitle: 'politicalrightsscore',
     seriesName: 'Political Rights Score',
+    GDPcorrelation: 'Weak Positive',
+    GINIcorrelation: 'No',
+    Happycorrelation: 'No',
+    SEDAcorrelation: 'Weak Positive',
     upperText: 'MORE RIGHTS',
     lowerText: 'LESS RIGHTS',
-    domain: [-10, 50],
+    domain: [0, 40],
+    controlPosition: 'bottom',
+    definition: 'Part of the Freedom House’s Freedom in the World status',
+    subtitle:
+      'Part of the Freedom House’s Freedom in the World status, the Political Rights Score is out of 40. See how it relates to ',
   },
   {
     metricTitle: 'civillibertiesscore',
     seriesName: 'Civil Liberties Score',
+    GDPcorrelation: 'Strong Positive',
+    GINIcorrelation: 'No',
+    Happycorrelation: 'No',
+    SEDAcorrelation: 'Weak Positive',
     upperText: 'MORE LIBERTIES',
     lowerText: 'LESS LIBERTIES',
     domain: [0, 100],
+    definition: 'Part of the Freedom House’s Freedom in the World status',
+    subtitle:
+      'Part of the Freedom House’s Freedom in the World status, the Civil Liberties Score is out of 60. See how it relates to ',
   },
   {
     metricTitle: 'politcalstability',
     seriesName: 'Political Stability and Absence of Violence',
+    GDPcorrelation: 'Strong Positive',
+    GINIcorrelation: 'No',
+    Happycorrelation: 'No',
+    SEDAcorrelation: 'Strong Positive',
+    definition:
+      "Part of the Worldwide Governance Indicator's six dimensions of governance",
+
     upperText: 'MORE STABLE',
     lowerText: 'LESS STABLE',
     domain: [-3, 2],
-
     controlPosition: 'bottom',
+    subtitle:
+      "One of the Worldwide Governance Indicator's six dimensions of governance, see how Political Stability and Absence of Violence relates to ",
   },
   {
     metricTitle: 'goveffectiveness',
     seriesName: 'Government Effectiveness',
+    GDPcorrelation: 'Strong Positive',
+    GINIcorrelation: 'No',
+    Happycorrelation: 'No',
+    SEDAcorrelation: 'Strong Positive',
+
     upperText: 'MORE EFFECTIVE',
     lowerText: 'LESS EFFECTIVE',
     domain: [-2.5, 2.5],
     controlPosition: 'bottom',
+    definition:
+      "Part of the Worldwide Governance Indicator's six dimensions of governance",
+
+    subtitle:
+      "One of the Worldwide Governance Indicator's six dimensions of governance, see how Government Effectiveness relates to ",
   },
   {
     metricTitle: 'regulatoryquality',
     seriesName: 'Regulatory Quality',
+    GDPcorrelation: 'Strong Positive',
+    GINIcorrelation: 'No',
+    Happycorrelation: 'No',
+    SEDAcorrelation: 'Strong Positive',
     upperText: 'HIGHER',
     lowerText: 'LOWER',
     domain: [-2.5, 2.5],
     controlPosition: 'bottom',
+    definition:
+      "Part of the Worldwide Governance Indicator's six dimensions of governance",
+
+    subtitle:
+      "One of the Worldwide Governance Indicator's six dimensions of governance, see how Regulatory Quality relates to ",
   },
   {
     metricTitle: 'ruleoflaw',
     seriesName: 'Rule of Law',
+    GDPcorrelation: 'Strong Positive',
+    GINIcorrelation: 'No',
+    Happycorrelation: 'No',
+    SEDAcorrelation: 'Strong Positive',
     domain: [-2.5, 2.5],
     upperText: 'STRONG',
     lowerText: 'WEAK',
     controlPosition: 'bottom',
+    definition:
+      "Part of the Worldwide Governance Indicator's six dimensions of governance",
+
+    subtitle:
+      "One of the Worldwide Governance Indicator's six dimensions of governance, see how Rule of Law relates to ",
   },
   {
     metricTitle: 'controlcorruption',
     seriesName: 'Control of Corruption',
+    GDPcorrelation: 'Weak Positive',
+    GINIcorrelation: 'No',
+    Happycorrelation: 'No',
+    SEDAcorrelation: 'Strong Positive',
     domain: [-2.5, 2.5],
     upperText: 'HIGHER',
     lowerText: 'LOWER',
     controlPosition: 'bottom',
+    definition:
+      "Part of the Worldwide Governance Indicator's six dimensions of governance",
+
+    subtitle:
+      "One of the Worldwide Governance Indicator's six dimensions of governance, see how Control of Corruption relates to ",
   },
   {
     metricTitle: 'judicialeffectiveness',
     seriesName: 'Judicial Effectiveness',
+    GDPcorrelation: 'Strong Positive',
+    GINIcorrelation: 'No',
+    Happycorrelation: 'No',
+    SEDAcorrelation: 'Weak Positive',
     domain: [0, 100],
     upperText: 'MORE STABLE',
     lowerText: 'LESS STABLE',
     controlPosition: 'bottom',
+    definition: "Part of the Heritage Foundation's Index of Economic Freedom",
+
+    subtitle:
+      "A part of the Heritage Foundation's Index of Economic Freedom, see how Judicial Effectiveness relates to",
   },
   {
     metricTitle: 'govintegrity',
     seriesName: 'Government Integrity',
+    GDPcorrelation: 'Strong Positive',
+    GINIcorrelation: 'No',
+    Happycorrelation: 'No',
+    SEDAcorrelation: 'Strong Positive',
     upperText: 'HIGHER',
-
     domain: [0, 100],
     controlPosition: 'bottom',
+    definition: "Part of the Heritage Foundation's Index of Economic Freedom",
+
+    subtitle:
+      "A part of the Heritage Foundation's Index of Economic Freedom, see how Government Integrity relates to",
   },
   {
     metricTitle: 'economicfreedom',
     seriesName: 'Economic Freedom',
+    GINIcorrelation: 'Weak Negative',
+    Happycorrelation: 'No',
+    SEDAcorrelation: 'Strong Positive',
+    GDPcorrelation: 'Strong Positive',
     upperText: 'HIGHER',
-
     domain: [0, 100],
     controlPosition: 'bottom',
+    subtitle:
+      "Made up of multiple sub-scores (see Governemnt Integrity, Judicial Effectiveness), see how the Heritage Foundation's Index of Economic Freedom relates to",
   },
   {
     metricTitle: 'finncialfreedom',
     seriesName: 'Financial Freedom',
+    GDPcorrelation: 'Weak Positive',
     upperText: 'HIGHER',
-
+    GINIcorrelation: 'No',
+    Happycorrelation: 'No',
+    SEDAcorrelation: 'Weak Positive',
     domain: [0, 100],
     controlPosition: 'bottom',
+    definition: "Part of the Heritage Foundation's Index of Economic Freedom",
+
+    subtitle:
+      "A part of the Heritage Foundation's Index of Economic Freedom, see how Financial Freedom relates to",
   },
   {
     metricTitle: 'governmentexpenditure',
     seriesName: 'Government Expenditure',
+    GDPcorrelation: 'Strong Positive',
     upperText: 'HIGHER',
+    GINIcorrelation: 'No',
+    Happycorrelation: 'No',
+    SEDAcorrelation: 'Strong Positive',
+    definition: "Part of the Heritage Foundation's Index of Economic Freedom",
+
+    subtitle:
+      "A part of the Heritage Foundation's Index of Economic Freedom, see how Government Expenditure relates to",
 
     domain: [0, 100],
   },
   {
     metricTitle: 'CO2eemissionspercapita',
     seriesName: 'CO2 Emissions per Capita',
+    GDPcorrelation: 'Strong Positive',
+    GINIcorrelation: 'Weak Negative',
+    Happycorrelation: 'No',
+    SEDAcorrelation: 'Strong Positive',
+    definition: 'The amount of metric tons CO2 per person a country emits',
     upperText: 'HIGHER EMISSIONS',
     lowerText: 'LOWER EMISSIONS',
     domain: [0, 40],
+    subtitle: 'See how the amount of CO2 per person a country emits relates to',
   },
   {
     metricTitle: 'renewableshare',
     seriesName: 'Share of Electricity from Renewables Generation',
+    GDPcorrelation: 'No',
+    GINIcorrelation: 'No',
+    Happycorrelation: 'No',
+    SEDAcorrelation: 'No',
     upperText: 'HIGHER',
     lowerText: 'LOWER',
     domain: [0, 100],
+    definition: 'Amount of electricty generated from renewable sources',
+    subtitle:
+      'See how the amount of electricty generated from renewable sources relates to',
   },
   {
     metricTitle: 'womenparliment',
     seriesName: 'Percent of Seats Held by Women in National Parliaments',
+    GDPcorrelation: 'No',
+    GINIcorrelation: 'Weak Negative',
+    Happycorrelation: 'No',
+    SEDAcorrelation: 'No',
     upperText: 'MAJORITY WOMEN',
     lowerText: 'MINORITY WOMEN',
     domain: [0, 70],
+    definition: 'Percent of women holding seats in national parliment',
+    subtitle:
+      'See how the percent of women holding seats in national parliment relates to',
   },
   {
     metricTitle: 'militaryspending',
     seriesName: 'Military Spending as Percent of GDP',
+    GDPcorrelation: 'No',
+    GINIcorrelation: 'No',
+    Happycorrelation: 'No',
+    SEDAcorrelation: 'No',
     upperText: 'HIGHER',
     domain: [0, 20],
+    definition: 'Amount spent on militart as percent of GDP',
+    subtitle:
+      'See how the amount of money spent on the military as a percent of GDP relates to',
   },
 ];
 

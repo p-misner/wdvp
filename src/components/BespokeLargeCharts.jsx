@@ -596,7 +596,6 @@ const RankingLegendWrapper = styled.div`
   flex-direction: column;
   width: 100%;
 `;
-
 const GradientRect = styled.div`
   width: 100%;
   background: linear-gradient(
@@ -675,6 +674,48 @@ function RankingLegend() {
     </RankingLegendWrapper>
   );
 }
+
+const GradientRectVert = styled.div`
+  width: 32px;
+  height: 256px;
+  margin-top: 32px;
+  background: linear-gradient(
+    0deg,
+    ${DarkTeal},
+    ${Aqua},
+    ${Marigold},
+    ${Squash}
+  );
+  border: 2px solid #000531;
+  border-radius: 8px;
+`;
+const RankingLegendWrapperVert = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+`;
+const LabelWrapperVert = styled.div`
+  display: flex;
+  width: 100%;
+  flex-flow: column nowrap;
+  justify-content: space-between;
+  opacity: 0.7;
+  height: 256px;
+  margin-top: 32px;
+  margin-left: 4px;
+`;
+function RankingLegendVertical() {
+  return (
+    <RankingLegendWrapperVert>
+      <GradientRectVert />
+      <LabelWrapperVert>
+        <p> Lower</p>
+        <p> Higher</p>
+      </LabelWrapperVert>
+    </RankingLegendWrapperVert>
+  );
+}
+
 function ContinentLegend() {
   // wouldn't it be fun if the symbols weren't rectangles but the continent shape instead??
   return (
@@ -706,13 +747,16 @@ const LegendTitle = styled.h1`
   margin-bottom: 12px;
   text-transform: capitalize;
 `;
-export function Legend({ colorBy }) {
+export function Legend({ colorBy, windowSize }) {
   return (
     <div style={{ paddingTop: '12px' }}>
       {colorBy === 'Income' ? (
         <IncomeLegend />
-      ) : colorBy === 'Ranking' ? (
+      ) : colorBy === 'Ranking' &&
+        (windowSize.width > 1300 || windowSize.width < 1000) ? (
         <RankingLegend />
+      ) : colorBy === 'Ranking' ? (
+        <RankingLegendVertical />
       ) : colorBy === 'Continent' ? (
         <ContinentLegend />
       ) : (
@@ -723,6 +767,7 @@ export function Legend({ colorBy }) {
 }
 Legend.propTypes = {
   colorBy: PropTypes.string.isRequired,
+  windowSize: PropTypes.object.isRequired,
 };
 
 const BackgroundInfoWrapper = styled.div`
@@ -935,7 +980,7 @@ export function RankingInfo({
                     ? incomeScale(x.incomeLevel)
                     : colorBy === 'Continent'
                     ? continentScale(x.continent)
-                    : 'rgba(0,0,0,.7)'
+                    : 'rgba(0,5,49,.7)'
                 }
               />
               <rect
@@ -985,7 +1030,7 @@ export function RankingInfo({
                     ? incomeScale(x.incomeLevel)
                     : colorBy === 'Continent'
                     ? continentScale(x.continent)
-                    : 'rgba(0,0,0,.7)'
+                    : 'rgba(0,4,49,.7)'
                 }
               >
                 {x.avgVal > 1000
