@@ -356,7 +356,8 @@ export const customMetricOptions = [
     SEDAcorrelation: 'Weak Negative',
     lowerText: 'LESS EQUAL',
     upperText: 'MORE EQUAL',
-    subtitle: 'See the relationship between how equal a country is and their',
+    subtitle:
+      "See the relationship between country's level of inequality and their",
     definition:
       'Inequality in the distribution of family income. Lower is better.',
   },
@@ -402,7 +403,7 @@ export const customMetricOptions = [
     upperText: 'MORE SUSTAINABLE',
     lowerText: 'LESS SUSTAINABLE',
     definition:
-      'an assessment based on 40 indicators in sustainability, economics, & investments. Higher is better.',
+      'An assessment based on 40 indicators in sustainability, economics, & investments. Higher is better.',
     subtitle:
       'A way to understand a country’s overall social and economic conditions, see how a SEDA relates to ',
   },
