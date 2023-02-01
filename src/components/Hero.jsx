@@ -90,7 +90,7 @@ function Hero() {
               Using data provided as part of the{' '}
               <a
                 style={{ color: '#000531' }}
-                href="https://www.priyamisner.com"
+                href="https://wdvp.worldgovernmentsummit.org/"
                 rel="noopener noreferrer"
                 target="_blank"
               >
