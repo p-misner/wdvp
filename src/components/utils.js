@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { scaleLinear, scaleOrdinal } from '@visx/scale';
+
 import {
   Aqua,
   Carrot,
@@ -112,3 +114,70 @@ export function useWindowSize() {
   }, []); // Empty array ensures that effect is only run on mount
   return windowSize;
 }
+
+// Legend Scales
+
+export const popScale = scaleLinear({
+  domain: [20, 1386000000],
+  range: [2, 60],
+  nice: true,
+});
+
+export const continentScale = scaleOrdinal()
+  .domain([
+    'North America',
+    'South America',
+    'Europe',
+    'Asia',
+    'Africa',
+    'Oceania',
+  ])
+  .range([
+    DarkestBlue,
+    Aqua,
+    Marigold,
+    Squash,
+    'rgba(128, 101, 234, 1)',
+    'rgba(26, 154, 226, 1)',
+  ]);
+export const lightContinentScale = scaleOrdinal()
+  .domain([
+    'North America',
+    'South America',
+    'Europe',
+    'Asia',
+    'Africa',
+    'Oceania',
+  ])
+  .range([
+    'rgba(34, 50, 116, 0.1)',
+    'rgba(60, 161, 136, 0.1)',
+    'rgba(235, 173, 92, 0.1)',
+    'rgba(195, 91, 33, .1)',
+    'rgba(128, 101, 234, 0.1)',
+    'rgba(26, 154, 226, 0.1)',
+  ]);
+
+export const incomeScale = scaleOrdinal()
+  .domain([
+    'Low Income',
+    'Lower Middle Income',
+    'Upper Middle Income',
+    'High Income',
+  ])
+  .range([DarkestBlue, Aqua, Marigold, Squash])
+  .unknown('rgba(0, 5, 49,0.2)');
+export const lightIncomeScale = scaleOrdinal()
+  .domain([
+    'Low Income',
+    'Lower Middle Income',
+    'Upper Middle Income',
+    'High Income',
+  ])
+  .range([
+    'rgba(34, 50, 116, 0.1)',
+    'rgba(60, 161, 136, 0.1)',
+    'rgba(235, 173, 92, 0.1)',
+    'rgba(195, 91, 33, .1)',
+  ])
+  .unknown('rgba(0, 5, 49,.05)');

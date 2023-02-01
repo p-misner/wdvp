@@ -27,6 +27,10 @@ import {
   contourColor,
   correctVar,
   correctMetric,
+  incomeScale,
+  lightIncomeScale,
+  continentScale,
+  lightContinentScale,
 } from './utils';
 
 const ScatterSVG = styled.svg`
@@ -105,7 +109,7 @@ const SliderWrapper = styled.span`
 const SVGOverline = styled.text`
   font-size: 14px;
   font-weight: 600;
-  fill: #999bad;
+  fill: #9a9bad;
   pointer-events: none;
 `;
 const SVGOverlineHeavy = styled.text`
@@ -132,7 +136,7 @@ export function GINI({
   windowSize,
 }) {
   const [scaleByPop, setScaleByPop] = useState(false);
-  const [showSimilar, setShowSimilar] = useState(false);
+  const [showSimilar, setShowSimilar] = useState(true);
 
   const width = windowSize.width < 800 ? 600 : 800;
   const height = windowSize.width < 800 ? 400 : 620;
@@ -144,7 +148,6 @@ export function GINI({
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom;
 
-  console.log(customMetric);
   // domain changes depending on metric (not based on min max)
   const controlPosition = customMetric?.controlPosition
     ? customMetric.controlPosition
@@ -180,26 +183,6 @@ export function GINI({
       TopDomain,
     ])
     .range([DarkTeal, Aqua, Marigold, Squash]);
-
-  const continentScale = scaleOrdinal()
-    .domain([
-      'North America',
-      'South America',
-      'Europe',
-      'Asia',
-      'Africa',
-      'Australia',
-    ])
-    .range(['red', 'orange', 'yellow', 'green', 'blue', 'purple']);
-  const incomeScale = scaleOrdinal()
-    .domain([
-      'Low Income',
-      'Lower Middle Income',
-      'Upper Middle Income',
-      'High Income',
-    ])
-    .range([DarkestBlue, Aqua, Marigold, Squash])
-    .unknown('black');
 
   // contour
   const contour = contourDensity()
@@ -251,7 +234,7 @@ export function GINI({
 
   const similarCountries = ['China', 'United States', 'India', 'Argentina'];
   const allLabeledCountries = showSimilar
-    ? ['China', 'United States', 'India', 'Argentina'].concat([selectedCountry])
+    ? ['China', 'United States', 'India'].concat([selectedCountry])
     : [''].concat([selectedCountry]);
 
   return (
@@ -329,6 +312,14 @@ export function GINI({
               scale={yScale}
               hideAxisLine
               tickStroke="#B3B4C1"
+              label={customMetric.seriesName}
+              labelOffset={28}
+              labelProps={{
+                textAnchor: 'middle',
+                opacity: 0.6,
+                fontSize: 16,
+                fontWeight: 500,
+              }}
               tickLength={16}
               tickLabelProps={() => ({
                 opacity: 0.6,
@@ -498,8 +489,10 @@ export function GINI({
                 fill={
                   Math.abs(d.avgVal) < 0.001 || Math.abs(d[xMetric]) < 0.001
                     ? 'none'
-                    : allLabeledCountries.indexOf(d.country) > -1
+                    : selectedCountry === d.country
                     ? '#000531'
+                    : allLabeledCountries.indexOf(d.country) > -1
+                    ? '#999BAB'
                     : 'none'
                 }
               >
@@ -642,6 +635,9 @@ function IncomeLegend() {
       <PillsLegendItem>
         <SmallColorRect color={Squash} /> <p>High</p>
       </PillsLegendItem>
+      <PillsLegendItem>
+        <SmallColorRect color="rgba(0, 5, 49,0.2)" /> <p>Missing Info</p>
+      </PillsLegendItem>
     </PillsLegendWrapper>
   );
 }
@@ -660,7 +656,7 @@ function CorrelationLegend() {
         <SmallColorRect color={PaleBlue} /> <p>None</p>
       </PillsLegendItem>
       <PillsLegendItem>
-        <SmallColorRect color={Melon} /> <p>Weak Positive</p>
+        <SmallColorRect color={Melon} /> <p>Weak Negative</p>
       </PillsLegendItem>
       <PillsLegendItem>
         <SmallColorRect color={Squash} /> <p>Strong Negative</p>
@@ -684,22 +680,22 @@ function ContinentLegend() {
   return (
     <PillsLegendWrapper>
       <PillsLegendItem>
-        <SmallColorRect color="red" /> <p>North America</p>
+        <SmallColorRect color={DarkestBlue} /> <p>North America</p>
       </PillsLegendItem>
       <PillsLegendItem>
-        <SmallColorRect color="orange" /> <p>South America</p>
+        <SmallColorRect color={Aqua} /> <p>South America</p>
       </PillsLegendItem>
       <PillsLegendItem>
-        <SmallColorRect color="yellow" /> <p>Europe</p>
+        <SmallColorRect color={Marigold} /> <p>Europe</p>
       </PillsLegendItem>
       <PillsLegendItem>
-        <SmallColorRect color="green" /> <p>Asia</p>
+        <SmallColorRect color={Squash} /> <p>Asia</p>
       </PillsLegendItem>
       <PillsLegendItem>
-        <SmallColorRect color="blue" /> <p>Africa</p>
+        <SmallColorRect color="rgba(128, 101, 234, 1)" /> <p>Africa</p>
       </PillsLegendItem>
       <PillsLegendItem>
-        <SmallColorRect color="purple" /> <p>Oceania</p>
+        <SmallColorRect color="rgba(26, 154, 226, 1)" /> <p>Oceania</p>
       </PillsLegendItem>
     </PillsLegendWrapper>
   );
@@ -753,10 +749,9 @@ const TitleBlock = styled.div`
   border-bottom: 2px solid #000531;
   background: ${(props) => props.color || '#e2e2e2'};
   border-radius: 8px 8px 0px 0px;
-  h1 {
-    font-size: 20px;
-    font-weight: 600;
-  }
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 26px;
 `;
 export function BackgroundInfo({ xMetric, customMetric }) {
   return (
@@ -793,6 +788,7 @@ const RankingWrapper = styled.div`
   border: 2px solid #000531;
   border-radius: 8px;
   margin-top: ${(props) => (props.position === 'bottom' ? '0px' : '24px')};
+  max-width: 800px;
 `;
 const RankingList = styled.div`
   display: flex;
@@ -834,11 +830,13 @@ const RankSVG = styled.svg`
   height: 38px;
   width: 100%;
 `;
+
 export function RankingInfo({
   position,
   rankingData,
   customMetric,
   selectedCountry,
+  colorBy,
 }) {
   const ele = document.getElementById(selectedCountry);
   console.log(ele);
@@ -865,6 +863,19 @@ export function RankingInfo({
       TopDomain,
     ])
     .range([DarkTeal, Aqua, Marigold, Squash]);
+  const lightRankingScale = scaleLinear()
+    .domain([
+      BottomDomain,
+      BottomDomain + (TopDomain - BottomDomain) / 3,
+      BottomDomain + (2 * (TopDomain - BottomDomain)) / 3,
+      TopDomain,
+    ])
+    .range([
+      'rgba(56, 99, 113, 0.1)',
+      'rgba(60, 161, 136, 0.1)',
+      'rgba(235, 173, 92, 0.1)',
+      'rgba(195, 91, 33, .1)',
+    ]);
   return (
     <RankingWrapper position={position}>
       <TitleBlock color="#fff">
@@ -879,7 +890,20 @@ export function RankingInfo({
           >
             <p>{x.rank}</p>
             <p>{x.country}</p>
-            <RankSVG viewBox="0 0 353 38">
+            <RankSVG
+              viewBox="0 0 353 38"
+              style={{
+                maxWidth: '600px',
+                background:
+                  colorBy === 'Ranking'
+                    ? lightRankingScale(x.avgVal)
+                    : colorBy === 'Income'
+                    ? lightIncomeScale(x.incomeLevel)
+                    : colorBy === 'Continent'
+                    ? lightContinentScale(x.continent)
+                    : 'none',
+              }}
+            >
               <defs>
                 <linearGradient id="grayLeft">
                   <stop offset="0%" stopColor="#f6f6f6" stopOpacity="1" />
@@ -904,7 +928,15 @@ export function RankingInfo({
                 x={xScale(x.avgVal) - 16 + margin.left}
                 width="32"
                 height="20"
-                fill={rankingScale(x.avgVal)}
+                fill={
+                  colorBy === 'Ranking'
+                    ? rankingScale(x.avgVal)
+                    : colorBy === 'Income'
+                    ? incomeScale(x.incomeLevel)
+                    : colorBy === 'Continent'
+                    ? continentScale(x.continent)
+                    : 'rgba(0,0,0,.7)'
+                }
               />
               <rect
                 y="8"
@@ -946,7 +978,15 @@ export function RankingInfo({
                 textAnchor="end"
                 //   fontFamily="monospace"
                 fontWeight="600"
-                fill={rankingScale(x.avgVal)}
+                fill={
+                  colorBy === 'Ranking'
+                    ? rankingScale(x.avgVal)
+                    : colorBy === 'Income'
+                    ? incomeScale(x.incomeLevel)
+                    : colorBy === 'Continent'
+                    ? continentScale(x.continent)
+                    : 'rgba(0,0,0,.7)'
+                }
               >
                 {x.avgVal > 1000
                   ? `${(x.avgVal / 1000).toFixed(1)}k`
@@ -961,6 +1001,7 @@ export function RankingInfo({
 }
 RankingInfo.propTypes = {
   selectedCountry: PropTypes.string.isRequired,
+  colorBy: PropTypes.string.isRequired,
   rankingData: PropTypes.array.isRequired,
   customMetric: PropTypes.object.isRequired,
   position: PropTypes.string,

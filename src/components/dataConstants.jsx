@@ -1,5 +1,5 @@
 export const countries = [
-  'None',
+  'None Selected',
   'Afghanistan',
   'Albania',
   'Algeria',
@@ -80,6 +80,7 @@ export const countries = [
   'Kazakhstan',
   'Kenya',
   'Korea (Dem. People’s Rep.)',
+  'Korea (Rep.)',
   'Kuwait',
   'Laos',
   'Latvia',
@@ -135,6 +136,7 @@ export const countries = [
   'Slovakia',
   'Slovenia',
   'South Africa',
+  'South Sudan',
   'Spain',
   'Sri Lanka',
   'Sudan',
@@ -200,6 +202,7 @@ export const customMetricOptions = [
     SEDAcorrelation: 'Weak Negative',
     lowerText: 'LESS EQUAL',
     upperText: 'MORE EQUAL',
+    subtitle: 'See the relationship between how equal a country is and their',
   },
   {
     metricTitle: 'happyplanetindex',
@@ -210,6 +213,8 @@ export const customMetricOptions = [
     SEDAcorrelation: 'No',
     domain: [0, 100],
     upperText: 'HAPPIER',
+    subtitle:
+      'See the relationship between the happiness of a country and their',
   },
   {
     metricTitle: 'humandevelopmentindex',
@@ -222,6 +227,8 @@ export const customMetricOptions = [
     controlPosition: 'bottom',
     lowerText: 'LESS DEVELOPED',
     upperText: 'MORE DEVELOPED',
+    subtitle:
+      'A summary measure of average achievement in key areas of human development, see how a this index relates to ',
   },
   {
     metricTitle: 'sustainableeconomicdevelopmentassessmentSEDA',
@@ -234,6 +241,8 @@ export const customMetricOptions = [
     controlPosition: 'bottom',
     upperText: 'MORE SUSTAINABLE',
     lowerText: 'LESS SUSTAINABLE',
+    subtitle:
+      'A way to understand a country’s overall social and economic conditions, see how a SEDA relates to ',
   },
   {
     metricTitle: 'GDPgrowthpercent',
@@ -245,6 +254,8 @@ export const customMetricOptions = [
     domain: [-15, 20],
     upperText: 'ECONOMY GROWING',
     lowerText: 'ECONOMY SHRINKING',
+    subtitle:
+      'See the relationship between the growth rate of a country’s GDP relates to',
   },
   {
     metricTitle: 'GDP',
@@ -255,6 +266,8 @@ export const customMetricOptions = [
     SEDAcorrelation: 'Strong Positive',
     domain: [0, 23000],
     upperText: 'WEALTHIER',
+    subtitle:
+      'A measure of a country’s wealth, see how  Gross Domestic Product (GDP) relates to',
   },
   {
     metricTitle: 'GDPpercapita',
@@ -1922,6 +1935,7 @@ export const defaultSelectedMetric = {
     },
     {
       country: 'Korea (Rep.)',
+      incomeLevel: 'High Income',
       continent: 'Asia',
       avgVal: 35.7,
       latestVal: 35.7,

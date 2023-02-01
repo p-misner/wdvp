@@ -31,6 +31,9 @@ import {
   contourColor,
   correctMetric,
   useWindowSize,
+  popScale,
+  continentScale,
+  incomeScale,
 } from './utils';
 import {
   BackgroundInfo,
@@ -206,11 +209,6 @@ function ScatterplotGDP({
     range: [yMax, 0],
     nice: true,
   });
-  const popScale = scaleLinear({
-    domain: [20, 1386000000],
-    range: [2, 60],
-    nice: true,
-  });
 
   const BottomDomain = Math.min(...data.map((x) => x.avgVal));
   const TopDomain = Math.max(...data.map((x) => x.avgVal));
@@ -222,26 +220,6 @@ function ScatterplotGDP({
       TopDomain,
     ])
     .range([DarkTeal, Aqua, Marigold, Squash]);
-
-  const continentScale = scaleOrdinal()
-    .domain([
-      'North America',
-      'South America',
-      'Europe',
-      'Asia',
-      'Africa',
-      'Australia',
-    ])
-    .range(['red', 'orange', 'yellow', 'green', 'blue', 'purple']);
-  const incomeScale = scaleOrdinal()
-    .domain([
-      'Low Income',
-      'Lower Middle Income',
-      'Upper Middle Income',
-      'High Income',
-    ])
-    .range([DarkestBlue, Aqua, Marigold, Squash])
-    .unknown('#000531');
 
   // contour
   const contour = contourDensity()
@@ -456,6 +434,7 @@ const Left = styled.div`
   display: flex;
   flex-direction: column;
   margin-left: 24px;
+  margin-top: 70px;
 `;
 const HeroChart = styled.div`
   h3 {
@@ -476,7 +455,15 @@ function LargeChart({ dataSeries, xMetric, colorBy, selectedCountry, size }) {
     <HeroChart>
       <SideSideWrapper>
         <div>
-          <h1>Large</h1>
+          <HighlightChartTitle>
+            <h3>{customMetric.seriesName}</h3>
+            <p>
+              {customMetric.subtitle} {correctMetric(xMetric)}. Different Metric
+              + Color combinations will reveal different ways of looking at the
+              same data.
+            </p>
+          </HighlightChartTitle>
+
           <GINI
             windowSize={windowSize}
             customMetric={customMetric}
@@ -493,13 +480,14 @@ function LargeChart({ dataSeries, xMetric, colorBy, selectedCountry, size }) {
             xMetric={xMetric}
             colorBy={colorBy}
           />
-          {colorBy === 'Correlation' && (
+          {/* {colorBy === 'Correlation' && (
             <BackgroundInfo xMetric={xMetric} customMetric={customMetric} />
-          )}
-          {colorBy === 'Ranking' && windowSize.width > 1300 && (
+          )} */}
+          {windowSize.width > 1300 && (
             <RankingInfo
               selectedCountry={selectedCountry}
               customMetric={customMetric}
+              colorBy={colorBy}
               rankingData={dataSeries.data
                 .filter(
                   (x) =>
@@ -510,17 +498,20 @@ function LargeChart({ dataSeries, xMetric, colorBy, selectedCountry, size }) {
                 .map((x, i) => ({
                   country: x.country,
                   avgVal: x.avgVal,
+                  incomeLevel: x.incomeLevel,
+                  continent: x.continent,
                   rank: i + 1,
                 }))}
             />
           )}
         </Left>
       </SideSideWrapper>
-      {colorBy === 'Ranking' && windowSize.width <= 1300 && (
+      {windowSize.width <= 1300 && (
         <RankingInfo
           selectedCountry={selectedCountry}
           customMetric={customMetric}
           position="bottom"
+          colorBy={colorBy}
           rankingData={dataSeries.data
             .filter(
               (x) =>
@@ -644,13 +635,21 @@ ControlPanel.propTypes = {
   controllersObj: PropTypes.array.isRequired,
 };
 
-const HighlightChartTitle = styled.h3`
-  color: #000531;
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 16px;
+const HighlightChartTitle = styled.div`
   margin: 0px 8px 12px 12px;
+  color: #000531;
+
+  p {
+    max-width: 1000px;
+    font-size: 16px;
+    line-height: 20px;
+  }
+  h3 {
+    font-size: 24px;
+    font-weight: 600;
+  }
 `;
+
 function HighlightSection({
   setPageLayout,
   pageLayout,
@@ -661,16 +660,8 @@ function HighlightSection({
   data,
   presentWorldControllers,
 }) {
-  const customMetric = customMetricOptions.find(
-    (item) => item.metricTitle === pageLayout.selectedMetric.metricTitle
-  );
   return (
     <SectionWrapper>
-      <HighlightChartTitle>
-        {customMetric
-          ? customMetric.seriesName
-          : pageLayout.selectedMetric.metricTitle}
-      </HighlightChartTitle>
       <ControlPanel controllersObj={presentWorldControllers} />
       <LargeChart
         size="large"
@@ -847,7 +838,7 @@ export function PresentFutureDashboard({ data, theme }) {
 
   const [xMetric, setXMetric] = useState('avgGDPpercapita');
   const [colorBy, setColorBy] = useState('Ranking');
-  const [selectedCountry, setSelectedCountry] = useState('None');
+  const [selectedCountry, setSelectedCountry] = useState('None Selected');
 
   const presentWorldControllers = [
     {
