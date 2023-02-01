@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/wdvp/static/css/main.8816b233.css",
-    "main.js": "/wdvp/static/js/main.f82d0cbd.js",
+    "main.js": "/wdvp/static/js/main.e746f2b2.js",
     "static/js/787.94cf8919.chunk.js": "/wdvp/static/js/787.94cf8919.chunk.js",
     "static/media/windmills.png": "/wdvp/static/media/windmills.afdd84741a6147b274c4.png",
     "static/media/women.png": "/wdvp/static/media/women.c34305a91497fd938efe.png",
     "index.html": "/wdvp/index.html",
     "main.8816b233.css.map": "/wdvp/static/css/main.8816b233.css.map",
-    "main.f82d0cbd.js.map": "/wdvp/static/js/main.f82d0cbd.js.map",
+    "main.e746f2b2.js.map": "/wdvp/static/js/main.e746f2b2.js.map",
     "787.94cf8919.chunk.js.map": "/wdvp/static/js/787.94cf8919.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.8816b233.css",
-    "static/js/main.f82d0cbd.js"
+    "static/js/main.e746f2b2.js"
   ]
 }
