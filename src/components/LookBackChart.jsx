@@ -12,13 +12,24 @@ import { pastDataArray } from './dataConstants';
 
 const LookBackWrapper = styled.div`
   min-height: 400px;
-  background: #fff;
-  margin-top: 128px;
+  // background: #fff;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    #ffffff 12%,
+    #ffffff 50%,
+    #ffffff 87%,
+    rgba(255, 255, 255, 0.2) 96%,
+    rgba(255, 255, 255, 0) 100%
+  );
+
+  margin-top: 32px;
 `;
 const AllContent = styled.div`
   border-radius: 8px;
   margin: 0px auto;
-  padding-bottom: 64px;
+  padding-top: 108px;
+  padding-bottom: 160px;
   width: 95vw;
   max-width: ${maxWidth};
 `;
