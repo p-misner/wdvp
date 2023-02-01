@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Aqua,
   Carrot,
@@ -67,7 +67,7 @@ export function correctMetric(item) {
     case 'latestGDPpercapita':
       return 'Latest GDP per Capita';
     case 'GINI':
-      return 'GINI Index';
+      return 'GINI Inequality Index';
     case 'SEDA':
       return 'SEDA';
     case 'avgHappyPlanet':
@@ -91,4 +91,24 @@ export function correctVar(item) {
     default:
       return item;
   }
+}
+export function useWindowSize() {
+  const [windowSize, setWindowSize] = useState({
+    width: undefined,
+    height: undefined,
+  });
+  useEffect(() => {
+    function handleResize() {
+      // Set window width/height to state
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+    handleResize();
+    return () => window.removeEventListener('resize', handleResize);
+  }, []); // Empty array ensures that effect is only run on mount
+  return windowSize;
 }

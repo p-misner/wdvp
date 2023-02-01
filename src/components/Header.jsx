@@ -1,12 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import {
-  boldWeight,
-  fontColor,
-  medFontSize,
-  medSpacing,
-  regularWeight,
-} from '../styleConstants';
+import { medFontSize, medSpacing, regularWeight } from '../styleConstants';
 
 const HeaderWrapper = styled.div`
   border-bottom: 2px solid #000531;

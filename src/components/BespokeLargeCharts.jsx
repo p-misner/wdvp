@@ -6,7 +6,7 @@ import { GridRows, GridColumns } from '@visx/grid';
 import { scaleLinear, scaleOrdinal } from '@visx/scale';
 import { AxisLeft, AxisBottom } from '@visx/axis';
 import { Group } from '@visx/group';
-import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
+import { useTooltip, useTooltipInPortal, defaultStyles } from '@visx/tooltip';
 import { contourDensity } from 'd3-contour';
 import { geoPath } from 'd3-geo';
 import {
@@ -31,6 +31,7 @@ import {
 
 const ScatterSVG = styled.svg`
   width: 800px;
+  overflow: visible;
   @media (max-width: 1000px) {
     width: 100%;
   }
@@ -38,26 +39,69 @@ const ScatterSVG = styled.svg`
 const InChartButtonWrapper = styled.div`
   position: absolute;
   top: ${(props) =>
-    props.position === 'bottom' ? (!props.width ? '480px' : '10px') : '10px'};
+    props.position === 'bottom' ? (!props.width ? '490px' : '10px') : '10px'};
   right: 20px;
   background: white;
   padding: 2px;
+  display: flex;
+  align-items: center;
+  flex-flow: row nowrap;
   p {
-    margin-bottom: 4px;
+    margin-right: 8px;
+    color: #000531;
   }
 `;
-const InChartButton = styled.button`
-  background: ${(props) => (props.active ? '#000531' : 'none')};
-  color: ${(props) => (props.active ? 'white' : '#000531')};
-  border: 1px solid #000531;
-  border-radiys: 2px;
-  padding: 4px 6px;
-  font-size: ${regFontSize};
 
-  &:hover {
-    background: ${(props) => (props.active ? '#000531' : '#B3B4C1')};
+const SwitchWrapper = styled.label`
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 24px;
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  input:checked + .slider {
+    background-color: #000531;
+  }
+
+  input:focus + .slider {
+    box-shadow: 0 0 1px #000531;
+  }
+
+  input:checked + .slider:before {
+    -webkit-transform: translateX(16px);
+    -ms-transform: translateX(16px);
+    transform: translateX(16px);
   }
 `;
+
+const SliderWrapper = styled.span`
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #999bab;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+  border-radius: 34px;
+  &:before {
+    position: absolute;
+    content: '';
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+    border-radius: 50%;
+  }
+`;
+
 const SVGOverline = styled.text`
   font-size: 14px;
   font-weight: 600;
@@ -100,6 +144,7 @@ export function GINI({
   const xMax = width - margin.left - margin.right;
   const yMax = height - margin.top - margin.bottom;
 
+  console.log(customMetric);
   // domain changes depending on metric (not based on min max)
   const controlPosition = customMetric?.controlPosition
     ? customMetric.controlPosition
@@ -174,12 +219,23 @@ export function GINI({
     showTooltip, // on hover we will call this function to show tooltip
     hideTooltip, // and this one to hide it
   } = useTooltip();
-
   const { containerRef, TooltipInPortal } = useTooltipInPortal({
     detectBounds: true,
     // when tooltip containers are scrolled, this will correctly update the Tooltip position
     scroll: true,
   });
+  const tooltipStyles = {
+    ...defaultStyles,
+    backgroundColor: '#ffffff',
+    color: '#000531',
+    border: '1px solid #000531',
+    borderRadius: 8,
+    // width: 152,
+    // height: 72,
+    padding: '12px',
+    lineHeight: '20px',
+    fontSize: '16px',
+  };
 
   function HoverStyleReset(e) {
     e.target.style['-webkit-filter'] = 'drop-shadow(0px 0px 0px #fff)';
@@ -204,21 +260,14 @@ export function GINI({
         width={windowSize.width < 800}
         position={controlPosition}
       >
-        <p> Scale by:</p>
-        <InChartButton
-          active={!scaleByPop}
-          onClick={() => setScaleByPop(false)}
-          type="button"
-        >
-          None
-        </InChartButton>
-        <InChartButton
-          active={scaleByPop}
-          onClick={() => setScaleByPop(true)}
-          type="button"
-        >
-          Population
-        </InChartButton>
+        <p> Scale by Population:</p>
+        <SwitchWrapper className="switch" htmlFor="control">
+          <input type="checkbox" id="control" />
+          <SliderWrapper
+            className="slider round"
+            onClick={() => setScaleByPop(!scaleByPop)}
+          />
+        </SwitchWrapper>
       </InChartButtonWrapper>
 
       <ScatterSVG
@@ -259,13 +308,14 @@ export function GINI({
             stroke="#B3B4C1"
             strokeWidth="2px"
             tickStroke="#B3B4C1"
-            // label={xMetric}
-            // labelOffset={20}
-            // labelProps={() => ({
-            //   textAnchor: 'start',
-            //   opacity: 0.6,
-            //   fontSize: 16,
-            // })}
+            label={correctMetric(xMetric)}
+            labelOffset={4}
+            labelProps={{
+              textAnchor: 'middle',
+              opacity: 0.6,
+              fontSize: 16,
+              fontWeight: 500,
+            }}
             hideAxisLine
             tickLabelProps={() => ({
               opacity: 0.6,
@@ -465,10 +515,15 @@ export function GINI({
           key={Math.random()}
           top={tooltipTop}
           left={tooltipLeft}
+          style={tooltipStyles}
         >
-          <p> {tooltipData.country}</p>
-          <p> GDP: {Math.round(tooltipData[xMetric]) / 1000}k</p>
-          <p> value: {tooltipData.avgVal}</p>
+          <p style={{ fontWeight: 500 }}> {tooltipData.country}</p>
+          <p>
+            {customMetric.seriesName}: {tooltipData.avgVal}
+          </p>
+          <p>
+            {xMetric}: {tooltipData[xMetric]}
+          </p>
         </TooltipInPortal>
       )}
     </GINIWrapper>

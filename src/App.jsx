@@ -33,8 +33,18 @@ function App() {
   const [theme, setTheme] = useState('presentWorld');
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState();
+  // useEffect(() => {
+  //   fetch('/presentDayAvgLatest.json')
+  //     .then((response) => response.json())
+  //     .then((d) => {
+  //       setData(d);
+  //       setLoading(false);
+  //     });
+  // }, []);
   useEffect(() => {
-    fetch('presentDayAvgLatest.json')
+    fetch(
+      'https://raw.githubusercontent.com/p-misner/wdvp/main/public/presentDayAvgLatest.json'
+    )
       .then((response) => response.json())
       .then((d) => {
         setData(d);

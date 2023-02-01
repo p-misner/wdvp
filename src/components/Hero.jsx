@@ -1,11 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import {
-  lrgSpacing,
-  regFontSize,
-  regSpacing,
-  xlrgSpacing,
-} from '../styleConstants';
+import { regSpacing, xlrgSpacing } from '../styleConstants';
 
 const HeroWrapper = styled.div`
   margin-top: ${xlrgSpacing};

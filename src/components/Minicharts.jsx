@@ -17,6 +17,7 @@ import {
   DarkTeal,
   DarkestBlue,
   Squash,
+  PaleBlue,
 } from '../styleConstants';
 import {
   colorByOptions,
@@ -25,7 +26,12 @@ import {
   defaultSelectedMetric,
   countries,
 } from './dataConstants';
-import { tickFormatter, contourColor } from './utils';
+import {
+  tickFormatter,
+  contourColor,
+  correctMetric,
+  useWindowSize,
+} from './utils';
 import {
   BackgroundInfo,
   GINI,
@@ -94,7 +100,7 @@ const GraphContents = styled.div`
   margin-left: -8px;
 
   &:hover {
-    cursor: pointer;
+    cursor: nesw-resize;
   }
 
   .arrow {
@@ -109,7 +115,8 @@ const GraphContents = styled.div`
     font-size: 16px;
     font-weight: 600;
     width: 150px;
-    color: rgba(0, 0, 0, 0.4);
+    color: rgba(0, 0, 0, 0.7);
+    text-shadow: 0 0 1px white, 0 0 2px white, 0 0 3px white;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -122,7 +129,7 @@ const BottomInfoWrapper = styled.div`
   height: ${(props) => (props.open ? '180px' : '40px')};
   width: 100%;
   position: absolute;
-  background: #fff;
+  background: ${(props) => (props.open ? PaleBlue : '#fff')};
   left: 0px;
   bottom: 0px;
   border-radius: 8px 8px 0px 0px;
@@ -136,6 +143,9 @@ const BottomInfoWrapper = styled.div`
     right: 8px;
     top: 12px;
   }
+  div:first-child {
+    white-space: ${(props) => (props.open ? 'wrap' : 'nowrap')};
+  }
 `;
 const BottomInfoContents = styled.div`
   width: 100%;
@@ -145,7 +155,6 @@ const BottomInfoContents = styled.div`
     font-weight: 500;
     text-overflow: ellipsis;
     overflow: hidden;
-    white-space: nowrap;
   }
 `;
 const ScatterSVG = styled.svg``;
@@ -461,43 +470,23 @@ function LargeChart({ dataSeries, xMetric, colorBy, selectedCountry, size }) {
   const customMetric = customMetricOptions.find(
     (item) => item.metricTitle === dataSeries.metricTitle
   );
-  function useWindowSize() {
-    // Initialize state with undefined width/height so server and client renders match
-    // Learn more here: https://joshwcomeau.com/react/the-perils-of-rehydration/
-    const [windowSize, setWindowSize] = useState({
-      width: undefined,
-      height: undefined,
-    });
-    useEffect(() => {
-      // Handler to call on window resize
-      function handleResize() {
-        // Set window width/height to state
-        setWindowSize({
-          width: window.innerWidth,
-          height: window.innerHeight,
-        });
-      }
-      // Add event listener
-      window.addEventListener('resize', handleResize);
-      // Call handler right away so state gets updated with initial window size
-      handleResize();
-      // Remove event listener on cleanup
-      return () => window.removeEventListener('resize', handleResize);
-    }, []); // Empty array ensures that effect is only run on mount
-    return windowSize;
-  }
+
   const windowSize = useWindowSize();
   return (
     <HeroChart>
       <SideSideWrapper>
-        <GINI
-          windowSize={windowSize}
-          customMetric={customMetric}
-          data={dataSeries.data}
-          xMetric={xMetric}
-          colorBy={colorBy}
-          selectedCountry={selectedCountry}
-        />
+        <div>
+          <h1>Large</h1>
+          <GINI
+            windowSize={windowSize}
+            customMetric={customMetric}
+            data={dataSeries.data}
+            xMetric={xMetric}
+            colorBy={colorBy}
+            selectedCountry={selectedCountry}
+          />
+        </div>
+
         <Left>
           <Legend
             customMetric={customMetric}
@@ -638,7 +627,10 @@ function ControlPanel({ controllersObj }) {
                   color: '#000531',
                 }),
               }}
-              defaultValue={{ value: x.defaultState, label: x.defaultState }}
+              defaultValue={{
+                value: x.defaultState,
+                label: correctMetric(x.defaultState),
+              }}
               options={x.options}
               onChange={(a) => x.changeState(a.value)}
             />
