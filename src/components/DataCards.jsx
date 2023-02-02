@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import windmills from '../media/windmills.png';
 import women from '../media/women.png';
-import arrow from '../media/arrow.png';
+import education from '../media/education.png';
 
 const DataCardGrid = styled.div`
   display: grid;
@@ -97,14 +97,20 @@ export function DataCard() {
             <Bolded>Lesotho</Bolded>, <Bolded>Nepal</Bolded> and{' '}
             <Bolded>Paraguay</Bolded>.
           </p>
-          <CardImage src={windmills} alt="windmill mage" />
+          <CardImage
+            src={windmills}
+            alt="Three windmills on a fuzzy gradient background"
+          />
         </DataCardWrapper>
         <DataCardWrapper>
           <p>
             A majority of members in national parliaments in{' '}
             <Bolded>Rwanda</Bolded> and <Bolded>Bolivia</Bolded> are women.
           </p>
-          <CardImage src={women} alt="women image" />
+          <CardImage
+            src={women}
+            alt="Image of 3 female symbols and 2 male symbols"
+          />
         </DataCardWrapper>
         <DataCardWrapper>
           <p>
@@ -113,6 +119,10 @@ export function DataCard() {
             on education (as a % of GDP) than any <Chip>High Income</Chip>{' '}
             country.
           </p>
+          <CardImage
+            src={education}
+            alt="image of a bar chart representing the country's spending"
+          />
         </DataCardWrapper>
 
         {/* <HighlightedDataCardWrapper>

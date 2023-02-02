@@ -2,7 +2,7 @@ export const pastDataArray = [
   {
     metricTitle: 'Health Expenditure Per Capita',
     category: 'Global Health',
-    dataType: 'current expenditure per capita (current US$)',
+    dataType: 'Current Expenditure per Capita (current US$)',
     conclusion: 'Upward Trend',
     data: [
       {
@@ -54,7 +54,7 @@ export const pastDataArray = [
   {
     metricTitle: 'Infant Mortality',
     category: 'Global Health',
-    dataType: 'mortality per 1000 live births (%)',
+    dataType: 'Mortality per 1000 Live Births (%)',
     conclusion: 'Steady Downward Trend',
     data: [
       {
@@ -148,6 +148,578 @@ export const pastDataArray = [
       {
         year: '2017',
         value: '295000',
+      },
+    ],
+  },
+  {
+    metricTitle: 'Not in Extreme Poverty',
+    category: 'Global Health',
+    dataType: '% Not in Extreme Poverty',
+    conclusion: 'Steady Upward Trend',
+    data: [
+      {
+        year: '2010',
+        value: '83.69',
+      },
+      {
+        year: '2011',
+        value: '85.87',
+      },
+      {
+        year: '2015',
+        value: '90.39',
+      },
+      {
+        year: '2018',
+        value: '91.4',
+      },
+    ],
+  },
+  {
+    metricTitle: 'Access to Electricity',
+    category: 'Global Health',
+    dataType: '% of Global Population',
+    conclusion: 'Upward Trend',
+    data: [
+      {
+        year: '2009',
+        value: '83.2',
+      },
+      {
+        year: '2010',
+        value: '83.5',
+      },
+      {
+        year: '2011',
+        value: '82.5',
+      },
+      {
+        year: '2012',
+        value: '85.0',
+      },
+      {
+        year: '2013',
+        value: '85.2',
+      },
+      {
+        year: '2014',
+        value: '85.7',
+      },
+      {
+        year: '2015',
+        value: '87.0',
+      },
+      {
+        year: '2016',
+        value: '87.4',
+      },
+      {
+        year: '2017',
+        value: '88.9',
+      },
+      {
+        year: '2020',
+        value: '90.5',
+      },
+    ],
+  },
+  {
+    metricTitle: 'Happy Planet Index',
+    category: 'Global Health',
+    dataType: 'Average Happy Planet Index',
+    conclusion: 'Pretty Steady Level',
+    data: [
+      {
+        year: '2009',
+        value: '44',
+      },
+      {
+        year: '2010',
+        value: '43.6',
+      },
+      {
+        year: '2011',
+        value: '44',
+      },
+      {
+        year: '2012',
+        value: '44.1',
+      },
+      {
+        year: '2013',
+        value: '44',
+      },
+      {
+        year: '2014',
+        value: '44.6',
+      },
+      {
+        year: '2015',
+        value: '44.3',
+      },
+      {
+        year: '2016',
+        value: '44.5',
+      },
+      {
+        year: '2017',
+        value: '44.3',
+      },
+      {
+        year: '2018',
+        value: '44.2',
+      },
+      {
+        year: '2019',
+        value: '44.1',
+      },
+      {
+        year: '2020',
+        value: '46',
+      },
+    ],
+  },
+  {
+    metricTitle: 'Human Development Index',
+    category: 'Global Health',
+    dataType: 'Human Development Index',
+    conclusion: 'Upward but Flattening Trend',
+    data: [
+      {
+        year: '2009',
+        value: '0.69',
+      },
+      {
+        year: '2010',
+        value: '0.697',
+      },
+      {
+        year: '2011',
+        value: '0.704',
+      },
+      {
+        year: '2012',
+        value: '0.709',
+      },
+      {
+        year: '2013',
+        value: '0.714',
+      },
+      {
+        year: '2014',
+        value: '0.72',
+      },
+      {
+        year: '2015',
+        value: '0.724',
+      },
+      {
+        year: '2016',
+        value: '0.729',
+      },
+      {
+        year: '2017',
+        value: '0.733',
+      },
+      {
+        year: '2018',
+        value: '0.736',
+      },
+      {
+        year: '2019',
+        value: '0.739',
+      },
+      {
+        year: '2020',
+        value: '0.735',
+      },
+    ],
+  },
+  {
+    metricTitle: 'Renewable Energy',
+    category: 'Global Health',
+    dataType: 'Share of Global Electricity Production (%)',
+    conclusion: 'Steady Upward Trend',
+    data: [
+      {
+        year: '2009',
+        value: '19.1',
+      },
+      {
+        year: '2010',
+        value: '19.4',
+      },
+      {
+        year: '2011',
+        value: '19.8',
+      },
+      {
+        year: '2012',
+        value: '20.6',
+      },
+      {
+        year: '2013',
+        value: '21.5',
+      },
+      {
+        year: '2014',
+        value: '22.0',
+      },
+      {
+        year: '2015',
+        value: '22.7',
+      },
+      {
+        year: '2016',
+        value: '23.5',
+      },
+      {
+        year: '2017',
+        value: '24.4',
+      },
+      {
+        year: '2018',
+        value: '25.0',
+      },
+      {
+        year: '2019',
+        value: '26.0',
+      },
+      {
+        year: '2020',
+        value: '27.9',
+      },
+    ],
+  },
+  {
+    metricTitle: 'Women Members of National Parliments',
+    category: 'Global Health',
+    dataType: '% of representatives',
+    conclusion: 'Steady Upward Trend',
+    data: [
+      {
+        year: '2009',
+        value: '19.02',
+      },
+      {
+        year: '2010',
+        value: '19.16',
+      },
+      {
+        year: '2011',
+        value: '19.83',
+      },
+      {
+        year: '2012',
+        value: '20.76',
+      },
+      {
+        year: '2013',
+        value: '21.78',
+      },
+      {
+        year: '2014',
+        value: '22.19',
+      },
+      {
+        year: '2015',
+        value: '22.85',
+      },
+      {
+        year: '2016',
+        value: '23.1',
+      },
+      {
+        year: '2017',
+        value: '23.6',
+      },
+      {
+        year: '2018',
+        value: '24.1',
+      },
+      {
+        year: '2019',
+        value: '24.64',
+      },
+      {
+        year: '2020',
+        value: '25.58',
+      },
+      {
+        year: '2021',
+        value: '26.13',
+      },
+    ],
+  },
+  {
+    metricTitle: '% of Children Not in Primary School',
+    category: 'Global Health',
+    dataType: '% of Kids of Primary School Age',
+    conclusion: 'Fluctuating Up and Down Trend',
+    data: [
+      {
+        year: '2009',
+        value: '9.00',
+      },
+      {
+        year: '2010',
+        value: '8.87',
+      },
+      {
+        year: '2011',
+        value: '8.89',
+      },
+      {
+        year: '2012',
+        value: '8.62',
+      },
+      {
+        year: '2013',
+        value: '8.37',
+      },
+      {
+        year: '2014',
+        value: '8.78',
+      },
+      {
+        year: '2015',
+        value: '8.99',
+      },
+      {
+        year: '2016',
+        value: '8.80',
+      },
+      {
+        year: '2017',
+        value: '8.78',
+      },
+      {
+        year: '2018',
+        value: '8.55',
+      },
+      {
+        year: '2019',
+        value: '8.64',
+      },
+      {
+        year: '2020',
+        value: '8.76',
+      },
+    ],
+  },
+  {
+    metricTitle: 'Global CO2 Emissions',
+    category: 'Global Health',
+    dataType: 'Billion Tonnes',
+    conclusion: 'Upward Trend with Fluctuations',
+    data: [
+      {
+        year: '2009',
+        value: '3.16',
+      },
+      {
+        year: '2010',
+        value: '3.34',
+      },
+      {
+        year: '2011',
+        value: '3.45',
+      },
+      {
+        year: '2012',
+        value: '3.50',
+      },
+      {
+        year: '2013',
+        value: '3.53',
+      },
+      {
+        year: '2014',
+        value: '3.56',
+      },
+      {
+        year: '2015',
+        value: '3.56',
+      },
+      {
+        year: '2016',
+        value: '3.55',
+      },
+      {
+        year: '2017',
+        value: '3.61',
+      },
+      {
+        year: '2018',
+        value: '3.68',
+      },
+      {
+        year: '2019',
+        value: '3.71',
+      },
+      {
+        year: '2020',
+        value: '3.53',
+      },
+      {
+        year: '2021',
+        value: '3.71',
+      },
+    ],
+  },
+  {
+    metricTitle: 'GDP per capita',
+    category: 'Global Health',
+    dataType: '$USD',
+    conclusion: 'Steady Upward Trend ',
+    data: [
+      {
+        year: '2009',
+        value: '13383',
+      },
+      {
+        year: '2010',
+        value: '13892',
+      },
+      {
+        year: '2011',
+        value: '14260',
+      },
+      {
+        year: '2012',
+        value: '14528',
+      },
+      {
+        year: '2013',
+        value: '14824',
+      },
+      {
+        year: '2014',
+        value: '15149',
+      },
+      {
+        year: '2015',
+        value: '15480',
+      },
+      {
+        year: '2016',
+        value: '15803',
+      },
+      {
+        year: '2017',
+        value: '16211',
+      },
+      {
+        year: '2018',
+        value: '16607',
+      },
+      {
+        year: '2019',
+        value: '16897',
+      },
+    ],
+  },
+  {
+    metricTitle: 'GDP growth per capita',
+    category: 'Global Health',
+    dataType: '% Growth',
+    conclusion: 'Fluctuating Up and Down Trend ',
+    data: [
+      {
+        year: '2009',
+        value: '-2.5',
+      },
+      {
+        year: '2010',
+        value: '3.25',
+      },
+      {
+        year: '2011',
+        value: '2.13',
+      },
+      {
+        year: '2012',
+        value: '1.43',
+      },
+      {
+        year: '2013',
+        value: '1.61',
+      },
+      {
+        year: '2014',
+        value: '1.89',
+      },
+      {
+        year: '2015',
+        value: '1.96',
+      },
+      {
+        year: '2016',
+        value: '1.64',
+      },
+      {
+        year: '2017',
+        value: '2.22',
+      },
+      {
+        year: '2018',
+        value: '2.14',
+      },
+      {
+        year: '2019',
+        value: '1.52',
+      },
+    ],
+  },
+  {
+    metricTitle: 'Economic Freedom',
+    category: 'Global Health',
+    dataType: 'Economic Freedom',
+    conclusion: 'Slight Upward Trend ',
+    data: [
+      {
+        year: '2009',
+        value: '59.5',
+      },
+      {
+        year: '2010',
+        value: '59.4',
+      },
+      {
+        year: '2011',
+        value: '59.7',
+      },
+      {
+        year: '2012',
+        value: '59.5',
+      },
+      {
+        year: '2013',
+        value: '59.6',
+      },
+      {
+        year: '2014',
+        value: '60.3',
+      },
+      {
+        year: '2015',
+        value: '60.4',
+      },
+      {
+        year: '2016',
+        value: '60.7',
+      },
+      {
+        year: '2017',
+        value: '60.9',
+      },
+      {
+        year: '2018',
+        value: '61.1',
+      },
+      {
+        year: '2019',
+        value: '60.8',
       },
     ],
   },

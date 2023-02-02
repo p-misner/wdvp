@@ -98,9 +98,9 @@ function Hero() {
               </a>
               <Bolded> World Data Visualization Prize 2023</Bolded>, this
               website helps you explore how specific countries or the entire
-              world measures up. Explore the data through specific lens (like
-              income levels, world ranking, overall trend) or look at certain
-              metrics over the past decade- the choice is yours!
+              world measures up. Explore the data through a specific lens (like
+              income levels, world ranking, overall trend) or track metrics over
+              the past decade- the choice is yours!
             </BodyCopy>
           </CopyFlex>
         </HorizontalHeroText>

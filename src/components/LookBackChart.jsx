@@ -84,7 +84,7 @@ const DashboardTitleWrapper = styled.div`
 `;
 const GridTitleHoriz = styled.div`
   display: flex;
-  flex-flow: row wrap;
+  flex-flow: row nowrap;
   justify-content: space-between;
   align-items: center;
   margin-top: 24px;
@@ -92,7 +92,7 @@ const GridTitleHoriz = styled.div`
   p {
     font-size: 20px;
     // font-weight: 500;
-    max-width: 600px;
+    max-width: 500px;
     text-align: center;
   }
   button {
@@ -105,6 +105,10 @@ const GridTitleHoriz = styled.div`
       font-weight: 600;
       color: ${Aqua};
     }
+  }
+
+  @media (max-width: 420px) {
+    flex-flow: column wrap;
   }
 `;
 const Bolded = styled.span`
@@ -158,8 +162,9 @@ export function LookBackChart({ windowSize }) {
     range: [0, xMax],
     nice: true,
   });
-  const BottomDomain = Math.min(...valueArray);
-  const TopDomain = Math.max(...valueArray);
+  const BottomDomain = Math.min(...yearArray);
+  const TopDomain = Math.max(...yearArray);
+
   const rankingScale = scaleLinear()
     .domain([
       BottomDomain,
@@ -211,7 +216,7 @@ export function LookBackChart({ windowSize }) {
               <AxisBottom
                 top={yMax}
                 scale={yearScale}
-                // numTicks={5}
+                numTicks={windowSize.width > 600 ? 10 : 5}
                 stroke="#B3B4C1"
                 strokeWidth="2px"
                 tickStroke="#B3B4C1"
@@ -271,7 +276,7 @@ export function LookBackChart({ windowSize }) {
                 <text
                   x={yearScale(d.year)}
                   y={yScale(d.value) - 20}
-                  fill={rankingScale(d.value)}
+                  fill={rankingScale(d.year)}
                   textAnchor="middle"
                   style={{ fontWeight: 600 }}
                 >

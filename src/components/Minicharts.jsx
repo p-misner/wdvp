@@ -369,6 +369,9 @@ function PlotBox({
     <GridBox pageLayout={pageLayout}>
       <GraphContents
         onClick={() => {
+          const ele = document.getElementById('presentfuturedashboard');
+          ele.scrollIntoView();
+
           setPageLayout({
             layout: 'highlight',
             selectedMetric: dataSeries,
@@ -887,7 +890,7 @@ export function PresentFutureDashboard({ data, theme }) {
   ];
 
   return (
-    <DashboardWrapper>
+    <DashboardWrapper id="presentfuturedashboard">
       <DashboardTitleWrapper>
         <h2>Dashboard of the Present Future</h2>
         <p>

@@ -515,7 +515,7 @@ export function GINI({
             {customMetric.seriesName}: {tooltipData.avgVal}
           </p>
           <p>
-            {xMetric}: {tooltipData[xMetric]}
+            {correctMetric(xMetric)}: {tickFormatter(tooltipData[xMetric])}
           </p>
         </TooltipInPortal>
       )}
